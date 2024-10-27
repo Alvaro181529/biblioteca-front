@@ -1,0 +1,374 @@
+"use client"
+import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, ListGroup } from "flowbite-react";
+import { bookTypes, currencies, languages } from "../Interface/Types";
+import { createBook } from "@/app/dashboard/books/lib/createBook";
+import { BookFormData } from "../Interface/Interface";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { Author } from "../../authors/Interface/Interface";
+import { Instrument } from "../../instruments/Interface/Interface";
+import { Categories } from "../../categories/Interface/Interface";
+export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
+    const [fetch, setFetch] = useState<BookFormData | null>(null)
+    useEffect(() => {
+        const fetchData = async () => {
+            if (id) {
+                const res = await fetchDataBook(id)
+                setFetch(res);
+            }
+        }
+        fetchData();
+    }, [id])
+
+    const onSave = async () => {
+        setTimeout(() => {
+            setOpenModal(false);
+        }, 500);
+    }
+
+    if (fetch == null && id) return <h1>Cargando</h1>
+    return (
+        <form id="submit-form" action={createBook} onSubmit={onSave}>
+            <div className="space-y-6" >
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="mb-4">
+                        <Label htmlFor="book_title_original" value="Título Original" />
+                        <TextInput
+                            name="book_title_original"
+                            id="book_title_original"
+                            placeholder="Título Original"
+                            defaultValue={fetch?.book_title_original}
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <Label htmlFor="book_title_parallel" value="Título Paralelo" />
+                        <TextInput
+                            name="book_title_parallel"
+                            id="book_title_parallel"
+                            placeholder="Título Paralelo"
+                            defaultValue={fetch?.book_title_parallel}
+                        />
+                    </div>
+                    <div className="col-span-2 grid grid-cols-4 gap-4">
+                        <div className="col-span-2 mb-4">
+                            <Label htmlFor="book_editorial" value="Editorial" />
+                            <TextInput
+                                name="book_editorial"
+                                id="book_editorial"
+                                placeholder="Editorial"
+                                defaultValue={fetch?.book_editorial}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <Label htmlFor="book_isbn" value="ISBN" />
+                            <TextInput
+                                name="book_isbn"
+                                id="book_isbn"
+                                placeholder="978-3-16-148410-0"
+                                defaultValue={fetch?.book_isbn}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <Label htmlFor="book_quantity" value="Numero de ejemplares" />
+                            <TextInput
+                                name="book_quantity"
+                                id="book_quantity"
+                                type="number"
+                                defaultValue={fetch?.book_quantity}
+                                min={1}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-span-2 mb-4">
+                        <Label htmlFor="book_description" value="Descripción" />
+                        <Textarea
+                            name="book_description"
+                            id="book_description"
+                            placeholder="Descripción"
+                            defaultValue={fetch?.book_description}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <Label htmlFor="book_condition" value="Condición" />
+                        <Select id="book_condition" name="book_condition"
+                            defaultValue={String(fetch?.book_condition)}
+                            required>
+                            <option>BUENO</option>
+                            <option>REGULAR</option>
+                            <option>MALO</option>
+                        </Select>
+                    </div>
+                    <div className="mb-4">
+                        <Label htmlFor="book_language" value="Idioma" />
+                        <Select id="book_language" name="book_language" defaultValue={String(fetch?.book_language)}>
+                            {languages.map((language, index) => (
+                                <option key={index} value={language.code}>
+                                    {language.name} ({language.code})
+                                </option>
+                            ))}
+                        </Select>
+                    </div>
+
+                    <div className="mb-4">
+                        <Label htmlFor="book_location" value="Ubicación" />
+                        <TextInput
+                            name="book_location"
+                            id="book_location"
+                            placeholder="Ubicación"
+                            defaultValue={fetch?.book_location}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
+                        <Datepicker
+                            minDate={new Date(2023, 0, 1)} maxDate={new Date(2023, 3, 30)}
+                            name="book_acquisition_date"
+                            id="book_acquisition_date"
+                        />
+                    </div>
+                    <div className="col-span-full">
+                        <section className="grid grid-cols-3 gap-2">
+                            <div className="mb-4">
+                                <Label htmlFor="book_price_type" value="Tipo de Precio" />
+                                <Select id="book_price_type" name="book_price_type"
+                                    defaultValue={String(fetch?.book_price_type)}
+                                    required>
+                                    {currencies.map(currency => (
+                                        <option key={currency.code} value={currency.code}>
+                                            {currency.name} ({currency.code})
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+
+                            <div className="mb-4">
+                                <Label htmlFor="book_original_price" value="Precio Original" />
+                                <TextInput
+                                    name="book_original_price"
+                                    id="book_original_price"
+                                    placeholder="3"
+                                    type="number"
+                                    step="0.01"
+                                    defaultValue={fetch?.book_original_price}
+                                    min="0"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <Label htmlFor="book_type" value="Tipo de Libro" />
+                                <Select id="book_type" name="book_type"
+                                    defaultValue={String(fetch?.book_type)}
+                                    required>
+                                    {bookTypes.map(books => (
+                                        <option key={books.code} value={books.code}>
+                                            {books.name}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+
+                        </section>
+                    </div>
+
+                    <div className="mb-4">
+                        <AutocompleteSuggestion
+                            id="book_category"
+                            name="Categorías"
+                            placeholder="Ingrese categorías separadas por comas"
+                            type="categories"
+                        />
+
+                    </div>
+                    <div className="mb-4">
+                        <AutocompleteSuggestion
+                            id="book_authors"
+                            name="Autores"
+                            placeholder="Ingrese autores separados por comas"
+                            type="authors"
+                        />
+
+                    </div>
+                    <div className="mb-4">
+                        <AutocompleteSuggestion
+                            id="book_instruments"
+                            name="Instrumentos"
+                            placeholder="Ingrese instrumentos separados por comas"
+                            type="instruments"
+                        />
+                    </div>
+                    <div className=" mb-4">
+                        <Label htmlFor="book_includes" value="Incluye" />
+                        <Textarea
+                            name="book_includes"
+                            id="book_includes"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <Tabs aria-label="Tabs with underline" style="underline" >
+                            <Tabs.Item active title="URL">
+                                <Label htmlFor="book_imagen" value="Imagen " />
+                                <span className="text-xs text-gray-700">(opcional)</span>
+                                <TextInput
+                                    name="book_imagen_url"
+                                    placeholder="URL de la imagen"
+                                    defaultValue={fetch?.book_imagen}
+                                />
+                            </Tabs.Item>
+                            <Tabs.Item title="Archivo">
+                                <Label htmlFor="book_imagen" value="Imagen " />
+                                <span className="text-xs text-gray-700">(opcional)</span>
+                                <FileInput
+                                    defaultValue={fetch?.book_imagen}
+                                    id="book_imagen"
+                                />
+                            </Tabs.Item>
+                        </Tabs>
+                    </div>
+
+                    <div className="mb-4">
+                        <Tabs aria-label="Tabs with underline" style="underline">
+                            <Tabs.Item active title="URL">
+                                <Label htmlFor="book_document" value="Documento " />
+                                <span className="text-xs text-gray-700">(opcional)</span>
+
+                                <TextInput
+                                    name="book_document_url"
+                                    defaultValue={fetch?.book_imagen}
+                                    placeholder="URL del documento"
+
+                                />
+                            </Tabs.Item>
+                            <Tabs.Item title="Archivo">
+                                <Label htmlFor="book_document" value="Documento " />
+                                <span className="text-xs text-gray-700">(opcional)</span>
+                                <FileInput
+                                    id="book_document"
+                                    defaultValue={fetch?.book_imagen}
+                                />
+                            </Tabs.Item>
+                        </Tabs>
+                    </div>
+                    <div className="col-span-2">
+                        <Label htmlFor="book_observation" value="Observaciones" />
+                        <Textarea
+                            name="book_observation"
+                            id="book_observation"
+                            placeholder="Observaciones"
+                            defaultValue={fetch?.book_observation}
+
+                        />
+                    </div>
+                    <input type="text" id="id" name="id" hidden defaultValue={fetch?.id} />
+                </div>
+            </div>
+
+        </form>
+
+    )
+}
+type SuggestionProps = {
+    id: string
+    name: string
+    placeholder: string
+    type: 'categories' | 'authors' | 'instruments'
+}
+
+type Suggestion = {
+    id: number;
+    name: string;
+}
+function AutocompleteSuggestion({ id, name, placeholder, type }: SuggestionProps) {
+    const [value, setValue] = useState('')
+    const [selectedItems, setSelectedItems] = useState<Suggestion[]>([])
+    const [search, setSearch] = useState('')
+    const suggestions = useFetchSuggestions(type, search)
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const inputValue = e.target.value
+        setValue(inputValue)
+
+        const lastWord = inputValue.split(', ').pop()?.trim() || ''
+        setSearch(lastWord)
+    }
+
+    const handleSuggestionClick = (suggestion: Suggestion) => {
+        const newSelectedItems = [...selectedItems, suggestion]
+        setSelectedItems(newSelectedItems)
+        setValue(newSelectedItems.map(item => item.name).join(', ') + ', ')
+        setSearch('') // Resetear búsqueda después de seleccionar
+    }
+
+    return (
+        <div className="relative mb-4">
+            <Label htmlFor={id} className="block text-sm font-medium text-gray-700">
+                {name}
+            </Label>
+            <Textarea
+                id={id}
+                name={id}
+                placeholder={placeholder}
+                value={value}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
+            />
+            {suggestions.length > 0 && (
+                <ul className="absolute z-10 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                    {suggestions.map((suggestion) => (
+                        <li
+                            key={suggestion.id}
+                            onClick={() => handleSuggestionClick(suggestion)}
+                            className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                            value={suggestion.id}
+                        >
+                            {suggestion.name}
+                        </li>
+                    ))}
+                </ul>
+            )}
+            <input
+                type="hidden"
+                name={`${id}_ids`}
+                value={selectedItems.map(item => item.id).join(',')}
+            />
+        </div>
+    )
+}
+
+
+const fetchDataBook = async (id: number) => {
+    const res = await fetch(`/api/books/${id}`);
+    if (!res.ok) {
+        throw new Error('Error al crear la Publicacion: ' + res.statusText);
+    }
+    return await res.json()
+}
+const useFetchSuggestions = (type: 'categories' | 'authors' | 'instruments', search: string) => {
+    const [data, setData] = useState<Suggestion[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (search) {
+                const url = `/api/${type}?query=${search}`;
+                const res = await fetch(url);
+                const result = await res.json();
+                const mappedData = result.data.map((item: Author | Instrument | Categories) => {
+                    if ("category_name" in item) {
+                        return { id: item.id, name: item.category_name };
+                    } else if ("author_name" in item) {
+                        return { id: item.id, name: item.author_name };
+                    } else if ("instrument_name" in item) {
+                        return { id: item.id, name: item.instrument_name };
+                    }
+                    throw new Error("Unexpected item type");
+                });
+                setData(mappedData);
+            } else {
+                setData([]);
+            }
+        };
+        fetchData();
+    }, [type, search]);
+
+    return data;
+};

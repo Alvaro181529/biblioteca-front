@@ -1,0 +1,138 @@
+"use client"
+import { useState, useEffect, act } from 'react';
+import { ComponentTable } from "@/components/Table/table"
+import { ComponentModalCreate } from '@/components/Modal/Modal';
+import { ComponentPagination } from '@/components/Pagination/Pagination';
+import { ComponentSearch } from '@/components/Search/Search';
+import { BookFormData } from './Interface/Interface';
+import { FormCreate } from './crud/create';
+import { FormDelete } from './crud/delete';
+import { useRouter } from 'next/navigation';
+interface SerchParams {
+    searchParams: {
+        query?: string;
+        page?: string;
+    };
+}
+
+export default function Books({ searchParams }: SerchParams) {
+    const searchQuery = searchParams?.query || ""
+    const [dataUpdate, setDataUpdate] = useState<(string | number)[]>([]);
+    const [modalState, setModalState] = useState(true)
+    const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'view'>('create');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [title, setTitle] = useState("Crear Libro");
+    const [actual, setActual] = useState("");
+    const [actualData, setActualData] = useState(0);
+    const [size, setSize] = useState(10);
+    const [openModal, setOpenModal] = useState(false);
+    const { data, columns, pages, infoData } = useBooksData(size, currentPage, searchQuery, openModal);
+    const router = useRouter();
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+    const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedSize = Number(event.target.value)
+        setSize(selectedSize);
+        setCurrentPage(1);
+    };
+    const handleView = (rowIndex: number) => {
+        const actualNumber = String(infoData[rowIndex]);
+        router.push(`books/${actualNumber}`)
+    };
+    const handleEdit = (rowIndex: number) => {
+        const actualNumber = Number(infoData[rowIndex])
+        setModalState(true)
+        setDataUpdate(data[rowIndex]);
+        setActualData(actualNumber)
+        setTitle("Editar Libro ")
+        setModalType('edit');
+        setOpenModal(true);
+    };
+    const handleDelate = (rowIndex: number) => {
+        const actualTitle = String(data[rowIndex][3])
+        const actualNumber = Number(infoData[rowIndex])
+        setModalState(false)
+        setActual(actualTitle)
+        setActualData(actualNumber)
+        setTitle("Eliminar Libro")
+        setModalType('delete');
+        setOpenModal(true);
+    };
+    const closeModal = () => {
+        setModalState(true)
+        setOpenModal(false);
+        setTitle("Crear Libro")
+        setModalType('create');
+    };
+    return (
+        <div>
+            <ComponentSearch onChange={handleSizeChange} size={size} />
+            <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
+            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+            <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
+                {modalType === 'create' && <FormCreate setOpenModal={closeModal} />}
+                {modalType === 'edit' && <FormCreate setOpenModal={closeModal} id={actualData} />}
+                {modalType === 'delete' && <FormDelete libro={actual} data={actualData} setOpenModal={closeModal} />}
+            </ComponentModalCreate>
+
+        </div>
+    )
+}
+
+const useBooksData = (size: number, currentPage: number, query: string, openModal: boolean) => {
+    const [data, setData] = useState<(string | number)[][]>([]);
+    const [columns, setColumns] = useState<string[]>([]);
+    const [infoData, setInfoData] = useState<(string | number)[][]>([]);
+    const [pages, setPages] = useState<number>(0);
+    const info = (books: BookFormData[]) => {
+        return books.map((book) => [
+            book.id
+        ]);
+    };
+    const transformData = (books: BookFormData[]) => {
+        return books.map((book) => [
+            book.book_inventory,
+            book.book_condition,
+            book.book_location,
+            book.book_title_original,
+            book.book_language,
+            book.book_quantity,
+            book.book_observation,
+        ]);
+    };
+    const configureColumns = () => {
+        setColumns([
+            "INVENTARIO",
+            "CONDICION",
+            "LOCACION",
+            "TITULO ORIGINAL",
+            "LENGUAJE",
+            "CANTIDAD",
+            "OBSERVACION"
+        ]);
+    };
+
+    useEffect(() => {
+        if (!openModal) {
+            const fetchData = async () => {
+                try {
+                    const url = `/api/books?page=${currentPage}&size=${size}&query=${query}`;
+                    const res = await fetch(url);
+                    const result = await res.json();
+
+                    configureColumns();
+                    setInfoData(info(result.data))
+                    setData(transformData(result.data));
+                    setPages(result.totalPages)
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+
+            fetchData();
+        }
+    }, [currentPage, size, query, openModal]);
+
+    return { data, columns, pages, infoData };
+};

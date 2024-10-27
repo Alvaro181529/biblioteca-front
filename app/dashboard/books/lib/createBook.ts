@@ -1,0 +1,112 @@
+"use server"
+
+import { z } from "zod";
+
+const bookSchema = z.object({
+    id: z.optional(z.string()),
+    book_imagen: z.optional(z.string()),
+    book_document: z.optional(z.string()),
+    book_inventory: z.optional(z.string()),
+    book_isbn: z.optional(z.string()),
+    book_title_original: z.string(),
+    book_title_parallel: z.optional(z.string()),
+    book_observation: z.optional(z.string()),
+    book_location: z.optional(z.string()),
+    book_acquisition_date: z.optional(z.date()),
+    book_price_type: z.optional(z.string()),
+    book_original_price: z.optional(z.number()),
+    book_language: z.optional(z.string()),
+    book_type: z.optional(z.string()),
+    book_description: z.optional(z.string()),
+    book_condition: z.optional(z.enum(['BUENO', 'REGULAR', 'MALO'])),
+    book_quantity: z.optional(z.number()),
+    book_includes: z.optional(z.array(z.string())),
+    book_category: z.optional(z.array(z.string())),
+    book_authors: z.optional(z.array(z.string())),
+    book_instruments: z.optional(z.array(z.string())),
+    book_editorial: z.optional(z.string()),
+})
+export async function createBook(formData: FormData) {
+    const bookIncludes = String(formData.get('book_includes'));
+    const bookCategory = String(formData.get('book_category_ids'));
+    const bookAuthors = String(formData.get('book_authors_ids'));
+    const bookInstruments = String(formData.get('book_instruments_ids'));
+    const data = {
+        id: formData.get('id') || "null",
+        book_imagen: formData.get('book_imagen') || "null",
+        book_document: formData.get('book_document') || "null",
+        book_inventory: String(formData.get('book_inventory')) || undefined,
+        book_editorial: String(formData.get('book_editorial')) || undefined,
+        book_isbn: String(formData.get('book_isbn')) || undefined,
+        book_title_original: String(formData.get('book_title_original')) || undefined,
+        book_title_parallel: String(formData.get('book_title_parallel')) || undefined,
+        book_observation: String(formData.get('book_observation')) || undefined,
+        book_location: String(formData.get('book_location')) || undefined,
+        book_acquisition_date: new Date(formData.get('book_acquisition_date') as string) || undefined,
+        book_price_type: String(formData.get('book_price_type')) || undefined,
+        book_original_price: parseFloat(formData.get('book_original_price') as string) || undefined,
+        book_language: String(formData.get('book_language')) || undefined,
+        book_type: String(formData.get('book_type')) || undefined,
+        book_description: String(formData.get('book_description')) || undefined,
+        book_condition: formData.get('book_condition') || undefined,
+        book_quantity: parseInt(formData.get('book_quantity') as string, 10) || undefined,
+        book_includes: bookIncludes ? bookIncludes.split(',').map(item => item.trim()) : [],
+        book_category: bookCategory ? bookCategory.split(',').map(item => item.trim()) : [],
+        book_authors: bookAuthors ? bookAuthors.split(',').map(item => item.trim()) : [],
+        book_instruments: bookInstruments ? bookInstruments.split(',').map(item => item.trim()) : [],
+    };
+    console.log(data);
+    const validatedData = bookSchema.parse(data);
+    try {
+        await save(String(data.id), validatedData);
+    } catch (error) {
+        console.error('Error en el guardado:', error);
+    }
+}
+const create = async (validatedData: any) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(validatedData),
+        });
+
+        if (!res.ok) {
+            throw new Error('Error al crear el instrumento: ' + res.statusText);
+        }
+
+        return await res.json();
+    } catch (error) {
+        console.error(error);
+        throw error; // Opcional: lanzar el error para manejarlo más arriba
+    }
+};
+
+const update = async (id: string, validatedData: any) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(validatedData),
+        });
+        if (!res.ok) {
+            throw new Error('Error al actualizar el instrumento: ' + res.statusText);
+        }
+        return await res.json();
+    } catch (error) {
+        console.error(error);
+        throw error; // Opcional: lanzar el error para manejarlo más arriba
+    }
+};
+const save = async (id: string, validatedData: any) => {
+    if (id == "null") {
+        console.log("object");
+        return await create(validatedData);
+    } else {
+        return await update(id, validatedData);
+    }
+};

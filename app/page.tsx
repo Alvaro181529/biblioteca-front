@@ -1,0 +1,277 @@
+"use client"
+import { Avatar, Button, Card, DarkThemeToggle, Dropdown, Navbar, Tabs } from "flowbite-react";
+import { FaWhatsapp, FaYoutube, FaFacebook } from "react-icons/fa";
+
+import Image from "next/image";
+import Link from "next/link";
+import { HiBookOpen } from "react-icons/hi";
+import { useEffect, useState } from "react";
+interface dashProps {
+  title: string;
+  href: string;
+  count: number
+}
+export default function Home() {
+  return (
+    <main className="dark:bg-gray-700">
+      <ComponentNavbar />
+      <ComponentHeader />
+      <ComponentContent />
+      <ComponentTabs />
+      <ComponentFooter />
+    </main>
+  );
+}
+function ComponentContent() {
+  return (
+    <section className="w-full bg-gray-100 py-9 text-center dark:bg-gray-800 md:py-6 lg:py-20">
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">Contenido</h2>
+      </div>
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 p-5 sm:grid-cols-2 lg:grid-cols-4">
+        <CardDashboard title="Libros" href="" count={1000} />
+        <CardDashboard title="Contenido" href="" count={1000} />
+        <CardDashboard title="Contenido" href="" count={1000} />
+        <CardDashboard title="Contenido" href="" count={1000} />
+      </div>
+    </section>
+  )
+}
+function ComponentTabs() {
+  return (
+    <section className="w-full py-12 md:py-9 lg:py-16 " id="publicacion">
+      <Tabs className=" mx-auto max-w-7xl select-none items-center justify-center " aria-label="Default tabs" style="default"  >
+        <Tabs.Item active title="Libros" icon={HiBookOpen} className="dark:text-white">
+          <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">
+                Explora Nuestros Libros
+              </h2>
+              <div className="mx-auto max-w-[calc(50%-1rem)] text-gray-500  dark:text-gray-400 max-sm:max-w-[calc(100%-1rem)] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                {/* <SearchComponent onSearch={handleSearch} /> */}
+              </div>
+            </div>
+            <div className="grid gap-4 text-start max-lg:grid-cols-4 max-sm:grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+              {/* {libros.map((libro) => (
+                <div key={libro.libro_id}>
+                  <Card>
+                    <h5 className="flex flex-row items-center gap-4">
+                      <Image
+                        src={`/libros/0${libro.libro_id}.jpg` || "/svg/placeholder.svg"}
+                        alt="Program Cover"
+                        width={48}
+                        height={64}
+                        className="h-28 w-20 rounded-lg"
+                      />
+                      <div className="grid gap-1">
+                        <h1>{libro.libro_titulo_original}</h1>
+                        <div className="text-gray-600">
+                          <h5 >{libro.libro_autor}</h5>
+                        </div>
+                      </div>
+                    </h5>
+                  </Card>
+                </div>
+              ))} */}
+            </div>
+            {/* <PaginationComponent totalPages={totalPages} onPageChange={onPageChange} /> */}
+          </div>
+        </Tabs.Item>
+      </Tabs>
+    </section>
+  )
+}
+function CardDashboard({ title, count, href }: dashProps) {
+  return (
+    <Card href={href} className="max-w-sm">
+      <h5 className="text-base font-normal normal-case tracking-tight text-gray-900 dark:text-white">
+        {title}
+      </h5>
+      <p className="text-3xl font-bold text-gray-700 dark:text-gray-400">
+        {count}
+      </p>
+    </Card>
+  )
+}
+function ComponentHeader() {
+  return (
+    <section className="w-full pt-12 max-sm:pt-24 sm:pt-24 md:pt-24 lg:pt-32 ">
+      <div className="space-y-10 px-4 md:px-6 xl:space-y-16">
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-2 md:gap-16 md:px-10">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl lg:leading-tight xl:text-[3.4rem] 2xl:text-[3.75rem]">
+              Biblioteca digital del Conservatorio Plurinacional de Musica
+            </h1>
+          </div>
+          <div className="flex flex-col items-start space-y-4">
+            <h5 className="mx-auto max-w-[700px] text-gray-500 dark:text-gray-400 md:text-xl">
+              Explora nuestro vasto acervo de libros, que abarca todas las disciplinas y tradiciones culturales, resguardado por expertos bibliotecarios y situado en instalaciones acogedoras que invitan al aprendizaje y la investigación.
+            </h5>
+            <div className="space-x-4">
+              <Link
+                href="#publicacion"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-verde-700 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-verde-600/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                prefetch={false}
+              >
+                Explora Mas
+              </Link>
+              <Link
+                href="#"
+                className="inline-flex h-9 items-center justify-center rounded-md border border-gray-200 bg-white  px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
+                prefetch={false}
+              >
+                Admissions
+              </Link>
+            </div>
+          </div>
+        </div>
+        <Image
+          src={"/imagenes/piano.png"}
+          width="1270"
+          height="300"
+          alt="Hero"
+          className="mx-auto aspect-[3/1] overflow-hidden rounded-t-xl object-cover"
+        />
+      </div>
+    </section>
+  )
+}
+function ComponentNavbar() {
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollTop = window.scrollY;
+      if (currentScrollTop > lastScrollTop) {
+        setIsNavbarVisible(false);
+      } else {
+        setIsNavbarVisible(true);
+      }
+      setLastScrollTop(currentScrollTop);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollTop]);
+  return (
+    <Navbar className={`fixed top-0 m-1 w-[calc(100%-1rem)] rounded-xl bg-verde-700 text-white transition-transform duration-300 ease-in-out sm:w-[calc(100%-1rem)] ${isNavbarVisible ? 'translate-y-0' : '-translate-y-20'}`} rounded>
+      <Navbar.Brand >
+        <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Biblioteca</span>
+      </Navbar.Brand>
+      <Navbar.Toggle className="text-white hover:bg-verde-600" />
+      <NavbarDropdown />
+    </Navbar>
+  )
+}
+function NavbarDropdown() {
+  const auth = true
+  const rol = "admin"
+  const name = "Alvaro"
+  const email = "Alvaro@gmail.com"
+  return (
+    <Navbar.Collapse>
+      <Navbar.Link className="mt-3 rounded-lg border-none text-white hover:text-amarillo-100 max-md:hover:bg-verde-600" href="#">
+        Inicio
+      </Navbar.Link>
+      <Navbar.Link className="mt-3 rounded-lg border-none  text-white hover:text-amber-100 max-md:hover:bg-verde-600" href="#publicacion">Explora mas</Navbar.Link>
+      <Navbar.Link className="mt-3 rounded-lg border-none  text-white hover:text-amber-100 max-md:hover:bg-verde-600" href="#contactos">Contactos</Navbar.Link>
+      {auth ? (
+        <div className="flex md:order-2">
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={<Avatar alt="User settings" img="" rounded />}
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">{name ?? "Usuario no encontrado"}</span>
+              <span className="block truncate text-sm font-medium text-gray-500">{email ?? ""}</span>
+            </Dropdown.Header>
+            <Dropdown.Item>
+              Modo Oscuro
+              <DarkThemeToggle className="mx-auto bg-gray-200" />
+            </Dropdown.Item>
+            {rol === "admin" ? (
+              <Dropdown.Item>
+                <Navbar.Link href="/dashboard">
+                  Dashboard
+                </Navbar.Link>
+              </Dropdown.Item>
+            ) : (
+              <Dropdown.Item>
+                <Navbar.Link href="/usuarios">
+                  Usuarios
+                </Navbar.Link>
+              </Dropdown.Item>
+            )}
+            <Dropdown.Divider />
+            <Dropdown.Item>
+              {/* <ButtonAuth /> */}
+            </Dropdown.Item>
+          </Dropdown>
+        </div>
+      ) : (
+
+        <>
+          <DarkThemeToggle className="text-white  ring-0 hover:bg-verde-600 hover:text-amber-100 "></DarkThemeToggle>
+          <Button className="bg-verde-700 text-white ring-verde-400 hover:bg-verde-600 hover:text-amber-100 dark:bg-gray-700">
+            Logearse
+            {/* <ButtonAuth /> */}
+          </Button>
+        </>
+      )}
+
+    </Navbar.Collapse>
+  )
+}
+function ComponentFooter() {
+  return (
+    <footer className="w-full bg-gray-200 p-6 md:py-12" id="contactos">
+      <div className="container mx-auto grid max-w-7xl grid-cols-1 gap-8 text-sm sm:grid-cols-2 md:grid-cols-4">
+        <div className="flex items-center gap-2">
+          <Image alt="concer_logo" src="/imagenes/coplumu.png" width={5000} height={60} />
+        </div>
+        <div className="grid gap-1">
+          <h3 className="font-semibold">Navigation</h3>
+          <Link href="#" prefetch={false}>
+            Home
+          </Link>
+          <Link href="#" prefetch={false}>
+            About
+          </Link>
+          <Link href="#" prefetch={false}>
+            Contact
+          </Link>
+        </div>
+        <div className="grid gap-1">
+          <h3 className="font-semibold">Legal</h3>
+          <Link href="#" prefetch={false}>
+            Terms of Service
+          </Link>
+          <Link href="#" prefetch={false}>
+            Privacy Policy
+          </Link>
+        </div>
+        <div className="grid gap-1">
+          <h3 className="font-semibold">Social</h3>
+          <Link href="#" className="flex items-center gap-2" prefetch={false}>
+            <FaYoutube className="size-4" />
+            YouTube
+          </Link>
+          <Link href="https://www.facebook.com/COPLUMU/?locale=es_LA" className="flex items-center gap-2" prefetch={false}>
+            <FaFacebook className="size-4" />
+            Facebook
+          </Link>
+          <Link href="https://api.whatsapp.com/send?phone=62523239&text=Hola%20Coplumu" className="flex items-center gap-2" prefetch={false}>
+            <FaWhatsapp className="size-4" />
+            Whatsapp
+          </Link>
+        </div>
+      </div>
+      <div className="container mx-auto mt-8 grid max-w-7xl text-xs">
+        &copy; 2024 Concervatorio plurinacional de musica
+      </div>
+    </footer>
+  )
+}

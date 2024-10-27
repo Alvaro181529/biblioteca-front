@@ -1,0 +1,75 @@
+"use client"
+import { TextInput, Label, Button } from "flowbite-react";
+import { createContent } from "../lib/createContent";
+import { useState } from "react";
+
+export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data?: any, setOpenModal: (open: boolean) => void, view?: boolean }) {
+    let title: any;
+    let number: any;
+    let idData: any;
+
+    if (data) ({ id: idData, content_sectionTitle: title, content_pageNumber: number } = data);
+
+    const [contents, setContents] = useState([{ sectionTitle: title, pageNumber: number }]);
+
+    const handleAddContent = () => {
+        setContents([...contents, { sectionTitle: '', pageNumber: 0 }]);
+    };
+
+    const handleChange = (index: any, field: any, value: any) => {
+        const newContents: any = [...contents];
+        newContents[index][field] = value;
+        setContents(newContents);
+    };
+    const onSave = async () => {
+        setTimeout(() => {
+            setOpenModal(false);
+        }, 500);
+    }
+
+    return (
+        <form id="submit-form" action={createContent} onSubmit={onSave}>
+            <div className="space-y-2" >
+                {contents.map((content, index) => (
+                    <div key={index} className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                        <div className="col-span-3 mb-4">
+                            <Label htmlFor={`content_sectionTitle_${index}`} value="Seccion" />
+                            <TextInput
+                                name={`content_sectionTitle_${index}`}
+                                id={`content_sectionTitle_${index}`}
+                                placeholder="Contenido"
+                                defaultValue={title}
+                                onChange={(e) => handleChange(index, 'sectionTitle', e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <Label htmlFor={`content_pageNumber_${index}`} value="Pagina" />
+                            <TextInput
+                                type="number"
+                                name={`content_pageNumber_${index}`}
+                                id={`content_pageNumber_${index}`}
+                                defaultValue={number}
+                                placeholder="2"
+                                onChange={(e) => handleChange(index, 'pageNumber', Number(e.target.value))}
+                            />
+                        </div>
+                        <input name="book" id="book" hidden defaultValue={id} />
+                        <input name={`id_${index}`} id={`id_${index}`} hidden defaultValue={String(idData)} />
+                    </div>
+                ))}
+                {!view && (
+                    <button
+                        type="button"
+                        className={`group relative flex items-center justify-center rounded-md border 
+            border-gray-300 bg-white p-2 text-sm font-medium text-gray-900 
+            transition duration-200 hover:bg-gray-100 focus:outline-none focus:ring-4 
+            dark:border-gray-600 dark:bg-gray-600 dark:text-white dark:focus:ring-gray-700`}
+                        onClick={handleAddContent}
+                    >
+                        Agregar Contenido
+                    </button>
+                )}
+            </div>
+        </form>
+    )
+}
