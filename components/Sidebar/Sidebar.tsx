@@ -12,7 +12,7 @@ interface SidebarContentProps {
 export function ComponentSidebar({ rol }: { rol: boolean }) {
     const isRoot = rol;
     return (
-        <Sidebar aria-label="Sidebar" className="z-40 h-screen -translate-x-full transition-transform md:translate-x-0">
+        <Sidebar aria-label="Sidebar" className="z-40 h-screen -translate-x-full transition-transform max-md:hidden md:translate-x-0 ">
             <SidebarContent items={isRoot ? adminItems : personalItems} />
         </Sidebar>
     )
