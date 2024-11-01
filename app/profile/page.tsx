@@ -6,7 +6,12 @@ import { Accordion, Button, Badge, List } from "flowbite-react";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
+    const hi = () => {
+
+    }
     return (
-        <h1>Hola esta es tu ṕagina de inicio</h1>
+        <section>
+            <ComponentSearch onChange={hi} size={3} />
+        </section>
     )
 }

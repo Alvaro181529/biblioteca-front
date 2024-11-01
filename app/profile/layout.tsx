@@ -1,7 +1,6 @@
 import { ComponentNavbar } from "@/components/Navbar/Navbar"
 import { ComponentSidebar } from "@/components/Sidebar/Sidebar"
 
-
 export default function DashboardLayout({
     children, // will be a page or nested layout
 }: {
