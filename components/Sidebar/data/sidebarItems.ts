@@ -1,14 +1,15 @@
 // data/sidebarItems.ts
-import { HiChartPie, HiViewBoards, HiInbox, HiUser, HiShoppingBag, HiArrowSmRight, HiTable } from 'react-icons/hi';
-import { BiBuoy, BiSolidPiano, BiSolidCategory } from 'react-icons/bi';
-import { MdPublic, MdPerson, MdPerson4 } from "react-icons/md";
+import { HiChartPie, HiArrowSmRight, HiTable } from 'react-icons/hi';
+import { BiSolidPiano, BiSolidCategory, BiSolidBookBookmark } from 'react-icons/bi';
+import { MdPublic, MdPerson, MdPerson4, MdHome } from "react-icons/md";
+import { FaBookOpenReader } from "react-icons/fa6";
 import { ImBooks } from "react-icons/im";
 import { SidebarItemGroup } from '../types/sidebarItems'; // Ajusta la ruta según tu estructura
 
 export const adminItems: SidebarItemGroup = [
 
     { href: "/dashboard", icon: HiChartPie, label: "Dashboard" },
-    { href: "/dashboard/books", icon: ImBooks, label: "Libros" },
+    { href: "/dashboard/books", icon: ImBooks, label: "Inventario" },
     { href: "/dashboard/instruments", icon: BiSolidPiano, label: "Instrumentos" },
     { href: "/dashboard/categories", icon: BiSolidCategory, label: "Categorias" },
     { href: "/dashboard/publications", icon: MdPublic, label: "Publicaciones" },
@@ -19,14 +20,7 @@ export const adminItems: SidebarItemGroup = [
 ];
 
 export const personalItems: SidebarItemGroup = [
-    { href: "#", icon: HiChartPie, label: "Personal" },
-    { href: "#", icon: HiViewBoards, label: "Kanban" },
-    { href: "#", icon: HiInbox, label: "Inbox" },
-    { href: "#", icon: HiUser, label: "Users" },
-    { href: "#", icon: HiShoppingBag, label: "Products" },
-    { href: "#", icon: HiArrowSmRight, label: "Sign In" },
-    { href: "#", icon: HiTable, label: "Sign Up" },
-    { href: "#", icon: HiChartPie, label: "Upgrade to Pro" },
-    { href: "#", icon: HiViewBoards, label: "Documentation" },
-    { href: "#", icon: BiBuoy, label: "Help" }
+    { href: "/profile", icon: MdHome, label: "Inicio" },
+    { href: "/profile/orders", icon: FaBookOpenReader, label: "Mis prestamos" },
+    { href: "/profile/history", icon: BiSolidBookBookmark, label: "Historial" },
 ];
