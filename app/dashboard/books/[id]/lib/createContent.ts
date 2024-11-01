@@ -1,4 +1,5 @@
 "use server";
+import { getTokenFromSession } from "@/app/api/utils/auth";
 import { z } from "zod";
 
 const contentSchema = z.object({
@@ -34,11 +35,13 @@ export async function createContent(formData: FormData) {
 }
 
 const create = async (validatedData: any) => {
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}contents`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(validatedData),
         });
@@ -55,11 +58,13 @@ const create = async (validatedData: any) => {
 };
 
 const update = async (id: string, validatedData: any) => {
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}contents/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(validatedData),
         });

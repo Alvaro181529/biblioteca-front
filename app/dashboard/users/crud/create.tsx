@@ -1,5 +1,5 @@
 import { TextInput, Label, Select } from "flowbite-react";
-import { createUser } from "../lib/createIntrument";
+import { createUser } from "../lib/createUser";
 import { useEffect, useState } from "react";
 import { User } from "../Interface/Interface";
 

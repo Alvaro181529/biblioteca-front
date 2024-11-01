@@ -1,7 +1,6 @@
 "use server";
+import { getTokenFromSession } from "@/app/api/utils/auth";
 import { z } from "zod";
-
-var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiYWxqYWtAeHpjY3p4Y3pjYy5jb20iLCJpYXQiOjE3Mjk4OTcwNzMsImV4cCI6MTcyOTkwMDY3M30.cnxmyOxm0DEEDNkkTsO06IWHUmyMtfmz6ljQptMdi4Q"
 
 const orderSchema = z.object({
     orders: z.array(z.object({
@@ -29,12 +28,13 @@ export async function createOrder(formData: FormData) {
 }
 
 const create = async (validatedData: any) => {
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}orders`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`, // Añade el token aquí
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(validatedData),
         });

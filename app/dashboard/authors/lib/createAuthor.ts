@@ -1,4 +1,5 @@
 "use server"
+import { getTokenFromSession } from "@/app/api/utils/auth"
 import { z } from "zod"
 const IntrumentSchema = z.object({
     author_name: z.optional(z.string()),
@@ -22,11 +23,13 @@ export async function createAuthor(formData: FormData) {
 }
 
 const create = async (validatedData: any) => {
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}authors`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(validatedData),
         });
@@ -43,11 +46,13 @@ const create = async (validatedData: any) => {
 };
 
 const update = async (id: string, validatedData: any) => {
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}authors/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(validatedData),
         });
