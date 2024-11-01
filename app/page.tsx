@@ -165,18 +165,16 @@ function ComponentNavbar() {
     </Navbar>
   )
 }
+
 function NavbarDropdown() {
-  const auth = true
-  const rol = "admin"
-  const name = "Alvaro"
-  const email = "Alvaro@gmail.com"
+  const auth = true;
+  const rol: string = "usuario";
+  const name = "Alvaro";
+  const email = "Alvaro@gmail.com";
+
   return (
     <Navbar.Collapse>
-      <Navbar.Link className="mt-3 rounded-lg border-none text-white hover:text-amarillo-100 max-md:hover:bg-verde-600" href="#">
-        Inicio
-      </Navbar.Link>
-      <Navbar.Link className="mt-3 rounded-lg border-none  text-white hover:text-amber-100 max-md:hover:bg-verde-600" href="#publicacion">Explora mas</Navbar.Link>
-      <Navbar.Link className="mt-3 rounded-lg border-none  text-white hover:text-amber-100 max-md:hover:bg-verde-600" href="#contactos">Contactos</Navbar.Link>
+      {/* Links de navegación */}
       {auth ? (
         <div className="flex md:order-2">
           <Dropdown
@@ -194,15 +192,11 @@ function NavbarDropdown() {
             </Dropdown.Item>
             {rol === "admin" ? (
               <Dropdown.Item>
-                <Navbar.Link href="/dashboard">
-                  Dashboard
-                </Navbar.Link>
+                <Navbar.Link href="/dashboard">Dashboard</Navbar.Link>
               </Dropdown.Item>
             ) : (
               <Dropdown.Item>
-                <Navbar.Link href="/usuarios">
-                  Usuarios
-                </Navbar.Link>
+                <Navbar.Link href="/profile">Perfil</Navbar.Link>
               </Dropdown.Item>
             )}
             <Dropdown.Divider />
@@ -212,19 +206,18 @@ function NavbarDropdown() {
           </Dropdown>
         </div>
       ) : (
-
         <>
-          <DarkThemeToggle className="text-white  ring-0 hover:bg-verde-600 hover:text-amber-100 "></DarkThemeToggle>
+          <DarkThemeToggle className="text-white ring-0 hover:bg-verde-600 hover:text-amber-100" />
           <Button className="bg-verde-700 text-white ring-verde-400 hover:bg-verde-600 hover:text-amber-100 dark:bg-gray-700">
             Logearse
             {/* <ButtonAuth /> */}
           </Button>
         </>
       )}
-
     </Navbar.Collapse>
-  )
+  );
 }
+
 function ComponentFooter() {
   return (
     <footer className="w-full bg-gray-200 p-6 md:py-12" id="contactos">
