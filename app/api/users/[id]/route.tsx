@@ -1,16 +1,26 @@
 import { NextResponse } from "next/server"
 import { env } from "process"
+import { getTokenFromSession } from "../../utils/auth";
 
 interface interfaceParams {
     id: number
 }
 export async function GET(request: any, { params }: { params: interfaceParams }) {
-    const res = await fetch(`${env.NEXT_PUBLIC_URL_API}users/${params.id}`)
+    const token = getTokenFromSession();
+    const res = await fetch(`${env.NEXT_PUBLIC_URL_API}users/${params.id}`,
+        {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }
+    );
     const book = await res.json()
     return NextResponse.json(book)
 }
 export async function DELETE(request: any, { params }: { params: interfaceParams }) {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiZW1haWwiOiJhbGpzYWFrQGdtYWlsLmNvbSIsImlhdCI6MTcyODYxMjExNiwiZXhwIjoxNzI4NjE1NzE2fQ.XA9yHG4Lx8-0Wb1CHQtY34ym5i_CZFgVdNkryhkAqIM"
+    const token = getTokenFromSession();
     const response = await fetch(`${env.NEXT_PUBLIC_URL_API}users/${params.id}`, {
         method: 'DELETE',
         headers: {

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { getTokenFromSession } from "../utils/auth";
 
 export async function GET(request: any) {
+    const token = getTokenFromSession();
     const { searchParams } = new URL(request.url)
     let query = searchParams.get("query")
     let page = searchParams.get("page")
@@ -9,7 +11,15 @@ export async function GET(request: any) {
     size = (!size || Number(size) < 1) ? "10" : size;
     query = (!query || Number(query) < 1) ? "" : query;
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}publications?page=${page}&pageSize=${size}&query=${query}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}publications?page=${page}&pageSize=${size}&query=${query}`,
+            {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
 
         if (!res.ok) {
             console.error("Error fetching data:", res.statusText);
