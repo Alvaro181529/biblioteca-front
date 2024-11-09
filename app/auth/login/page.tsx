@@ -59,8 +59,8 @@ export default function Home() {
     };
 
     return (
-        <main className="">
-            <div className="h-screen w-screen bg-verde-700">
+        <main className=" h-full bg-verde-700">
+            <div className="h-screen w-screen">
                 <div className="flex h-full flex-1 flex-col items-center justify-center px-4 sm:px-0">
                     <div className="flex w-full rounded-lg bg-white shadow-2xl shadow-black sm:mx-0 sm:w-3/4 lg:w-1/2" style={{ height: "500px" }}>
                         <div className="flex w-full flex-col p-4 md:w-1/2">
