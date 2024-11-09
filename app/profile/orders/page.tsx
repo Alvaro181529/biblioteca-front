@@ -2,10 +2,13 @@
 import { Orders } from "@/app/dashboard/orders/Interface/Interface";
 import { ComponentPagination } from "@/components/Pagination/Pagination";
 import { ComponentSearch } from "@/components/Search/Search";
-import { Badge, Card } from "flowbite-react";
+import { InvoicesCardUserSkeleton } from "@/components/Skeleton/skeletons";
+import { Badge, Card, Select } from "flowbite-react";
 import { useEffect, useState } from "react"
 import { MdRemoveRedEye } from "react-icons/md";
 import { RiBookFill, RiCalendarLine } from "react-icons/ri";
+import { importanceColor, importanceColorMap } from "./Interface/type";
+import { useRouter } from "next/navigation";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -15,10 +18,14 @@ interface SerchParams {
 
 export default function OrderPage({ searchParams }: SerchParams) {
     const searchQuery = searchParams?.query || "";
+    const [type, setType] = useState("PRESTADO");
     const [size, setSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
-    const { data, total } = FetchData(size, currentPage, searchQuery)
-
+    const { data, total } = FetchData(size, currentPage, searchQuery, type)
+    const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setType(event.target.value);
+        setCurrentPage(1); // Reinicia a la primera página si cambias el tipo
+    };
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -29,23 +36,62 @@ export default function OrderPage({ searchParams }: SerchParams) {
     };
     return (
         <section>
-            <ComponentSearch onChange={handleSizeChange} size={size} />
+            <div className="grid grid-cols-7 gap-2">
+                <div className="col-span-6">
+                    <ComponentSearch onChange={handleSizeChange} size={size} />
+                </div>
+                <Select onChange={handleTypeChange} className=" py-2">
+                    <option value="PRESTADO">Prestados</option>
+                    <option value="ESPERA">En espera</option>
+                </Select>
+            </div>
             <CardBook data={data} page={currentPage} size={size} />
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={total} />
         </section>
     );
 }
 const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasNoResults, setHasNoResults] = useState(false);
+    const router = useRouter()
+    const handleView = (id: number) => {
+        router.push(`content/${id}`)
+    };
+    useEffect(() => {
+        if (!data || data.length === 0) {
+            const timer = setTimeout(() => {
+                setHasNoResults(true);
+                setIsLoading(false);
+            }, 1000);
+            return () => clearTimeout(timer);
+        } else {
+            setIsLoading(false);
+            setHasNoResults(false);
+        }
+    }, [data]);
+
+    if (isLoading) {
+        return <InvoicesCardUserSkeleton />;
+    }
+
+    if (hasNoResults) {
+        return (
+            <Card className="col-span-full">
+                <p className="text-gray-600">No hay resultados disponibles.</p>
+            </Card>
+        );
+    }
     return (
         <div className="grid grid-cols-2 gap-4">
-            {data.length > 0 ? (
-                data.map((order, index) => (
-                    <Card key={index} className="relative overflow-hidden">
-                        <div className={`absolute left-0 top-0 h-full w-2 ${order.order_status === "PRESTADO" ? "bg-verde-500" : "bg-gray-400"
-                            }`} />
+            {data.map((order, index) => {
+                const badgeColor = importanceColorMap[String(order.order_status)] || 'default';
+                const lineColor = importanceColor[String(order.order_status)] || 'default';
+                return (
+                    <Card key={index} className="relative overflow-hidden" >
+                        <div className={`absolute left-0 top-0 h-full w-2 ${lineColor}`} />
                         <div className="flex items-center justify-between">
                             <h2 className="text-lg font-semibold">Orden #  {(page - 1) * size + index + 1}</h2>
-                            <Badge color="success" className="rounded-lg" >
+                            <Badge color={badgeColor} className="rounded-lg" >
                                 {order.order_status}
                             </Badge>
                         </div>
@@ -53,42 +99,33 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
                             <RiCalendarLine className="mr-2 size-4" />
                             {new Date(order.order_at).toLocaleDateString()}
                         </div>
-                        <hr />
                         {order.books.map((book, index) => (
-                            <div key={index} className="flex w-full items-center">
-                                <RiBookFill className="mr-2 size-5 text-gray-600" />
-                                <div>
-                                    <p className="font-medium">{book.book_title_original}</p>
-                                    {book.book_title_parallel && (
-                                        <p className="text-sm text-gray-600">{book.book_title_parallel}</p>
-                                    )}
+                            <Card key={index} className="cursor-pointer " onClick={() => { handleView(Number(order.id)) }}>
+                                <div className="flex items-center">
+                                    <RiBookFill className="mr-2 size-5 text-gray-600" />
+                                    <div>
+                                        <p className="font-medium">{book.book_title_original}</p>
+                                        {book.book_title_parallel && (
+                                            <p className="text-sm text-gray-600">{book.book_title_parallel}</p>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="m-auto flex justify-end gap-2">
-                                    <button className="m-auto  text-gray-600 hover:underline dark:text-verde-300">
-                                        <MdRemoveRedEye className="size-5" />
-                                    </button>
-                                </div>
-                            </div>
+                            </Card >
                         ))}
                     </Card >
-                ))
-            ) : (
-                <Card className="col-span-full">
-                    <p className="text-gray-600">No hay órdenes disponibles.</p>
-                </Card>
-            )
-            }
+                )
+            })}
         </div >
     )
 }
-const FetchData = (size: number, currentPage: number, query: string) => {
+const FetchData = (size: number, currentPage: number, query: string, type: string) => {
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const url = `/api/orders?term=PRESTADO&size=${size}&page=${currentPage}&query=${query || ""}`;
+                const url = `/api/orders?term=${type}&size=${size}&page=${currentPage}&query=${query || ""}`;
                 const res = await fetch(url);
                 const result = await res.json();
                 console.log(result); // Verificar la estructura
@@ -100,7 +137,7 @@ const FetchData = (size: number, currentPage: number, query: string) => {
             }
         };
         fetchData();
-    }, [size, currentPage, query]);
+    }, [size, currentPage, query, type]);
 
     return { data, total };
 };

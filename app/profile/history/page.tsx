@@ -2,10 +2,12 @@
 import { Orders } from "@/app/dashboard/orders/Interface/Interface";
 import { ComponentPagination } from "@/components/Pagination/Pagination";
 import { ComponentSearch } from "@/components/Search/Search";
+import { InvoicesCardUserSkeleton } from "@/components/Skeleton/skeletons";
 import { Badge, Card, Select } from "flowbite-react";
 import { useEffect, useState } from "react"
 import { MdRemoveRedEye } from "react-icons/md";
 import { RiBookFill, RiCalendarLine } from "react-icons/ri";
+import { importanceColor, importanceColorMap } from "../orders/Interface/type";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -15,7 +17,7 @@ interface SerchParams {
 
 export default function HistoryPage({ searchParams }: SerchParams) {
     const searchQuery = searchParams?.query || "";
-    const [type, setType] = useState("");
+    const [type, setType] = useState("DEVUELTO");
     const [size, setSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
     const { data, total } = FetchData(size, currentPage, searchQuery, type)
@@ -39,7 +41,6 @@ export default function HistoryPage({ searchParams }: SerchParams) {
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
                 <Select onChange={handleTypeChange} className=" py-2">
-                    <option value="">Todo</option>
                     <option value="DEVUELTO">Devuelto</option>
                     <option value="CANCELADO">Cancelado</option>
                 </Select>
@@ -50,24 +51,32 @@ export default function HistoryPage({ searchParams }: SerchParams) {
     );
 }
 const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
-    const importanceColorMap: { [key: string]: string } = {
-        'ESPERA': 'warning',
-        'PRESTADO': 'indigo',
-        'DEVUELTO': 'success',
-        'CANCELADO': 'failure',
-    };
-    const importanceColor: { [key: string]: string } = {
-        'ESPERA': 'bg-yellow-300',
-        'PRESTADO': 'bg-indigo-600  ',
-        'DEVUELTO': 'bg-verde-500',
-        'CANCELADO': 'bg-red-500',
-    };
-    if (!Array.isArray(data) || data.length === 0) {
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasNoResults, setHasNoResults] = useState(false);
+
+    useEffect(() => {
+        if (!data || data.length === 0) {
+            const timer = setTimeout(() => {
+                setHasNoResults(true);
+                setIsLoading(false);
+            }, 1000);
+            return () => clearTimeout(timer);
+        } else {
+            setIsLoading(false);
+            setHasNoResults(false);
+        }
+    }, [data]);
+
+    if (isLoading) {
+        return <InvoicesCardUserSkeleton />;
+    }
+
+    if (hasNoResults) {
         return (
             <Card className="col-span-full">
-                <p className="text-gray-600">No hay órdenes disponibles.</p>
+                <p className="text-gray-600">No hay resultados disponibles.</p>
             </Card>
-        )
+        );
     }
     return (
         <div className="grid grid-cols-2 gap-4">
@@ -97,9 +106,6 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
                                         <p className="text-sm text-gray-600">{book.book_title_parallel}</p>
                                     )}
                                 </div>
-                                <button className="m-auto  text-gray-600 hover:underline dark:text-verde-300">
-                                    <MdRemoveRedEye className="size-5" />
-                                </button>
                             </div>
                         ))}
                     </Card >
