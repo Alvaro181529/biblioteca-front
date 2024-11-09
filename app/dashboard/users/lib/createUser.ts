@@ -6,7 +6,7 @@ const IntrumentSchema = z.object({
     name: z.optional(z.string()),
     email: z.optional(z.string()),
     password: z.optional(z.string()),
-    rols: z.optional(z.enum(['USUARIO', 'ESTUDIANTE'])),
+    rols: z.optional(z.enum(['USUARIO EXTERNO', 'ESTUDIANTE'])),
 })
 
 export async function createUser(formData: FormData) {
@@ -14,7 +14,7 @@ export async function createUser(formData: FormData) {
         id: String(formData.get("id")) || "null",
         name: String(formData.get("name")) || null,
         email: String(formData.get("email")) || null,
-        rols: String(formData.get("rols")) || "USUARIO",
+        rols: String(formData.get("rols")) || "USUARIO EXTERNO",
         password: String(formData.get("password")) || "null",
     }
 
@@ -22,13 +22,14 @@ export async function createUser(formData: FormData) {
         id: String(formData.get("id")) || "null",
         name: String(formData.get("name")) || null,
         email: String(formData.get("email")) || null,
-        rols: String(formData.get("rols")) || "USUARIO",
+        rols: String(formData.get("rols")) || "USUARIO EXTERNO",
     }
-    if (data.rols !== 'USUARIO' && data.rols !== 'ESTUDIANTE') {
-        update.rols = 'USUARIO';
-        data.rols = 'USUARIO';
+    console.log(data);
+    if (data.rols !== 'USUARIO EXTERNO' && data.rols !== 'ESTUDIANTE') {
+        update.rols = 'USUARIO EXTERNO';
+        data.rols = 'USUARIO EXTERNO';
     }
-    // if (update.rols !== 'USUARIO' && update.rols !== 'ESTUDIANTE') {
+    // if (update.rols !== 'USUARIO EXTERNO' && update.rols !== 'ESTUDIANTE') {
     // }
     const validatedData = IntrumentSchema.parse(data);
     const validatedUpdate = IntrumentSchema.parse(update);
@@ -41,6 +42,7 @@ export async function createUser(formData: FormData) {
 }
 const create = async (validatedData: any) => {
     const token = await getTokenFromSession()
+    console.log(token);
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users`, {
             method: 'POST',
@@ -52,7 +54,7 @@ const create = async (validatedData: any) => {
         });
 
         if (!res.ok) {
-            throw new Error('Error al crear el instrumento: ' + res.statusText);
+            throw new Error('Error al crear el usuario: ' + res.statusText);
         }
         return await res.json();
     } catch (error) {
@@ -73,7 +75,7 @@ const update = async (id: string, validatedData: any) => {
             body: JSON.stringify(validatedData),
         });
         if (!res.ok) {
-            throw new Error('Error al actualizar el instrumento: ' + res.statusText);
+            throw new Error('Error al actualizar el usuario: ' + res.statusText);
         }
         return await res.json();
     } catch (error) {

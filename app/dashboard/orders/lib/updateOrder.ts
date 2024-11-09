@@ -37,7 +37,7 @@ const save = async (id: number, state: State, validatedData: any) => {
 };
 
 const handleCancelado = async (id: number, validatedData: any) => {
-    const token = getTokenFromSession()
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}orders/${id}`, {
             method: 'PATCH',
@@ -61,7 +61,7 @@ const handleCancelado = async (id: number, validatedData: any) => {
 };
 
 const handlePrestado = async (id: number, validatedData: any) => {
-    const token = getTokenFromSession()
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}orders/${id}`, {
             method: 'PATCH',
@@ -85,7 +85,7 @@ const handlePrestado = async (id: number, validatedData: any) => {
 };
 
 const handleDevuelto = async (id: number, validatedData: any) => {
-    const token = getTokenFromSession()
+    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}orders/${id}`, {
             method: 'PATCH',

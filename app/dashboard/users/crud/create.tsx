@@ -22,6 +22,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                     <div className="mb-4">
                         <Label htmlFor="name" value="Nombre completo" />
                         <TextInput
+                            required
                             disabled={view}
                             name="name"
                             id="name"
@@ -60,9 +61,13 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                             name="rols"
                             id="rols"
                             defaultValue={String(rol)}
+                            required
                         >
                             <option value={"ESTUDIANTE"}>Estudiante</option>
-                            <option value={"USUARIO"}>Persona Comun</option>
+                            <option value={"ESTUDIANTIL"}>Estudiantil</option>
+                            <option value={"USUARIO EXTERNO"}>Usuario Externo</option>
+                            <option value={"DOCENTE"}>Docente</option>
+                            <option value={"COLEGIAL"}>Colegial</option>
                         </Select>
                     </div>
                     <input type="text" id="id" name="id" defaultValue={id} hidden />

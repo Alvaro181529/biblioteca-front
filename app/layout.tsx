@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
+import SessionAuthProvider from "@/context/SessionAuthProvider";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,18 +17,21 @@ export const metadata: Metadata = {
     shortcut: "/imagenes/logo_cpm.png",
   },
 };
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions)
   return (
     <html lang="en">
       <head>
         <ThemeModeScript />
       </head>
       <body className={inter.className}>
-        {children}
+        <SessionAuthProvider session={session}>
+          {children}
+        </SessionAuthProvider>
       </body>
     </html>
   );

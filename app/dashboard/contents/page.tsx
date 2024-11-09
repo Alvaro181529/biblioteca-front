@@ -14,7 +14,7 @@ const Contents = () => {
     const { data: contCD } = ContentData("CD")
     const { data: contCasset } = ContentData("CASSETTE")
     const { data: contRevista } = ContentData("REVISTA")
-    const { data: contEbook } = ContentData("EBOLOK")
+    const { data: contEbook } = ContentData("EBOOK")
     const { data: contAudio } = ContentData("AUDIO LIBRO")
     const { data: contTesis } = ContentData("TESIS")
     const { data: contProyectos } = ContentData("PROYECTOS")

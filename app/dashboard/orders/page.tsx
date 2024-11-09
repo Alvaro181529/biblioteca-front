@@ -1,12 +1,13 @@
 "use client"
 import { ComponentSearch } from "@/components/Search/Search";
-import { Button, List, Table } from "flowbite-react";
+import { Button, Card, List, Select, Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Orders } from "./Interface/Interface";
 import { IoReloadSharp } from "react-icons/io5";
 import { orderBorrowed } from "./lib/updateOrder";
 import { ComponentPagination } from "@/components/Pagination/Pagination";
 import { InvoicesTableSkeleton } from "@/components/Skeleton/skeletons";
+import { HiArrowSmRight } from "react-icons/hi";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -15,9 +16,10 @@ interface SerchParams {
 }
 export default function OrderPage({ searchParams }: SerchParams) {
     const searchQuery = searchParams?.query || "";
+    const [type, setType] = useState("PRESTADO");
     const [size, setSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
-    const { data, total } = FetchData(size, currentPage, searchQuery)
+    const { data, total } = FetchData(type, size, currentPage, searchQuery)
     const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSize = Number(event.target.value)
         setSize(selectedSize);
@@ -26,9 +28,24 @@ export default function OrderPage({ searchParams }: SerchParams) {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
+    const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setType(event.target.value);
+        setCurrentPage(1); // Reinicia a la primera página si cambias el tipo
+    };
     return (
         <div>
-            <ComponentSearch onChange={handleSizeChange} size={size} />
+            <div className="grid grid-cols-7 gap-2">
+                <div className="col-span-6">
+                    <ComponentSearch onChange={handleSizeChange} size={size} />
+                </div>
+                <Select onChange={handleTypeChange} className=" py-2">
+                    <option value="PRESTADO">Prestado</option>
+                    <option value="DEVUELTO">Devuelto</option>
+                    <option value="CANCELADO">Cancelado</option>
+                    <option value="ESPERA">Espera</option>
+                    <option value="">Todo</option>
+                </Select>
+            </div>
             <TableOrders data={data} page={currentPage} size={size} />
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={total} />
         </div>
@@ -37,11 +54,42 @@ export default function OrderPage({ searchParams }: SerchParams) {
 
 const TableOrders = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
 
-    if (!Array.isArray(data) || data.length === 0) {
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasNoResults, setHasNoResults] = useState(false);
+
+    useEffect(() => {
+        if (!data || data.length === 0) {
+            const timer = setTimeout(() => {
+                setHasNoResults(true);
+                setIsLoading(false);
+            }, 1000);
+            return () => clearTimeout(timer);
+        } else {
+            setIsLoading(false);
+            setHasNoResults(false);
+        }
+    }, [data]);
+
+    if (isLoading) {
         return <InvoicesTableSkeleton />;
     }
+
+    if (hasNoResults) {
+        return (
+            <Card className="col-span-full">
+                <p className="text-gray-600">No hay prestamos o pedidos disponibles.</p>
+            </Card>
+        );
+    }
+
     const handleDevolver = async (id: number) => {
         await orderBorrowed(id, "DEVUELTO")
+    }
+    const handlePrestar = async (id: number) => {
+        await orderBorrowed(id, "PRESTADO")
+    }
+    const handleCancelar = async (id: number) => {
+        await orderBorrowed(id, "CANCELADO")
     }
     return (
         <div className="overflow-x-auto">
@@ -50,8 +98,8 @@ const TableOrders = ({ data, page, size }: { data: Orders[], page: number, size:
                     <Table.HeadCell className="bg-verde-700 text-white">N</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">Usuario</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">Libro</Table.HeadCell>
-                    <Table.HeadCell className="bg-verde-700 text-white">Estado</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">Fecha de préstamo</Table.HeadCell>
+                    <Table.HeadCell className="bg-verde-700 text-white">Estado</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">
                         <span className="sr-only">Acción</span>
                     </Table.HeadCell>
@@ -86,29 +134,44 @@ const TableOrders = ({ data, page, size }: { data: Orders[], page: number, size:
                                 })}
                             </Table.Cell>
                             <Table.Cell>{order.order_status}</Table.Cell>
-                            <Table.Cell>
-                                <Button color="gray" size="sm" onClick={() => { handleDevolver(order.id) }} >
-                                    <IoReloadSharp className="my-auto mr-2" />
-                                    Devolver
-                                </Button>
+                            <Table.Cell className="flex flex-col space-y-2">
+                                {order.order_status === "PRESTADO" ? (
+                                    <Button color="gray" size="sm" onClick={() => { handleDevolver(order.id) }}>
+                                        <IoReloadSharp className="my-auto mr-2" />
+                                        Devolver
+                                    </Button>
+                                ) : order.order_status === "ESPERA" ? (
+                                    <div className="flex flex-col space-y-2">
+                                        <Button color="gray" size="sm" onClick={() => { handlePrestar(order.id) }}>
+                                            <HiArrowSmRight className="my-auto mr-2 size-5 font-light" />
+                                            Prestar
+                                        </Button>
+                                        <Button color="warning" size="sm" onClick={() => { handleCancelar(order.id) }}>
+                                            <HiArrowSmRight className="my-auto mr-2 size-5 font-light" />
+                                            Cancelar
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <button hidden></button>
+                                )}
                             </Table.Cell>
                         </Table.Row>
                     ))}
                 </Table.Body>
             </Table>
-        </div>
+        </div >
     );
 }
 
 
-const FetchData = (size: number, currentPage: number, query: string) => {
+const FetchData = (type: string, size: number, currentPage: number, query: string) => {
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const url = `/api/orders/admin?state=PRESTADO&size=${size}&page=${currentPage}&query=${query || ""}`;
+                const url = `/api/orders/admin?state=${type}&size=${size}&page=${currentPage}&query=${query || ""}`;
                 const res = await fetch(url);
                 const result = await res.json();
                 console.log(result); // Verificar la estructura
@@ -120,7 +183,7 @@ const FetchData = (size: number, currentPage: number, query: string) => {
             }
         };
         fetchData();
-    }, [size, currentPage, query]);
+    }, [size, currentPage, query, type]);
 
     return { data, total };
 };

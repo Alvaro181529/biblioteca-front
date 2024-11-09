@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HiBookOpen } from "react-icons/hi";
 import { useEffect, useState } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 interface dashProps {
   title: string;
   href: string;
@@ -28,7 +29,7 @@ function ComponentContent() {
       <div className="space-y-4">
         <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">Contenido</h2>
       </div>
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 p-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 self-center p-5  max-sm:justify-items-center sm:grid-cols-2 lg:grid-cols-4">
         <CardDashboard title="Libros" href="" count={1000} />
         <CardDashboard title="Contenido" href="" count={1000} />
         <CardDashboard title="Contenido" href="" count={1000} />
@@ -83,7 +84,7 @@ function ComponentTabs() {
 }
 function CardDashboard({ title, count, href }: dashProps) {
   return (
-    <Card href={href} className="max-w-sm">
+    <Card href={href} className="max-w-sm max-sm:px-32">
       <h5 className="text-base font-normal normal-case tracking-tight text-gray-900 dark:text-white">
         {title}
       </h5>
@@ -156,68 +157,74 @@ function ComponentNavbar() {
   }, [lastScrollTop]);
   return (
     <Navbar className={`fixed top-0 m-1 w-[calc(100%-1rem)] rounded-xl bg-verde-700 text-white transition-transform duration-300 ease-in-out sm:w-[calc(100%-1rem)] ${isNavbarVisible ? 'translate-y-0' : '-translate-y-20'}`} rounded>
+      {/* <Navbar.Toggle className="text-white hover:bg-verde-600" /> */}
       <Navbar.Brand >
         <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Biblioteca</span>
       </Navbar.Brand>
-      <Navbar.Toggle className="text-white hover:bg-verde-600" />
       <NavbarDropdown />
     </Navbar>
   )
 }
 
 function NavbarDropdown() {
-  const auth = true;
-  const rol: string = "usuario";
-  const name = "Alvaro";
-  const email = "Alvaro@gmail.com";
+  type Role = 'ADMIN' | 'ROOT' | 'USUARIO' | 'ESTUDIANTE';
+
+  const { data: session, status } = useSession()
+  if (status === "unauthenticated") {
+    return (
+      <div className="flex gap-2">
+        <DarkThemeToggle className="text-white ring-verde-400 hover:bg-verde-600 hover:text-amber-100 "></DarkThemeToggle>
+        <Button className="bg-verde-600 ring-verde-400 hover:bg-verde-500 hover:text-amber-100 dark:bg-gray-700" onClick={() => signIn()}>
+          Iniciar sesión
+        </Button>
+      </div>
+    )
+  }
+
+  const user = session?.user?.name
+  const email = session?.user?.email
+  const rol = session?.user?.rols as Role | undefined; // Asegúrate de que rol es de tipo Role o undefined
+
+  const roleToHref = {
+    ADMIN: "/dashboard",
+    ROOT: "/dashboard",
+    USUARIO: "/profile",
+    ESTUDIANTE: "/profile",
+  };
+  const settingToHref = {
+    ADMIN: "/dashboard/settings",
+    ROOT: "/dashboard/settings",
+    USUARIO: "/profile/settings",
+    ESTUDIANTE: "/profile/settings",
+  };
+  const Dashboard = typeof rol === 'string' && rol in roleToHref ? roleToHref[rol] : "/";
+  const Setting = typeof rol === 'string' && rol in settingToHref ? settingToHref[rol] : "/";
 
   return (
-    <Navbar.Collapse>
-      {/* Links de navegación */}
-      {auth ? (
-        <div className="flex md:order-2">
-          <Dropdown
-            arrowIcon={false}
-            inline
-            label={<Avatar alt="User settings" img="" rounded />}
-          >
-            <Dropdown.Header>
-              <span className="block text-sm">{name ?? "Usuario no encontrado"}</span>
-              <span className="block truncate text-sm font-medium text-gray-500">{email ?? ""}</span>
-            </Dropdown.Header>
-            <Dropdown.Item>
-              Modo Oscuro
-              <DarkThemeToggle className="mx-auto bg-gray-200" />
-            </Dropdown.Item>
-            {rol === "admin" ? (
-              <Dropdown.Item>
-                <Navbar.Link href="/dashboard">Dashboard</Navbar.Link>
-              </Dropdown.Item>
-            ) : (
-              <Dropdown.Item>
-                <Navbar.Link href="/profile">Perfil</Navbar.Link>
-              </Dropdown.Item>
-            )}
-            <Dropdown.Divider />
-            <Dropdown.Item>
-              {/* <ButtonAuth /> */}
-            </Dropdown.Item>
-          </Dropdown>
-        </div>
-      ) : (
-        <>
-          <DarkThemeToggle className="text-white ring-0 hover:bg-verde-600 hover:text-amber-100" />
-          <Button className="bg-verde-700 text-white ring-verde-400 hover:bg-verde-600 hover:text-amber-100 dark:bg-gray-700">
-            Logearse
-            {/* <ButtonAuth /> */}
-          </Button>
-        </>
-      )}
-    </Navbar.Collapse>
-  );
+    <Dropdown
+      arrowIcon={false}
+      inline
+      label={
+        <Avatar alt="User settings" img="" rounded />
+      }
+    >
+      <Dropdown.Header>
+        <span className="block text-sm">{user}</span>
+        <span className="block truncate text-sm font-medium">{email}</span>
+      </Dropdown.Header>
+      <Dropdown.Item
+        as={Link}
+        href={Dashboard}
+      >
+        Inicio
+      </Dropdown.Item>
+      < Dropdown.Item as={Link} href={Setting}>Ajustes</Dropdown.Item >
+      <Dropdown.Divider />
+      <Dropdown.Item onClick={() => signOut()}>Cerrar sesión</Dropdown.Item>
+    </Dropdown >
+  )
 }
-
 function ComponentFooter() {
   return (
     <footer className="w-full bg-gray-200 p-6 md:py-12" id="contactos">

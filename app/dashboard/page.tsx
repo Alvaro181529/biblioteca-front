@@ -82,9 +82,7 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
             const timer = setTimeout(() => setUpdate(false), 1000); // Restablece update después de un segundo
             return () => clearTimeout(timer);
         }
-    }, [update, setUpdate
-
-    ]);
+    }, [update, setUpdate]);
 
     if (!data || data.length === 0) {
         return (

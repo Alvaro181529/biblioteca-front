@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export default withAuth((req) => {
     const token = req.nextauth.token;
     const isAdminOrRoot = token?.rols === "ADMIN" || token?.rols === "ROOT";
-    const isEstudianteOrUsuario = token?.rols === "ESTUDIANTE" || token?.rols === "USUARIO";
+    const isEstudianteOrUsuario = token?.rols === "ESTUDIANTE" || token?.rols === "USUARIO EXTERNO" || token?.rols === "DOCENTE" || token?.rols === "ESTUDIANTIL" || token?.rols === "COLEGIAL";
 
     // Define las rutas permitidas según el rol
     if (req.nextUrl.pathname.startsWith("/dashboard") && !isAdminOrRoot) {

@@ -20,11 +20,11 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
             {
                 data?.publication_imagen != "null" && (
                     <Image
-                        src={String("/svg/placeholder.svg")}
+                        src={String(data?.publication_imagen || "/svg/placeholder.svg")}
                         alt={String(data?.publication_title)}
                         width={800}
                         height={400}
-                        className="h-[400px] w-full object-cover"
+                        className="h-auto w-full object-cover"
                     />
                 )
             }
