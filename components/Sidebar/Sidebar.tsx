@@ -24,7 +24,7 @@ function SidebarContent({ items }: SidebarContentProps) {
         <Sidebar.Items>
             <Sidebar.ItemGroup>
                 {items.map((item, idx) => (
-                    <Sidebar.Item as={Link} key={idx} href={item.href} icon={item.icon} className={`${pathname === item.href ? "bg-verde-100 hover:bg-verde-100" : ""}`} >
+                    <Sidebar.Item as={Link} key={idx} href={item.href} icon={item.icon} className={`${pathname === item.href ? "bg-verde-100 hover:bg-verde-100 dark:bg-gray-600" : ""}`} >
                         {item.label}
                     </Sidebar.Item>
                 ))}

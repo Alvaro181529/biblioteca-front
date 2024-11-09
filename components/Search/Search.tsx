@@ -24,7 +24,7 @@ export function ComponentSearch({ onChange, size }: propsSelect) {
 
 
     return (
-        <div className="flex flex-col items-center gap-2 py-2 sm:flex-row">
+        <div className="flex flex-row items-center gap-2 py-2">
             <TextInput
                 className="flex-1 rounded-lg border focus:border-verde-500 focus:outline-none focus:ring-2"
                 type="text"

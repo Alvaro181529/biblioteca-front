@@ -9,9 +9,8 @@ export const adminItems: NavbarItem[] = [
 ];
 
 export const personalItems: NavbarItem[] = [
-    { href: "/personal", label: "Personal" },
-    { href: "/personal/kanban", label: "Kanban" },
-    { href: "/personal/inbox", label: "Inbox" },
-    { href: "/personal/users", label: "Users" },
-    { href: "/personal/products", label: "Products" }
+    { href: "/profile/content", label: "Contenido" },
+    { href: "/profile/history", label: "Historial" },
+    { href: "/profile/settings", label: "Ajustes" },
+    { href: "/profile/products", label: "Products" }
 ];
