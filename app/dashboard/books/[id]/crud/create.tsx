@@ -1,5 +1,5 @@
 "use client"
-import { TextInput, Label, Button } from "flowbite-react";
+import { TextInput, Label } from "flowbite-react";
 import { createContent } from "../lib/createContent";
 import { useState } from "react";
 

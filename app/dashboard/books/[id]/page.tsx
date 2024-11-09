@@ -17,6 +17,7 @@ export default function BooksId({ params }: { params: { id: number } }) {
 
     const [openModal, setOpenModal] = useState(false);
     const { data } = useBooksData(params.id, openModal)
+    console.log(data?.book_imagen);
 
     if (data?.statusCode == 404) return notFound()
     return (
@@ -38,7 +39,7 @@ export default function BooksId({ params }: { params: { id: number } }) {
                         height={800}
                         className="aspect-[3/4] w-full rounded-lg object-cover"
                         alt={String(data?.book_title_original)}
-                        src={"/imagenes/concer.png"}
+                        src={data?.book_imagen?.toLowerCase() === "null" || !data?.book_imagen ? "/svg/placeholder.svg" : data.book_imagen}
                     />
                 </div>
                 <CardContent id={params.id} data={data || null} setOpenModal={setOpenModal} openModal={openModal} />

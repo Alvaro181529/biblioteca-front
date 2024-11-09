@@ -56,7 +56,6 @@ export async function createBook(formData: FormData) {
         book_authors: bookAuthors ? bookAuthors.split(',').map(item => item.trim()) : [],
         book_instruments: bookInstruments ? bookInstruments.split(',').map(item => item.trim()) : [],
     };
-    console.log(data);
     const validatedData = bookSchema.parse(data);
     try {
         await save(String(data.id), validatedData);

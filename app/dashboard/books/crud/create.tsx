@@ -19,6 +19,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         fetchData();
     }, [id])
 
+    console.log(fetch);
     const onSave = async () => {
         setTimeout(() => {
             setOpenModal(false);
@@ -102,7 +103,9 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                     </div>
                     <div className="mb-4">
                         <Label htmlFor="book_language" value="Idioma" />
-                        <Select id="book_language" name="book_language" defaultValue={String(fetch?.book_language)}>
+                        <Select id="book_language" name="book_language"
+                            defaultValue={String(fetch?.book_language)}
+                        >
                             {languages.map((language, index) => (
                                 <option key={index} value={language.code}>
                                     {language.name} ({language.code})
@@ -112,7 +115,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                     </div>
 
                     <div className="mb-4">
-                        <Label htmlFor="book_location" value="Ubicación" />
+                        <Label htmlFor="book_location" value="Signatura tipografica" />
                         <TextInput
                             name="book_location"
                             id="book_location"
@@ -202,6 +205,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                         <Textarea
                             name="book_includes"
                             id="book_includes"
+                            defaultValue={fetch?.book_includes}
                         />
                     </div>
                     <div className="mb-4">
@@ -210,7 +214,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 <Label htmlFor="book_imagen" value="Imagen " />
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <TextInput
-                                    name="book_imagen_url"
+                                    name="book_imagen"
                                     placeholder="URL de la imagen"
                                     defaultValue={fetch?.book_imagen}
                                 />
@@ -219,7 +223,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 <Label htmlFor="book_imagen" value="Imagen " />
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <FileInput
-                                    defaultValue={fetch?.book_imagen}
+                                    // defaultValue={fetch?.book_imagen}
                                     id="book_imagen"
                                 />
                             </Tabs.Item>
@@ -233,7 +237,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 <span className="text-xs text-gray-700">(opcional)</span>
 
                                 <TextInput
-                                    name="book_document_url"
+                                    name="book_document"
                                     defaultValue={fetch?.book_imagen}
                                     placeholder="URL del documento"
 
@@ -244,13 +248,21 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <FileInput
                                     id="book_document"
-                                    defaultValue={fetch?.book_imagen}
+                                // defaultValue={fetch?.book_imagen}
                                 />
                             </Tabs.Item>
                         </Tabs>
                     </div>
                     <div className="col-span-2">
-                        <Label htmlFor="book_observation" value="Observaciones" />
+                        <Label htmlFor="book_includes" value="Incluye" />
+                        <Textarea
+                            name="book_includes"
+                            id="book_includes"
+                            defaultValue={fetch?.book_includes}
+                        />
+                    </div>
+                    <div className="col-span-2">
+                        <Label htmlFor="book_observation" value="Encabezados" />
                         <Textarea
                             name="book_observation"
                             id="book_observation"

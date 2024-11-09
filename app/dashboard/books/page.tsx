@@ -8,6 +8,7 @@ import { BookFormData } from './Interface/Interface';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delete';
 import { useRouter } from 'next/navigation';
+import { Select } from 'flowbite-react';
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -20,13 +21,14 @@ export default function Books({ searchParams }: SerchParams) {
     const [dataUpdate, setDataUpdate] = useState<(string | number)[]>([]);
     const [modalState, setModalState] = useState(true)
     const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'view'>('create');
-    const [currentPage, setCurrentPage] = useState(1);
     const [title, setTitle] = useState("Crear Libro");
     const [actual, setActual] = useState("");
     const [actualData, setActualData] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [type, setType] = useState("");
     const [size, setSize] = useState(10);
     const [openModal, setOpenModal] = useState(false);
-    const { data, columns, pages, infoData } = useBooksData(size, currentPage, searchQuery, openModal);
+    const { data, columns, pages, infoData } = useBooksData(size, currentPage, searchQuery, type, openModal);
     const router = useRouter();
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -35,6 +37,10 @@ export default function Books({ searchParams }: SerchParams) {
         const selectedSize = Number(event.target.value)
         setSize(selectedSize);
         setCurrentPage(1);
+    };
+    const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setType(event.target.value);
+        setCurrentPage(1); // Reinicia a la primera página si cambias el tipo
     };
     const handleView = (rowIndex: number) => {
         const actualNumber = String(infoData[rowIndex]);
@@ -67,7 +73,25 @@ export default function Books({ searchParams }: SerchParams) {
     };
     return (
         <div>
-            <ComponentSearch onChange={handleSizeChange} size={size} />
+            <div className="grid grid-cols-7 gap-2">
+                <div className="col-span-6">
+                    <ComponentSearch onChange={handleSizeChange} size={size} />
+                </div>
+                <Select onChange={handleTypeChange} className=" py-2">
+                    <option value="">Todo</option>
+                    <option value="LIBRO" > LIBRO</option>
+                    <option value="PARTITURA" > PARTITURA</option>
+                    <option value="DVD" > DVD</option>
+                    <option value="CD" > CD</option>
+                    <option value="CASSETTE" > CASSETTE</option>
+                    <option value="TESIS" > TESIS</option>
+                    <option value="REVISTA" > REVISTA</option>
+                    <option value="EBOOK" > EBOOK</option>
+                    <option value="AUDIO LIBRO" > AUDIO LIBRO</option>
+                    <option value="PROYECTOS" > PROYECTOS</option>
+                    <option value="OTRO" > OTRO</option>
+                </Select>
+            </div>
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
             <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
@@ -80,7 +104,7 @@ export default function Books({ searchParams }: SerchParams) {
     )
 }
 
-const useBooksData = (size: number, currentPage: number, query: string, openModal: boolean) => {
+const useBooksData = (size: number, currentPage: number, query: string, type: string, openModal: boolean) => {
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
@@ -117,7 +141,7 @@ const useBooksData = (size: number, currentPage: number, query: string, openModa
         if (!openModal) {
             const fetchData = async () => {
                 try {
-                    const url = `/api/books?page=${currentPage}&size=${size}&query=${query}`;
+                    const url = `/api/books?type=${type}&page=${currentPage}&size=${size}&query=${query}`;
                     const res = await fetch(url);
                     const result = await res.json();
 
@@ -132,7 +156,7 @@ const useBooksData = (size: number, currentPage: number, query: string, openModa
 
             fetchData();
         }
-    }, [currentPage, size, query, openModal]);
+    }, [currentPage, size, query, openModal, type]);
 
     return { data, columns, pages, infoData };
 };
