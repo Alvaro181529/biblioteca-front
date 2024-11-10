@@ -41,7 +41,43 @@ function ComponentContent() {
 function ComponentTabs() {
   return (
     <section className="w-full py-12 md:py-9 lg:py-16 " id="publicacion">
-      <Tabs className=" mx-auto max-w-7xl select-none items-center justify-center " aria-label="Default tabs" style="default"  >
+      <Tabs className=" mx-auto max-w-7xl select-none items-center justify-center " aria-label="Default tabs" style="underline"  >
+        <Tabs.Item active title="Libros" icon={HiBookOpen} className="dark:text-white">
+          <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">
+                Explora Nuestros Libros
+              </h2>
+              <div className="mx-auto max-w-[calc(50%-1rem)] text-gray-500  dark:text-gray-400 max-sm:max-w-[calc(100%-1rem)] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                {/* <SearchComponent onSearch={handleSearch} /> */}
+              </div>
+            </div>
+            <div className="grid gap-4 text-start max-lg:grid-cols-4 max-sm:grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+              {/* {libros.map((libro) => (
+                <div key={libro.libro_id}>
+                  <Card>
+                    <h5 className="flex flex-row items-center gap-4">
+                      <Image
+                        src={`/libros/0${libro.libro_id}.jpg` || "/svg/placeholder.svg"}
+                        alt="Program Cover"
+                        width={48}
+                        height={64}
+                        className="h-28 w-20 rounded-lg"
+                      />
+                      <div className="grid gap-1">
+                        <h1>{libro.libro_titulo_original}</h1>
+                        <div className="text-gray-600">
+                          <h5 >{libro.libro_autor}</h5>
+                        </div>
+                      </div>
+                    </h5>
+                  </Card>
+                </div>
+              ))} */}
+            </div>
+            {/* <PaginationComponent totalPages={totalPages} onPageChange={onPageChange} /> */}
+          </div>
+        </Tabs.Item>
         <Tabs.Item active title="Libros" icon={HiBookOpen} className="dark:text-white">
           <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
             <div className="space-y-3">
@@ -175,7 +211,10 @@ function NavbarDropdown() {
     return (
       <div className="flex gap-2">
         <DarkThemeToggle className="text-white ring-verde-400 hover:bg-verde-600 hover:text-amber-100 "></DarkThemeToggle>
-        <Button className="bg-verde-600 ring-verde-400 hover:bg-verde-500 hover:text-amber-100 dark:bg-gray-700" onClick={() => signIn()}>
+        <Button
+          className="bg-verde-600 text-white ring-verde-400 transition-colors duration-200 hover:bg-verde-500 hover:text-amber-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:ring-gray-600"
+          onClick={() => signIn()}
+        >
           Iniciar sesión
         </Button>
       </div>
@@ -227,7 +266,7 @@ function NavbarDropdown() {
 }
 function ComponentFooter() {
   return (
-    <footer className="w-full bg-gray-200 p-6 md:py-12" id="contactos">
+    <footer className="w-full bg-gray-200 p-6 dark:bg-gray-500 dark:text-white md:py-12" id="contactos">
       <div className="container mx-auto grid max-w-7xl grid-cols-1 gap-8 text-sm sm:grid-cols-2 md:grid-cols-4">
         <div className="flex items-center gap-2">
           <Image alt="concer_logo" src="/imagenes/coplumu.png" width={5000} height={60} />
