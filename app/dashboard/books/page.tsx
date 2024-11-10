@@ -8,7 +8,7 @@ import { BookFormData } from './Interface/Interface';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delete';
 import { useRouter } from 'next/navigation';
-import { Select } from 'flowbite-react';
+import { Button, Select } from 'flowbite-react';
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -71,10 +71,22 @@ export default function Books({ searchParams }: SerchParams) {
         setTitle("Crear Libro")
         setModalType('create');
     };
+    const reportBook = async () => {
+        const api = `/api/reports?page=books`;
+        const res = await fetch(api);
+        if (!res.ok) {
+            console.error('Error al descargar el reporte');
+            return;
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        window.URL.revokeObjectURL(url);
+    };
     return (
         <div>
             <div className="grid grid-cols-7 gap-2">
-                <div className="col-span-6">
+                <div className="col-span-5">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
                 <Select onChange={handleTypeChange} className=" py-2">
@@ -91,6 +103,9 @@ export default function Books({ searchParams }: SerchParams) {
                     <option value="PROYECTOS" > PROYECTOS</option>
                     <option value="OTRO" > OTRO</option>
                 </Select>
+                <div className='w-full py-2'>
+                    <Button className='w-full bg-red-600' onClick={reportBook}>Reporte</Button>
+                </div>
             </div>
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />

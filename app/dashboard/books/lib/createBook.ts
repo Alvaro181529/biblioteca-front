@@ -76,7 +76,7 @@ const create = async (validatedData: any) => {
         });
 
         if (!res.ok) {
-            throw new Error('Error al crear el instrumento: ' + res.statusText);
+            throw new Error('Error al crear el libro: ' + res.statusText);
         }
 
         return await res.json();
@@ -98,7 +98,7 @@ const update = async (id: string, validatedData: any) => {
             body: JSON.stringify(validatedData),
         });
         if (!res.ok) {
-            throw new Error('Error al actualizar el instrumento: ' + res.statusText);
+            throw new Error('Error al actualizar el libro: ' + res.statusText);
         }
         return await res.json();
     } catch (error) {
