@@ -78,42 +78,6 @@ function ComponentTabs() {
             {/* <PaginationComponent totalPages={totalPages} onPageChange={onPageChange} /> */}
           </div>
         </Tabs.Item>
-        <Tabs.Item active title="Libros" icon={HiBookOpen} className="dark:text-white">
-          <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
-            <div className="space-y-3">
-              <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">
-                Explora Nuestros Libros
-              </h2>
-              <div className="mx-auto max-w-[calc(50%-1rem)] text-gray-500  dark:text-gray-400 max-sm:max-w-[calc(100%-1rem)] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                {/* <SearchComponent onSearch={handleSearch} /> */}
-              </div>
-            </div>
-            <div className="grid gap-4 text-start max-lg:grid-cols-4 max-sm:grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-              {/* {libros.map((libro) => (
-                <div key={libro.libro_id}>
-                  <Card>
-                    <h5 className="flex flex-row items-center gap-4">
-                      <Image
-                        src={`/libros/0${libro.libro_id}.jpg` || "/svg/placeholder.svg"}
-                        alt="Program Cover"
-                        width={48}
-                        height={64}
-                        className="h-28 w-20 rounded-lg"
-                      />
-                      <div className="grid gap-1">
-                        <h1>{libro.libro_titulo_original}</h1>
-                        <div className="text-gray-600">
-                          <h5 >{libro.libro_autor}</h5>
-                        </div>
-                      </div>
-                    </h5>
-                  </Card>
-                </div>
-              ))} */}
-            </div>
-            {/* <PaginationComponent totalPages={totalPages} onPageChange={onPageChange} /> */}
-          </div>
-        </Tabs.Item>
       </Tabs>
     </section>
   )
