@@ -61,7 +61,7 @@ const Filas = () => {
 
 export function InvoicesCardSkeleton() {
     return (
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <CardInvoice />
             <CardInvoice />
             <CardInvoice />
@@ -72,18 +72,17 @@ export function InvoicesCardSkeleton() {
 
 const CardInvoice = () => {
     return (
-        <Card className=" h-52 w-full ">
+        <Card className="w-full ">
+            <div className=" h-80 w-full animate-pulse rounded-t-lg bg-gray-100 max-sm:h-96 "></div>
             <div className=" flex items-center gap-2 ">
-                <div className=" h-48 w-1/2 animate-pulse rounded-t-lg bg-gray-100 "></div>
                 <div className="w-full ">
-                    <div className="mb-2 h-4  animate-pulse rounded-full bg-gray-100"></div>
-                    <div className="mb-2 h-2  animate-pulse rounded-full bg-gray-100"></div>
-                    <div className="mb-2 h-2  animate-pulse rounded-full bg-gray-100"></div>
-                    <div className="mb-4 h-2  animate-pulse rounded-full bg-gray-100"></div>
-                    <div className="flex items-center">
-                        <div className="mr-2 h-4 w-1/4 animate-pulse rounded-full bg-gray-100"></div>
-                        <div className="h-4 w-3/4 animate-pulse rounded-full bg-gray-100"></div>
+                    <div className="flex w-full items-center justify-between">
+                        <div className="mb-2 h-4 w-1/2 animate-pulse rounded-full bg-gray-100 max-sm:h-8"></div>
+                        <div className="mb-2 h-4 w-1/5 animate-pulse rounded-full bg-gray-100 max-sm:h-8"></div>
                     </div>
+                    <div className="my-2 h-4 animate-pulse rounded-full bg-gray-100 max-sm:h-6"></div>
+                    <div className="my-2 h-4 animate-pulse rounded-full bg-gray-100 max-sm:h-6"></div>
+                    <div className="my-2 h-4 animate-pulse rounded-full bg-gray-100 max-sm:h-6"></div>
                 </div>
             </div>
         </Card>
@@ -105,23 +104,18 @@ export function InvoicesCardUserSkeleton() {
 const CardUser = () => {
     return (
         <Card className="relative overflow-hidden">
-            {/* Barra de carga superior */}
             <div className="absolute left-0 top-0 h-full w-2 animate-pulse bg-gray-200" />
 
-            {/* Título y sub-título */}
             <div className="flex items-center justify-between">
                 <h2 className="h-6 w-24 animate-pulse bg-gray-300 text-lg font-semibold"></h2>
                 <div className="mb-2 h-4 w-16 animate-pulse rounded-full bg-gray-200"></div>
             </div>
 
-            {/* Información secundaria */}
             <div className="flex items-center text-sm text-gray-600">
                 <div className="mb-2 h-4 w-20 animate-pulse rounded-full bg-gray-200"></div>
             </div>
 
-            {/* Línea separadora */}
             <Card>
-                {/* Sección inferior con avatar y texto */}
                 <div className="flex w-full items-center">
                     <div className="size-[38px] animate-pulse bg-gray-200"></div>
                     <div className="ml-4 flex-1">
