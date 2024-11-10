@@ -21,20 +21,20 @@ export default function SettingPage() {
 
 const SectionSession = ({ data }: { data?: User | null }) => {
     return (
-        <Card className="mb-2 grid w-full grid-cols-2">
+        <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
             <form action={updateSession}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
-                    Informacion de perfil
+                    Informacion del Usuario
                 </h5>
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor="email1" value="Your email" />
+                        <Label htmlFor="email1" value="Nombre" />
                     </div>
                     <TextInput id="email1" type="text" placeholder="ca esta tu nombre" defaultValue={data?.name} required />
                 </div>
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor="email1" value="Your email" />
+                        <Label htmlFor="email1" value="Correo" />
                     </div>
                     <TextInput id="email1" type="email" placeholder="name@flowbite.com" defaultValue={data?.email} required />
                 </div>
@@ -47,7 +47,7 @@ const SectionSession = ({ data }: { data?: User | null }) => {
 }
 const SectionAccount = ({ data }: { data?: User | null }) => {
     return (
-        <Card className="mb-2 grid w-full grid-cols-2">
+        <Card className="mb-2 grid w-full grid-cols-2 max-sm:grid-cols-1">
             <form action={updateRegister}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Informacion de perfil
@@ -56,7 +56,7 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
                     <div className="mb-2 block">
                         <Label htmlFor="register_ci" value="Carnet de identidad" />
                     </div>
-                    <TextInput id="register_ci" name="register_ci" type="text" placeholder="123456789 - LP" defaultValue={data?.register?.register_ci} required />
+                    <TextInput id="register_ci" name="register_ci" type="text" placeholder="123456789 - LP" defaultValue={data?.register?.register_ci} required autoFocus />
                 </div>
                 <div>
                     <div className="mb-2 block">
@@ -97,30 +97,30 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
 }
 const SectionMe = () => {
     return (
-        <Card className="mb-2 grid w-full grid-cols-2">
+        <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
             <form action={updateSession}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Actualizar constraseña
                 </h5>
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor="email1" value="Your email" />
+                        <Label htmlFor="email1" value="Contraseña " />
                     </div>
                     <TextInput id="email1" type="email" placeholder="name@flowbite.com" required />
                 </div>
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor="email1" value="Your email" />
+                        <Label htmlFor="email1" value="Nueva contraseña" />
                     </div>
                     <TextInput id="email1" type="email" placeholder="name@flowbite.com" required />
                 </div>
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor="email1" value="Your email" />
+                        <Label htmlFor="email1" value="Nueva contraseña" />
                     </div>
                     <TextInput id="email1" type="email" placeholder="name@flowbite.com" required />
                 </div>
-                <section className=" flex">
+                <section className="mt-2 flex">
                     <Button type="submit" className="bg-verde-600 ">Guardar</Button>
                 </section>
             </form>
@@ -130,7 +130,7 @@ const SectionMe = () => {
 
 const SectionAccountDelete = () => {
     return (
-        <Card className="mb-2 w-full">
+        <Card className="mb-2 w-full  max-sm:grid-cols-1">
             <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                 Eliminar cuenta
             </h5>

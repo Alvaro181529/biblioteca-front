@@ -79,7 +79,7 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
         );
     }
     return (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
             {data.map((order, index) => {
                 const badgeColor = importanceColorMap[String(order.order_status)] || 'default';
                 const lineColor = importanceColor[String(order.order_status)] || 'default';
