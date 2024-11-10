@@ -4,12 +4,14 @@ import { updateRegister } from "./lib/updateRegister"
 import { useEffect, useState } from "react"
 import { User } from "@/app/dashboard/users/Interface/Interface"
 import { useRouter } from "next/navigation"
+import { updateSession } from "./lib/updateSession"
 
 export default function SettingPage() {
     const router = useRouter()
     const { data } = FetchUser()
     return (
         <section>
+            <SectionSession />
             <SectionAccount data={data} />
             <SectionMe />
             <SectionAccountDelete />
@@ -20,7 +22,7 @@ export default function SettingPage() {
 const SectionSession = ({ data }: { data?: User | null }) => {
     return (
         <Card className="mb-2 grid w-full grid-cols-2">
-            <form >
+            <form action={updateSession}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Informacion de perfil
                 </h5>
@@ -28,7 +30,7 @@ const SectionSession = ({ data }: { data?: User | null }) => {
                     <div className="mb-2 block">
                         <Label htmlFor="email1" value="Your email" />
                     </div>
-                    <TextInput id="email1" type="email" placeholder="name@flowbite.com" defaultValue={data?.name} required />
+                    <TextInput id="email1" type="text" placeholder="ca esta tu nombre" defaultValue={data?.name} required />
                 </div>
                 <div>
                     <div className="mb-2 block">
@@ -36,7 +38,7 @@ const SectionSession = ({ data }: { data?: User | null }) => {
                     </div>
                     <TextInput id="email1" type="email" placeholder="name@flowbite.com" defaultValue={data?.email} required />
                 </div>
-                <section className=" flex">
+                <section className="mt-2 flex">
                     <Button type="submit" className="bg-verde-600 ">Guardar</Button>
                 </section>
             </form>
@@ -60,7 +62,7 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
                     <div className="mb-2 block">
                         <Label htmlFor="register_contact" value="Número de telefono" />
                     </div>
-                    <TextInput id="register_contact" name="register_contact" type="text" placeholder="87654321" defaultValue={data?.register.register_contact} required />
+                    <TextInput id="register_contact" name="register_contact" type="number" min={0} placeholder="87654321" defaultValue={data?.register.register_contact} required />
                 </div>
                 <div>
                     <div className="mb-2 block">
@@ -96,7 +98,7 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
 const SectionMe = () => {
     return (
         <Card className="mb-2 grid w-full grid-cols-2">
-            <form >
+            <form action={updateSession}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Actualizar constraseña
                 </h5>
@@ -132,7 +134,7 @@ const SectionAccountDelete = () => {
             <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                 Eliminar cuenta
             </h5>
-            <section className=" flex">
+            <section className="mt-2 flex">
                 <Button className="bg-red-600 dark:bg-red-700">Eliminar</Button>
             </section>
         </Card>

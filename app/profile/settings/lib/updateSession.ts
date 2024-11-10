@@ -11,7 +11,7 @@ const bookSchema = z.object({
     register_intrument: z.optional(z.array(z.string())),
     register_professor: z.optional(z.string()),
 })
-export async function updateRegister(formData: FormData) {
+export async function updateSession(formData: FormData) {
     const data = {
         register_ci: formData.get('register_ci') || "null",
         register_contact: Number(formData.get('register_contact')) || 0,
