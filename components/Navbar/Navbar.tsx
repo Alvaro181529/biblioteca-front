@@ -46,7 +46,7 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
     );
 }
 function NavbarDropdown() {
-    type Role = 'ADMIN' | 'ROOT' | 'USUARIO' | 'ESTUDIANTE';
+    type Role = 'ADMIN' | 'ROOT' | 'USUARIO EXTERNO' | 'ESTUDIANTE' | 'ESTUDIANTIL' | 'COLEGIAL' | 'DOCENTE';
     const { data: session, status } = useSession()
     const user = session?.user?.name
     const email = session?.user?.email
@@ -55,17 +55,23 @@ function NavbarDropdown() {
     const roleToHref = {
         ADMIN: "/dashboard",
         ROOT: "/dashboard",
-        USUARIO: "/profile",
+        'USUARIO EXTERNO': "/profile",
         ESTUDIANTE: "/profile",
+        ESTUDIANTIL: "/profile",
+        COLEGIAL: "/profile",
+        DOCENTE: "/profile",
     };
     const settingToHref = {
         ADMIN: "/dashboard/settings",
         ROOT: "/dashboard/settings",
-        USUARIO: "/profile/settings",
+        'USUARIO EXTERNO': "/profile/settings",
         ESTUDIANTE: "/profile/settings",
+        ESTUDIANTIL: "/profile/settings",
+        COLEGIAL: "/profile/settings",
+        DOCENTE: "/profile/settings",
     };
-    const Dashboard = typeof rol === 'string' && rol in roleToHref ? roleToHref[rol] : "/";
-    const Setting = typeof rol === 'string' && rol in settingToHref ? settingToHref[rol] : "/";
+    const Dashboard = rol && rol in roleToHref ? roleToHref[rol] : "/";
+    const Setting = rol && rol in settingToHref ? settingToHref[rol] : "/";
 
     return (
         <Dropdown
