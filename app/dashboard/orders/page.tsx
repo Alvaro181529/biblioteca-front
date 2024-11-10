@@ -1,7 +1,7 @@
 "use client"
 import { ComponentSearch } from "@/components/Search/Search";
 import { Button, Card, List, Select, Table } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Orders } from "./Interface/Interface";
 import { IoReloadSharp } from "react-icons/io5";
 import { orderBorrowed } from "./lib/updateOrder";
@@ -19,7 +19,7 @@ export default function OrderPage({ searchParams }: SerchParams) {
     const [type, setType] = useState("PRESTADO");
     const [size, setSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
-    const { data, total } = FetchData(type, size, currentPage, searchQuery)
+    const { data, total, fetchData } = FetchData(type, size, currentPage, searchQuery)
     const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSize = Number(event.target.value)
         setSize(selectedSize);
@@ -30,12 +30,24 @@ export default function OrderPage({ searchParams }: SerchParams) {
     };
     const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setType(event.target.value);
-        setCurrentPage(1); // Reinicia a la primera página si cambias el tipo
+        setCurrentPage(1);
+    };
+    const reportOrders = async () => {
+        const api = `/api/reports?page=orders`;
+        const res = await fetch(api);
+        if (!res.ok) {
+            console.error('Error al descargar el reporte');
+            return;
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        window.URL.revokeObjectURL(url);
     };
     return (
         <div>
             <div className="grid grid-cols-7 gap-2">
-                <div className="col-span-6">
+                <div className="col-span-5">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
                 <Select onChange={handleTypeChange} className=" py-2">
@@ -45,14 +57,17 @@ export default function OrderPage({ searchParams }: SerchParams) {
                     <option value="ESPERA">Espera</option>
                     <option value="">Todo</option>
                 </Select>
+                <div className='w-full py-2'>
+                    <Button className='w-full bg-red-600' onClick={reportOrders}>Reporte</Button>
+                </div>
             </div>
-            <TableOrders data={data} page={currentPage} size={size} />
+            <TableOrders data={data} page={currentPage} size={size} fetchData={fetchData} />
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={total} />
         </div>
     )
 }
 
-const TableOrders = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
+const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: number, size: number, fetchData: () => void }) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
@@ -84,12 +99,15 @@ const TableOrders = ({ data, page, size }: { data: Orders[], page: number, size:
 
     const handleDevolver = async (id: number) => {
         await orderBorrowed(id, "DEVUELTO")
+        fetchData();
     }
     const handlePrestar = async (id: number) => {
         await orderBorrowed(id, "PRESTADO")
+        fetchData();
     }
     const handleCancelar = async (id: number) => {
         await orderBorrowed(id, "CANCELADO")
+        fetchData();
     }
     return (
         <div className="overflow-x-auto">
@@ -168,22 +186,23 @@ const FetchData = (type: string, size: number, currentPage: number, query: strin
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const url = `/api/orders/admin?state=${type}&size=${size}&page=${currentPage}&query=${query || ""}`;
-                const res = await fetch(url);
-                const result = await res.json();
-                console.log(result); // Verificar la estructura
-                setData(Array.isArray(result.data) ? result.data : []);
-                setTotal(result.totalPages || 0);
-            } catch (error) {
-                console.error(error);
-                setData([]);
-            }
-        };
-        fetchData();
-    }, [size, currentPage, query, type]);
+    const fetchData = useCallback(async () => {
+        try {
+            const url = `/api/orders/admin?state=${type}&size=${size}&page=${currentPage}&query=${query || ""}`;
+            const res = await fetch(url);
+            const result = await res.json();
+            console.log(result); // Verificar la estructura
+            setData(Array.isArray(result.data) ? result.data : []);
+            setTotal(result.totalPages || 0);
+        } catch (error) {
+            console.error(error);
+            setData([]);
+        }
+    }, [type, size, currentPage, query]); // Dependencias necesarias para fetchData
 
-    return { data, total };
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    return { data, total, fetchData };
 };

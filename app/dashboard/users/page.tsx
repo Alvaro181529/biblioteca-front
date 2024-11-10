@@ -8,6 +8,7 @@ import { ComponentModalCreate } from '@/components/Modal/Modal';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delate';
 import { useRouter } from 'next/navigation';
+import { Button } from 'flowbite-react';
 
 interface SerchParams {
     searchParams: {
@@ -71,9 +72,28 @@ export default function Users({ searchParams }: SerchParams) {
         setTitle("Crear Usuario")
         setModalType('create');
     };
+    const reportUsers = async () => {
+        const api = `/api/reports?page=users`;
+        const res = await fetch(api);
+        if (!res.ok) {
+            console.error('Error al descargar el reporte');
+            return;
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        window.URL.revokeObjectURL(url);
+    };
     return (
         <div>
-            <ComponentSearch onChange={handleSizeChange} size={size} />
+            <div className='grid grid-cols-7 gap-2'>
+                <div className="col-span-6">
+                    <ComponentSearch onChange={handleSizeChange} size={size} />
+                </div>
+                <div className='w-full py-2'>
+                    <Button className='w-full bg-red-600' onClick={reportUsers}>Reporte</Button>
+                </div>
+            </div>
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
             <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
