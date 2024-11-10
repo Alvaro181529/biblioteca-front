@@ -5,9 +5,9 @@ import { ComponentSearch } from "@/components/Search/Search";
 import { InvoicesCardUserSkeleton } from "@/components/Skeleton/skeletons";
 import { Badge, Card, Select } from "flowbite-react";
 import { useEffect, useState } from "react"
-import { MdRemoveRedEye } from "react-icons/md";
 import { RiBookFill, RiCalendarLine } from "react-icons/ri";
 import { importanceColor, importanceColorMap } from "../orders/Interface/type";
+import { useRouter } from "next/navigation";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -27,7 +27,7 @@ export default function HistoryPage({ searchParams }: SerchParams) {
     };
     const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setType(event.target.value);
-        setCurrentPage(1); // Reinicia a la primera página si cambias el tipo
+        setCurrentPage(1);
     };
     const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSize = Number(event.target.value)
@@ -53,7 +53,10 @@ export default function HistoryPage({ searchParams }: SerchParams) {
 const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
-
+    const router = useRouter()
+    const handleView = (id: number) => {
+        router.push(`content/${id}`)
+    };
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {
@@ -96,17 +99,18 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
                             <RiCalendarLine className="mr-2 size-4" />
                             {new Date(order.order_at).toLocaleDateString()}
                         </div>
-                        <hr />
                         {order.books.map((book, index) => (
-                            <div key={index} className="flex items-center">
-                                <RiBookFill className="mr-2 size-5 text-gray-600" />
-                                <div>
-                                    <p className="font-medium">{book.book_title_original}</p>
-                                    {book.book_title_parallel && (
-                                        <p className="text-sm text-gray-600">{book.book_title_parallel}</p>
-                                    )}
+                            <Card key={index} className="cursor-pointer " onClick={() => { handleView(Number(order.id)) }}>
+                                <div key={index} className="flex items-center">
+                                    <RiBookFill className="mr-2 size-5 text-gray-600" />
+                                    <div>
+                                        <p className="font-medium">{book.book_title_original}</p>
+                                        {book.book_title_parallel && (
+                                            <p className="text-sm text-gray-600">{book.book_title_parallel}</p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            </Card >
                         ))}
                     </Card >
                 )

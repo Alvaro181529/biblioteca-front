@@ -2,7 +2,6 @@
 import { BookFormData } from "@/app/dashboard/books/Interface/Interface"
 import { ComponentSearch } from "@/components/Search/Search";
 import { Card, Select } from "flowbite-react";
-import { MdRemoveRedEye, MdArrowRight } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 import { InvoicesCardSkeleton } from "@/components/Skeleton/skeletons";
@@ -94,7 +93,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
     };
 
     return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
             {data?.map((book, index) => (
                 <Card
                     key={index}
