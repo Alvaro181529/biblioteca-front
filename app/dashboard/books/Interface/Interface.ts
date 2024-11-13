@@ -41,6 +41,7 @@ export interface BookFormData {
     book_condition: 'BUENO' | 'REGULAR' | 'MALO'; // Ajusta según tu enumeración
     book_quantity: number;
     book_includes: string[];
+    book_headers: string[];
     book_contents: Content[],
     book_category: Category[];
     book_authors: Author[];

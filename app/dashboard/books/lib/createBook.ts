@@ -22,12 +22,14 @@ const bookSchema = z.object({
     book_condition: z.optional(z.enum(['BUENO', 'REGULAR', 'MALO'])),
     book_quantity: z.optional(z.number()),
     book_includes: z.optional(z.array(z.string())),
+    book_headers: z.optional(z.array(z.string())),
     book_category: z.optional(z.array(z.string())),
     book_authors: z.optional(z.array(z.string())),
     book_instruments: z.optional(z.array(z.string())),
     book_editorial: z.optional(z.string()),
 })
 export async function createBook(formData: FormData) {
+    const bookHeaders = String(formData.get('book_headers'));
     const bookIncludes = String(formData.get('book_includes'));
     const bookCategory = String(formData.get('book_category_ids'));
     const bookAuthors = String(formData.get('book_authors_ids'));
@@ -52,6 +54,7 @@ export async function createBook(formData: FormData) {
         book_condition: formData.get('book_condition') || undefined,
         book_quantity: parseInt(formData.get('book_quantity') as string, 10) || undefined,
         book_includes: bookIncludes ? bookIncludes.split(',').map(item => item.trim()) : [],
+        book_headers: bookHeaders ? bookHeaders.split(',').map(item => item.trim()) : [],
         book_category: bookCategory ? bookCategory.split(',').map(item => item.trim()) : [],
         book_authors: bookAuthors ? bookAuthors.split(',').map(item => item.trim()) : [],
         book_instruments: bookInstruments ? bookInstruments.split(',').map(item => item.trim()) : [],

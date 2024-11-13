@@ -254,15 +254,15 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                         </Tabs>
                     </div>
                     <div className="col-span-2">
-                        <Label htmlFor="book_includes" value="Incluye" />
+                        <Label htmlFor="book_headers" value="Encabezados" />
                         <Textarea
-                            name="book_includes"
-                            id="book_includes"
-                            defaultValue={fetch?.book_includes}
+                            name="book_headers"
+                            id="book_headers"
+                            defaultValue={fetch?.book_headers}
                         />
                     </div>
                     <div className="col-span-2">
-                        <Label htmlFor="book_observation" value="Encabezados" />
+                        <Label htmlFor="book_observation" value="Observaciones" />
                         <Textarea
                             name="book_observation"
                             id="book_observation"
