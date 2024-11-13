@@ -9,7 +9,7 @@ interface ComponentPaginationProps {
 export function ComponentPagination({ currentPage, totalPages, onPageChange }: ComponentPaginationProps) {
 
     return (
-        <div className="flex overflow-x-auto sm:justify-center">
+        <div className="flex justify-center overflow-x-auto">
             <Pagination
                 layout="pagination"
                 currentPage={currentPage}
