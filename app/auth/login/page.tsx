@@ -80,7 +80,7 @@ export default function Home() {
                         <input
                             id="email"
                             type="email"
-                            className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
                             name="email"
                             required
                             placeholder="Correo"
@@ -96,7 +96,7 @@ export default function Home() {
                             <input
                                 id="password"
                                 type={passwordVisible ? "text" : "password"}
-                                className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none max-sm:w-full"
+                                className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
                                 name="password"
                                 required
                                 placeholder="Contraseña"
@@ -119,12 +119,12 @@ export default function Home() {
                         <input type="checkbox" name="remember" id="remember" className="mr-2" />
                         <label htmlFor="remember" className="text-sm text-gray-700">Remember Me</label>
                     </div>
-                    <div className="mt-8 flex flex-col">
+                    <div className="mt-8 flex flex-col items-center">
                         <Button
                             type="submit"
                             isProcessing={signin}
                             processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
-                            className="rounded bg-verde-600 px-4 text-sm font-semibold text-white ring-1 ring-verde-100 hover:bg-verde-700  focus:border-verde-100 focus:outline-verde-200">
+                            className="w-full rounded bg-verde-600 px-4 text-sm font-semibold text-white ring-1 ring-verde-100 hover:bg-verde-700  focus:border-verde-100 focus:outline-verde-200">
                             Ingresar
                         </Button>
                     </div>
