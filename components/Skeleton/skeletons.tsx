@@ -129,3 +129,30 @@ const CardUser = () => {
         </Card>
     );
 }
+
+export function InvoicesCardPageSkeleton() {
+    return (
+        <div className="col-span-full grid gap-4 text-start max-lg:grid-cols-4 max-sm:grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <CardPage />
+            <CardPage />
+            <CardPage />
+        </div>
+    )
+}
+const CardPage = () => {
+    return (
+        <div className="animate-pulse overflow-hidden rounded-lg bg-white shadow-lg">
+            <div className="flex">
+                <div className="h-44 w-60 rounded-s-md bg-gray-300" />
+                <div className="ml-4 w-full py-2 pe-3">
+                    <div className="mb-2 h-6 w-3/4 bg-gray-300" />
+                    <div className="mb-4 h-4 w-1/2 bg-gray-300" />
+                    <div className="mt-2">
+                        <div className="mb-1 h-4 w-1/2 bg-gray-300" />
+                        <div className="mb-1 h-4 w-2/3 bg-gray-300" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}

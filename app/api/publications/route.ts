@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getTokenFromSession } from "../utils/auth";
 
 export async function GET(request: any) {
-    const token = getTokenFromSession();
+    const token = await getTokenFromSession();
     const { searchParams } = new URL(request.url)
     let query = searchParams.get("query")
     let page = searchParams.get("page")

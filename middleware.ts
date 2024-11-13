@@ -3,16 +3,25 @@ import { NextResponse } from "next/server";
 
 export default withAuth((req) => {
     const token = req.nextauth.token;
+    if (!token) {
+        return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+    const currentTime = Math.floor(Date.now() / 1000);
+    const tokenExpirationTime = Number(token.exp);
+    console.log(currentTime);
+    console.log(tokenExpirationTime);
+    if (tokenExpirationTime && tokenExpirationTime < currentTime) {
+        return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
     const isAdminOrRoot = token?.rols === "ADMIN" || token?.rols === "ROOT";
     const isEstudianteOrUsuario = token?.rols === "ESTUDIANTE" || token?.rols === "USUARIO EXTERNO" || token?.rols === "DOCENTE" || token?.rols === "ESTUDIANTIL" || token?.rols === "COLEGIAL";
 
-    // Define las rutas permitidas según el rol
     if (req.nextUrl.pathname.startsWith("/dashboard") && !isAdminOrRoot) {
-        return new Response("Unauthorized", { status: 403 });
+        return NextResponse.redirect(new URL("/profile", req.url));
     }
 
     if (req.nextUrl.pathname.startsWith("/profile") && !isEstudianteOrUsuario) {
-        return new Response("Unauthorized", { status: 403 });
+        return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
     return NextResponse.next();
