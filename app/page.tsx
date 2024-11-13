@@ -150,7 +150,7 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
     </>
   )
 }
-export function ComponentSearch({ onChange, size }: propsSelect) {
+const ComponentSearch = ({ onChange, size }: propsSelect) => {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const { replace } = useRouter()
