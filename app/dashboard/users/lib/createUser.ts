@@ -1,12 +1,13 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth"
 import { z } from "zod"
+const rolesPermitidos = ['USUARIO EXTERNO', 'ADMIN', 'COLEGIAL', 'ESTUDIANTIL', 'ESTUDIANTE', 'DOCENTE', 'ROOT'] as const
 const IntrumentSchema = z.object({
     id: z.optional(z.string()),
     name: z.optional(z.string()),
     email: z.optional(z.string()),
     password: z.optional(z.string()),
-    rols: z.optional(z.enum(['USUARIO EXTERNO', 'ESTUDIANTE'])),
+    rols: z.optional(z.enum(rolesPermitidos)),
 })
 
 export async function createUser(formData: FormData) {
@@ -24,13 +25,12 @@ export async function createUser(formData: FormData) {
         email: String(formData.get("email")) || null,
         rols: String(formData.get("rols")) || "USUARIO EXTERNO",
     }
-    console.log(data);
-    if (data.rols !== 'USUARIO EXTERNO' && data.rols !== 'ESTUDIANTE') {
+
+    if (!rolesPermitidos.includes(data.rols as typeof rolesPermitidos[number])) {
         update.rols = 'USUARIO EXTERNO';
         data.rols = 'USUARIO EXTERNO';
     }
-    // if (update.rols !== 'USUARIO EXTERNO' && update.rols !== 'ESTUDIANTE') {
-    // }
+
     const validatedData = IntrumentSchema.parse(data);
     const validatedUpdate = IntrumentSchema.parse(update);
 
@@ -42,7 +42,6 @@ export async function createUser(formData: FormData) {
 }
 const create = async (validatedData: any) => {
     const token = await getTokenFromSession()
-    console.log(token);
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users`, {
             method: 'POST',
@@ -59,12 +58,14 @@ const create = async (validatedData: any) => {
         return await res.json();
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        throw error;
     }
 };
 
 const update = async (id: string, validatedData: any) => {
     const token = await getTokenFromSession()
+    console.log(validatedData);
+    console.log(token);
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/${id}`, {
             method: 'PATCH',
@@ -80,7 +81,7 @@ const update = async (id: string, validatedData: any) => {
         return await res.json();
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        throw error;
     }
 };
 const save = async (id: string, validatedData: any, validatedUpdate: any) => {

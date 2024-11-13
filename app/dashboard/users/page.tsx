@@ -7,7 +7,6 @@ import { User } from './Interface/Interface';
 import { ComponentModalCreate } from '@/components/Modal/Modal';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delate';
-import { useRouter } from 'next/navigation';
 import { Button } from 'flowbite-react';
 
 interface SerchParams {
@@ -62,6 +61,7 @@ export default function Users({ searchParams }: SerchParams) {
         const actualTitle = String(data[rowIndex][1])
         const actualNumber = Number(infoData[rowIndex])
         setActual(actualTitle)
+        setModalState(false)
         setActualData(actualNumber)
         setTitle("Eliminar Usuario")
         setModalType('delete');
