@@ -32,6 +32,8 @@ export default function Home() {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+        console.log(name);
+        console.log(value);
         setFormData(prevFormData => ({
             ...prevFormData,
             [name]: value
@@ -50,7 +52,6 @@ export default function Home() {
             password: formData.password,
             redirect: false
         });
-        console.log(res);
         if (res?.error) {
             setError(res.error);
         } else {
