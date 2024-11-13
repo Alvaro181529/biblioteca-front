@@ -32,8 +32,6 @@ export default function Home() {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        console.log(name);
-        console.log(value);
         setFormData(prevFormData => ({
             ...prevFormData,
             [name]: value
@@ -46,14 +44,15 @@ export default function Home() {
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
-
+        setSignin(true)
         const res = await signIn('credentials', {
             email: formData.email,
             password: formData.password,
             redirect: false
         });
         if (res?.error) {
-            setError(res.error);
+                setSignin(false)
+                setError(res.error);
         } else {
             const user = await fetch('/api/auth/session').then(res => res.json());
             if (user) {
