@@ -1,5 +1,5 @@
 "use client"
-import { Avatar, Button, Card, DarkThemeToggle, Dropdown, Navbar, Tabs } from "flowbite-react";
+import { Avatar, Button, Card, DarkThemeToggle, Dropdown, Navbar, Select, Tabs, TextInput } from "flowbite-react";
 import { FaWhatsapp, FaYoutube, FaFacebook } from "react-icons/fa";
 
 import Image from "next/image";
@@ -7,22 +7,37 @@ import Link from "next/link";
 import { HiBookOpen } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { BookFormData } from "./dashboard/books/Interface/Interface";
+import { ComponentPagination } from "@/components/Pagination/Pagination";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useDebouncedCallback } from 'use-debounce';
+
+interface propsSelect {
+  size: number;
+  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+const pageSizeOptions = [3, 6, 9];
 interface dashProps {
   title: string;
   href: string;
   count: number
 }
-export default function Home() {
+export default function Home({ searchParams }: {
+  searchParams: {
+    query?: string;
+  }
+}) {
   return (
     <main className="dark:bg-gray-700">
       <ComponentNavbar />
       <ComponentHeader />
       <ComponentContent />
-      <ComponentTabs />
+      <ComponentTabs searchQuery={searchParams.query} />
       <ComponentFooter />
     </main>
   );
 }
+
 function ComponentContent() {
   return (
     <section className="w-full bg-gray-100 py-9 text-center dark:bg-gray-800 md:py-6 lg:py-20">
@@ -38,7 +53,25 @@ function ComponentContent() {
     </section>
   )
 }
-function ComponentTabs() {
+function ComponentTabs({ searchQuery }: { searchQuery: any }) {
+  const [type, setType] = useState("");
+  const [size, setSize] = useState(6);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, page } = FetchDataBook(size, currentPage, searchQuery, type);
+  console.log(searchQuery);
+  console.log(data);
+  const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedSize = Number(event.target.value)
+    setSize(selectedSize);
+    setCurrentPage(1);
+  };
+  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setType(event.target.value);
+    setCurrentPage(1);
+  };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   return (
     <section className="w-full py-12 md:py-9 lg:py-16 " id="publicacion">
       <Tabs className=" mx-auto max-w-7xl select-none items-center justify-center " aria-label="Default tabs" style="underline"  >
@@ -48,39 +81,130 @@ function ComponentTabs() {
               <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">
                 Explora Nuestros Libros
               </h2>
-              <div className="mx-auto max-w-[calc(50%-1rem)] text-gray-500  dark:text-gray-400 max-sm:max-w-[calc(100%-1rem)] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                {/* <SearchComponent onSearch={handleSearch} /> */}
+              <div className="mx-auto text-gray-500  dark:text-gray-400 max-sm:max-w-[calc(100%-1rem)] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                <div className="grid grid-cols-7 gap-2">
+                  <div className="col-span-5 ">
+                    <ComponentSearch onChange={handleSizeChange} size={size} />
+                  </div>
+                  <Select onChange={handleTypeChange} className="col-span-2 py-2">
+                    <option value="">Todo</option>
+                    <option value="LIBRO" > LIBRO</option>
+                    <option value="PARTITURA" > PARTITURA</option>
+                    <option value="DVD" > DVD</option>
+                    <option value="CD" > CD</option>
+                    <option value="CASSETTE" > CASSETTE</option>
+                    <option value="TESIS" > TESIS</option>
+                    <option value="REVISTA" > REVISTA</option>
+                    <option value="EBOOK" > EBOOK</option>
+                    <option value="AUDIO LIBRO" > AUDIO LIBRO</option>
+                    <option value="PROYECTOS" > PROYECTOS</option>
+                    <option value="OTRO" > OTRO</option>
+                  </Select>
+                </div>
               </div>
             </div>
             <div className="grid gap-4 text-start max-lg:grid-cols-4 max-sm:grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-              {/* {libros.map((libro) => (
-                <div key={libro.libro_id}>
-                  <Card>
-                    <h5 className="flex flex-row items-center gap-4">
-                      <Image
-                        src={`/libros/0${libro.libro_id}.jpg` || "/svg/placeholder.svg"}
-                        alt="Program Cover"
-                        width={48}
-                        height={64}
-                        className="h-28 w-20 rounded-lg"
-                      />
-                      <div className="grid gap-1">
-                        <h1>{libro.libro_titulo_original}</h1>
-                        <div className="text-gray-600">
-                          <h5 >{libro.libro_autor}</h5>
-                        </div>
-                      </div>
-                    </h5>
-                  </Card>
-                </div>
-              ))} */}
+              <CardInventario data={data} />
             </div>
-            {/* <PaginationComponent totalPages={totalPages} onPageChange={onPageChange} /> */}
+            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={page} />
           </div>
         </Tabs.Item>
       </Tabs>
     </section>
   )
+}
+const CardInventario = ({ data }: { data: BookFormData[] }) => {
+  if (data.length == 0) {
+    return (
+      <Card className="col-span-full">
+        <p className="text-gray-600">No hay resultados disponibles.</p>
+      </Card>
+    )
+  }
+  return (
+    <>
+      {data?.map((book, index) => (
+        <div key={index}>
+          <div className="overflow-hidden rounded-lg bg-white shadow-lg">
+            <div className="flex">
+              <Image
+                src="/svg/placeholder.svg"
+                alt="Program Cover"
+                width={60}
+                height={70}
+                className="h-36 w-24 rounded-s-md object-cover"
+              />
+              <div className="ml-4 py-2 pe-3">
+                <h1 className="text-lg font-semibold">{book.book_title_original}</h1>
+                <h5 className="text-sm text-gray-600">{book.book_title_parallel}</h5>
+                <div className="mt-2 text-gray-600">
+                  {book?.book_authors?.map((author, index) => (
+                    <h5 key={index} className="text-sm">{author.author_name}</h5>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </>
+  )
+}
+export function ComponentSearch({ onChange, size }: propsSelect) {
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
+  const { replace } = useRouter()
+  const handleSerch = useDebouncedCallback((term: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (term) {
+      params.set('query', term)
+    } else {
+      params.delete('query')
+    }
+    replace(`${pathname}?${params}`)
+  }, 320)
+
+
+
+  return (
+    <div className="flex flex-row items-center gap-2 py-2">
+      <TextInput
+        className="w-full flex-1 rounded-lg border focus:border-verde-500 focus:outline-none focus:ring-2"
+        type="text"
+        defaultValue={searchParams.get('query')?.toString()}
+        onChange={(event) => handleSerch(event.target.value)}
+        placeholder="Buscar..."
+      />
+      <Select onChange={onChange} value={size}>
+        {
+          pageSizeOptions.map(pageSize => (
+            <option key={pageSize}>{pageSize}</option>
+          ))
+        }
+      </Select>
+    </div>
+  )
+}
+const FetchDataBook = (size: number, currentPage: number, query: string, type: string) => {
+  const [data, setData] = useState<BookFormData[] | []>([])
+  const [page, setPage] = useState(0)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const url = `/api/books?query=${query || ""}&page=${currentPage}&size=${size}&type=${type}`;
+        const res = await fetch(url);
+        const result = await res.json();
+        console.log(result);
+        setData(result.data);
+        setPage(result.totalPages)
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, size, query, type]);
+  return { data, page }
 }
 function CardDashboard({ title, count, href }: dashProps) {
   return (
@@ -156,7 +280,7 @@ function ComponentNavbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollTop]);
   return (
-    <Navbar className={`fixed top-0 m-1 w-[calc(100%-1rem)] rounded-xl bg-verde-700 text-white transition-transform duration-300 ease-in-out sm:w-[calc(100%-1rem)] ${isNavbarVisible ? 'translate-y-0' : '-translate-y-20'}`} rounded>
+    <Navbar className={`fixed top-0 z-50 m-1 w-[calc(100%-1rem)] rounded-xl bg-verde-700 text-white transition-transform duration-300 ease-in-out sm:w-[calc(100%-1rem)] ${isNavbarVisible ? 'translate-y-0' : '-translate-y-20'}`} rounded>
       {/* <Navbar.Toggle className="text-white hover:bg-verde-600" /> */}
       <Navbar.Brand >
         <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
