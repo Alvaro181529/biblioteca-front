@@ -19,7 +19,6 @@ export default function Home() {
     const [errors, setErrors] = useState<Partial<Signin>>({});
     const [signin, setSignin] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
@@ -93,16 +92,16 @@ export default function Home() {
                         )}
                     </div>
                     <div className="mt-4 flex">
-                        <div className="relative">
+                        <div className="relative w-full">
                             <input
                                 id="password"
                                 type={passwordVisible ? "text" : "password"}
-                                className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                                className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none max-sm:w-full"
                                 name="password"
                                 required
                                 placeholder="Contraseña"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                defaultValue={formData.password}
+                                onChange={handleChange}
                             />
                             <button
                                 type="button"
