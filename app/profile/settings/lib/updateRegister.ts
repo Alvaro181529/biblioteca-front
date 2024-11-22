@@ -22,7 +22,6 @@ export async function updateRegister(formData: FormData) {
         register_intrument: formData.get('register_intrument') || [],
         register_professor: formData.get('register_professor') || "null",
     }
-    console.log(data);
     const validatedData = bookSchema.parse(data);
     try {
         await update(validatedData);
@@ -33,7 +32,6 @@ export async function updateRegister(formData: FormData) {
 
 const update = async (validatedData: any) => {
     const token = await getTokenFromSession()
-    console.log(token);
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}registers/`, {
             method: 'PATCH',

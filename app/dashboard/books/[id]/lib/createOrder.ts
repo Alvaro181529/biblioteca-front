@@ -18,7 +18,6 @@ export async function createOrder(formData: FormData) {
     };
 
     const validatedData = orderSchema.parse(data);
-    console.log('Datos a enviar:', validatedData);
     try {
         await create(validatedData);
 

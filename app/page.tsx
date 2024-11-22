@@ -59,8 +59,6 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
   const [size, setSize] = useState(6);
   const [currentPage, setCurrentPage] = useState(1);
   const { data, page } = FetchDataBook(size, currentPage, searchQuery, type);
-  console.log(searchQuery);
-  console.log(data);
   const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedSize = Number(event.target.value)
     setSize(selectedSize);
@@ -123,7 +121,7 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
       const timer = setTimeout(() => {
         setHasNoResults(true);
         setIsLoading(false);
-      }, 1000);
+      }, 1500);
       return () => clearTimeout(timer);
     } else {
       setIsLoading(false);
@@ -217,7 +215,6 @@ const FetchDataBook = (size: number, currentPage: number, query: string, type: s
         const url = `/api/books?query=${query || ""}&page=${currentPage}&size=${size}&type=${type}`;
         const res = await fetch(url);
         const result = await res.json();
-        console.log(result);
         setData(result.data);
         setPage(result.totalPages)
       } catch (error) {

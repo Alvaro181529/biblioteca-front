@@ -23,7 +23,7 @@ export function ComponentTable({ columns, data, onEdit, onDelete, onView, setOpe
             const timer = setTimeout(() => {
                 setHasNoResults(true);
                 setIsLoading(false);
-            }, 1000);
+            }, 1500);
             return () => clearTimeout(timer);
         } else {
             setIsLoading(false);

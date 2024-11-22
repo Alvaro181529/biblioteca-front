@@ -132,7 +132,6 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
     };
 
     useEffect(() => {
-        console.log(query);
         if (!openModal || query) {
             const fetchData = async () => {
                 try {
@@ -143,7 +142,6 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
                     setInfoData(info(result.data || []))
                     setData(transformData(result.data || []));
                     setPages(result.totalPages || 0)
-                    console.log(result.data);
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 }

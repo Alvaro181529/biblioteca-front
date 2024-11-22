@@ -14,7 +14,6 @@ export default function ContentId({ params }: { params: { id: number } }) {
 
     const [openModal, setOpenModal] = useState(false);
     const { data } = useBooksData(params.id)
-    console.log(data?.book_imagen);
     if (data?.statusCode == 404) return notFound()
     return (
         <div className="mx-auto max-w-6xl px-4 py-2 md:px-2">

@@ -46,5 +46,6 @@ export interface BookFormData {
     book_category: Category[];
     book_authors: Author[];
     book_instruments: Instrument[];
+    book_create_at: Date,
     statusCode?: number;
 }

@@ -62,7 +62,7 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
             const timer = setTimeout(() => {
                 setHasNoResults(true);
                 setIsLoading(false);
-            }, 1000);
+            }, 1500);
             return () => clearTimeout(timer);
         } else {
             setIsLoading(false);
@@ -128,7 +128,6 @@ const FetchData = (size: number, currentPage: number, query: string, type: strin
                 const url = `/api/orders?term=${type}&size=${size}&page=${currentPage}&query=${query || ""}`;
                 const res = await fetch(url);
                 const result = await res.json();
-                console.log(result); // Verificar la estructura
                 setData(Array.isArray(result.data) ? result.data : []);
                 setTotal(result.totalPages || 0);
             } catch (error) {

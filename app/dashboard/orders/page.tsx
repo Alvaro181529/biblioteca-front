@@ -77,7 +77,7 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
             const timer = setTimeout(() => {
                 setHasNoResults(true);
                 setIsLoading(false);
-            }, 1000);
+            }, 1500);
             return () => clearTimeout(timer);
         } else {
             setIsLoading(false);
@@ -191,7 +191,6 @@ const FetchData = (type: string, size: number, currentPage: number, query: strin
             const url = `/api/orders/admin?state=${type}&size=${size}&page=${currentPage}&query=${query || ""}`;
             const res = await fetch(url);
             const result = await res.json();
-            console.log(result); // Verificar la estructura
             setData(Array.isArray(result.data) ? result.data : []);
             setTotal(result.totalPages || 0);
         } catch (error) {

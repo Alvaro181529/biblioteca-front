@@ -68,7 +68,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
             const timer = setTimeout(() => {
                 setHasNoResults(true);
                 setIsLoading(false);
-            }, 1000);
+            }, 1500);
             return () => clearTimeout(timer);
         } else {
             setIsLoading(false);
@@ -88,10 +88,6 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
         );
     }
 
-    const handleView = (id: number) => {
-        router.push(`content/${id}`)
-    };
-
     return (
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
             {data?.map((book, index) => (
@@ -99,7 +95,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
                     key={index}
                     className="w-full cursor-pointer"
                     imgSrc={book?.book_imagen?.toLowerCase() === "null" || !book?.book_imagen ? "/svg/placeholder.svg" : book.book_imagen}
-                    onClick={() => handleView(book.id)}
+                    onClick={() => router.push(`content/${book.id}`)}
 
                 >
                     <div className="flex w-full items-center justify-between">

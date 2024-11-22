@@ -11,7 +11,6 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
     const { data } = FetchUser(Number(id))
     const handleClick = async () => {
         if (!data?.register.register_ci && !data?.register.register_professor) {
-            console.log("llenar");
             alert("Necesita llenar los campos")
             router.push("/profile/settings")
         }

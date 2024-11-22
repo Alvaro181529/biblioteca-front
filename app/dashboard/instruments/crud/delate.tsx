@@ -1,4 +1,5 @@
 "use client"
+import { ToastSuccess } from "@/components/Toast/Toast";
 import { Button } from "flowbite-react";
 import { redirect, useRouter } from "next/navigation";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -40,5 +41,9 @@ const fetchData = async (id: number) => {
     if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
     }
-    return data;
+    if (data) {
+        return (
+            <ToastSuccess titulo="Eliminado Correctamente" />
+        )
+    }
 }

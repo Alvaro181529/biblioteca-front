@@ -19,7 +19,6 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         fetchData();
     }, [id])
 
-    console.log(fetch);
     const onSave = async () => {
         setTimeout(() => {
             setOpenModal(false);

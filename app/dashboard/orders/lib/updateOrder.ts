@@ -52,7 +52,7 @@ const handleCancelado = async (id: number, validatedData: any) => {
             const errorBody = await res.text(); // O res.json() si esperas un JSON
             throw new Error(`Error al actualizar el estado: ${res.statusText} - ${errorBody}`);
         }
-        console.log(res);
+
         return await res.json();
     } catch (error) {
         console.error(error);
@@ -76,7 +76,7 @@ const handlePrestado = async (id: number, validatedData: any) => {
             const errorBody = await res.text(); // O res.json() si esperas un JSON
             throw new Error(`Error al actualizar el estado: ${res.statusText} - ${errorBody}`);
         }
-        console.log(res);
+
         return await res.json();
     } catch (error) {
         console.error(error);
@@ -100,7 +100,7 @@ const handleDevuelto = async (id: number, validatedData: any) => {
             const errorBody = await res.text(); // O res.json() si esperas un JSON
             throw new Error(`Error al actualizar el estado: ${res.statusText} - ${errorBody}`);
         }
-        console.log(res);
+
         return await res.json();
     } catch (error) {
         console.error(error);

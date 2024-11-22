@@ -64,8 +64,6 @@ const create = async (validatedData: any) => {
 
 const update = async (id: string, validatedData: any) => {
     const token = await getTokenFromSession()
-    console.log(validatedData);
-    console.log(token);
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/${id}`, {
             method: 'PATCH',

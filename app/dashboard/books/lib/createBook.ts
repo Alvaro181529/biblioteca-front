@@ -111,7 +111,6 @@ const update = async (id: string, validatedData: any) => {
 };
 const save = async (id: string, validatedData: any) => {
     if (id == "null") {
-        console.log("object");
         return await create(validatedData);
     } else {
         return await update(id, validatedData);

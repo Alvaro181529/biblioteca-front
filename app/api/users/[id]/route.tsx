@@ -21,7 +21,6 @@ export async function GET(request: any, { params }: { params: interfaceParams })
 }
 export async function DELETE(request: any, { params }: { params: interfaceParams }) {
     const token = await getTokenFromSession();
-    console.log(token);
     const response = await fetch(`${env.NEXT_PUBLIC_URL_API}users/${params.id}`, {
         method: 'DELETE',
         headers: {
