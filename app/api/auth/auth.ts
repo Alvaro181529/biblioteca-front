@@ -26,6 +26,7 @@ interface SigninResponse {
         rols: string;
     };
     accessToken: string;
+    refreshToken: string;
 }
 
 async function Signin(
@@ -83,6 +84,7 @@ export const authOptions: NextAuthOptions = {
                     email: signin.user.email,
                     rols: signin.user.rols,
                     accessToken: signin.accessToken,
+                    refreshToken: signin.refreshToken,
                 };
             },
         }),
@@ -99,7 +101,27 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }: { token: any; user?: any }) {
             if (user) {
                 token.accessToken = user.accessToken;
+                token.refreshToken = user.refreshToken
                 token.rols = user.rols;
+            }
+            const isTokenExpired = token.exp && token.exp < Math.floor(Date.now() / 1000);
+            if (isTokenExpired && token.refreshToken) {
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/refresh-token`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ refreshToken: token.refreshToken }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        token.accessToken = data.accessToken;
+                    }
+                } catch (error) {
+                    console.error('Error renovando el token:', error);
+                }
             }
             return token;
         },
