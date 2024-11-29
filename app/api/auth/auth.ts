@@ -104,10 +104,10 @@ export const authOptions: NextAuthOptions = {
                 token.refreshToken = user.refreshToken
                 token.rols = user.rols;
             }
-            const isTokenExpired = token.exp && token.exp < Math.floor(Date.now() / 1000);
+            const isTokenExpired = token.exp && !isNaN(token.exp) && token.exp < Math.floor(Date.now() / 1000);
             if (isTokenExpired && token.refreshToken) {
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/refresh-token`, {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/refresh-token`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
