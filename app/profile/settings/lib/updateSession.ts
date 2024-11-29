@@ -3,37 +3,50 @@ import { getTokenFromSession } from "@/app/api/utils/auth";
 
 import { z } from "zod"
 
-const bookSchema = z.object({
-    register_ci: z.optional(z.string()),
-    register_contact: z.optional(z.number()),
-    register_ubication: z.optional(z.string()),
-    register_category: z.optional(z.array(z.string())),
-    register_intrument: z.optional(z.array(z.string())),
-    register_professor: z.optional(z.string()),
+const userSchema = z.object({
+    id: z.optional(z.string().nullable()),
+    name: z.optional(z.string().nullable()),
+    email: z.optional(z.string().nullable()),
+})
+const passSchema = z.object({
+    currentPassword: z.optional(z.string().nullable()),
+    newPassword: z.optional(z.string().nullable()),
+    confirmedPassword: z.optional(z.string().nullable()),
 })
 export async function updateSession(formData: FormData) {
-    const exp = String(formData.get('register_exp'))
-    const ci = String(formData.get('register_ci'))
     const data = {
-        register_ci: `${ci} - ${exp}` || "null",
-        register_contact: Number(formData.get('register_contact')) || 0,
-        register_ubication: formData.get('register_ubication') || "null",
-        register_category: formData.get('register_category') || [],
-        register_intrument: formData.get('register_intrument') || [],
-        register_professor: formData.get('register_professor') || "null",
+        id: formData.get('id') || null,
+        name: formData.get('name') || null,
+        email: formData.get('email') || null,
     }
-    const validatedData = bookSchema.parse(data);
+    const validatedData = userSchema.parse(data);
+    const id = validatedData?.id || ""
     try {
-        await update(validatedData);
+        await update(validatedData, id);
+    } catch (error) {
+        console.error('Error en el guardado:', error);
+    }
+}
+export async function updatePass(formData: FormData) {
+    const data = {
+        currentPassword: formData.get('password-current') || null,
+        newPassword: formData.get('password-new') || null,
+        confirmedPassword: formData.get('password-confirmed') || null,
+    }
+    const validatedData = passSchema.parse(data);
+    try {
+        await updatePassword(validatedData);
     } catch (error) {
         console.error('Error en el guardado:', error);
     }
 }
 
-const update = async (validatedData: any) => {
+const update = async (validatedData: any, id: string) => {
     const token = await getTokenFromSession()
+    console.log(validatedData);
+    console.log(id);
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}registers/`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,11 +55,32 @@ const update = async (validatedData: any) => {
             body: JSON.stringify(validatedData),
         });
         if (!res.ok) {
-            throw new Error('Error al actualizar el registro: ' + res.statusText);
+            throw new Error('Error al actualizar el email o usuario: ' + res.statusText);
         }
         return await res.json();
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        throw error;
+    }
+};
+const updatePassword = async (validatedData: any) => {
+    const token = await getTokenFromSession()
+    console.log(token);
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}update-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(validatedData),
+        });
+        if (!res.ok) {
+            throw new Error('Error al actualizar la contraseña: ' + res.statusText);
+        }
+        return await res.json();
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
 };
