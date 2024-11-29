@@ -4,9 +4,10 @@ import { getTokenFromSession } from "@/app/api/utils/auth";
 import { z } from "zod";
 
 const bookSchema = z.object({
+    files: z.optional(z.instanceof(File)).nullable(),
     id: z.optional(z.string()),
-    book_imagen: z.optional(z.string()),
-    book_document: z.optional(z.string()),
+    book_imagen: z.optional(z.string()).nullable(),
+    book_document: z.optional(z.string()).nullable(),
     book_inventory: z.optional(z.string()),
     book_isbn: z.optional(z.string()),
     book_title_original: z.string(),
@@ -34,10 +35,13 @@ export async function createBook(formData: FormData) {
     const bookCategory = String(formData.get('book_category_ids'));
     const bookAuthors = String(formData.get('book_authors_ids'));
     const bookInstruments = String(formData.get('book_instruments_ids'));
+    console.log(formData);
+
     const data = {
+        files: formData.get('files') || null,
         id: formData.get('id') || "null",
-        book_imagen: formData.get('book_imagen') || "null",
-        book_document: formData.get('book_document') || "null",
+        book_imagen: String(formData.get('book_imagen')) || null,
+        book_document: String(formData.get('book_document')) || null,
         book_inventory: String(formData.get('book_inventory')) || undefined,
         book_editorial: String(formData.get('book_editorial')) || undefined,
         book_isbn: String(formData.get('book_isbn')) || undefined,
@@ -60,6 +64,7 @@ export async function createBook(formData: FormData) {
         book_instruments: bookInstruments ? bookInstruments.split(',').map(item => item.trim()) : [],
     };
     const validatedData = bookSchema.parse(data);
+    console.log(validatedData)
     try {
         await save(String(data.id), validatedData);
     } catch (error) {
@@ -72,7 +77,6 @@ const create = async (validatedData: any) => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(validatedData),
@@ -95,7 +99,6 @@ const update = async (id: string, validatedData: any) => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books/${id}`, {
             method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(validatedData),
