@@ -18,7 +18,7 @@ export function ComponentModalCreate({ title, openModal, setOpenModal, children,
             {
                 status && (
                     <Modal.Footer className="flex justify-end">
-                        <Button form="submit-form" type="submit" className="bg-verde-700">Guardar</Button>
+                        <Button aria-label="Guardar" form="submit-form" type="submit" className="bg-verde-700">Guardar</Button>
                     </Modal.Footer>
                 )
             }

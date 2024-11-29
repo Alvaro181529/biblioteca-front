@@ -61,7 +61,7 @@ export function ComponentTable({ columns, data, onEdit, onDelete, onView, setOpe
                         <Table.HeadCell className="bg-verde-700 text-white" key={index}>{col}</Table.HeadCell>
                     ))}
                     <Table.HeadCell className="grid justify-center bg-verde-700 p-2">
-                        <Button className="flex justify-end bg-verde-500 ring-verde-300 hover:bg-verde-600 dark:bg-gray-600 dark:hover:bg-gray-500" onClick={() => setOpenModal(true)}>Añadir</Button>
+                        <Button aria-label="Añadir" className="flex justify-end bg-verde-500 ring-verde-300 hover:bg-verde-600 dark:bg-gray-600 dark:hover:bg-gray-500" onClick={() => setOpenModal(true)}>Añadir</Button>
                     </Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y">
@@ -78,6 +78,7 @@ export function ComponentTable({ columns, data, onEdit, onDelete, onView, setOpe
                             <Table.Cell className="m-auto flex justify-center gap-2 ">
                                 <Tooltip content="Editar">
                                     <button
+                                        aria-label="Editar"
                                         onClick={() => onEdit(rowIndex)}
                                         className="m-auto  text-verde-600 hover:underline dark:text-verde-300"
                                     >
@@ -86,6 +87,7 @@ export function ComponentTable({ columns, data, onEdit, onDelete, onView, setOpe
                                 </Tooltip>
                                 <Tooltip content="Eliminar">
                                     <button
+                                        aria-label="Eliminar"
                                         onClick={() => onDelete(rowIndex)}
                                         className="m-auto text-red-600 hover:underline dark:text-verde-300"
                                     >
@@ -95,6 +97,7 @@ export function ComponentTable({ columns, data, onEdit, onDelete, onView, setOpe
 
                                 <Tooltip content="Ver">
                                     <button
+                                        aria-label="Ver"
                                         onClick={() => onView(rowIndex)}
                                         className="m-auto text-gray-600 hover:underline dark:text-verde-300"
                                     >

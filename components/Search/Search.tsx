@@ -32,7 +32,7 @@ export function ComponentSearch({ onChange, size }: propsSelect) {
                 onChange={(event) => handleSerch(event.target.value)}
                 placeholder="Buscar..."
             />
-            <Select onChange={onChange} value={size}>
+            <Select onChange={onChange} value={size} aria-label="Size">
                 {
                     pageSizeOptions.map(pageSize => (
                         <option key={pageSize}>{pageSize}</option>
