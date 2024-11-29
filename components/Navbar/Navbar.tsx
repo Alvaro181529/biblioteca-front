@@ -37,7 +37,7 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
                     as={Link}
                     key={idx}
                     href={item.href}
-                    className={`rounded-lg border-none text-white hover:text-amarillo-200 focus:text-amarillo-100 max-md:hover:bg-verde-600 ${pathname == item.href ? "text-amarillo-200 hover:text-amarillo-200" : ""}`}
+                    className={`rounded-lg border-none text-white hover:text-amarillo-200 focus:text-amarillo-100 max-md:hover:bg-verde-600 sm:hidden ${pathname == item.href ? "text-amarillo-200 hover:text-amarillo-200" : ""}`}
                 >
                     {item.label}
                 </Navbar.Link>
