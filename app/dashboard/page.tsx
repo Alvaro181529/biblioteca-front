@@ -6,6 +6,7 @@ import { Accordion, Button, Badge, List } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { orderBorrowed } from "./orders/lib/updateOrder";
 import { Orders } from "./orders/Interface/Interface";
+import { ToastSuccess } from "@/components/Toast/Toast";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -52,6 +53,7 @@ const DashBoard = ({ update }: { update?: boolean }) => {
 
 const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: boolean; setUpdate: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [message, setMessage] = useState<string | null>(null);
     const [size, setSize] = useState(5);
     const { data, pages, count: countData } = useOrdersData(size, currentPage, searchParams.query, update);
     const handlePageChange = (page: number) => {
@@ -71,11 +73,13 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
     const prestar = async (id: number) => {
         setUpdate(true)
         await orderBorrowed(id, "PRESTADO")
+        setMessage("Prestado correctamente")
     }
 
     const cancelar = async (id: number) => {
         setUpdate(true)
         await orderBorrowed(id, "CANCELADO")
+        setMessage("Cancelado")
     }
     useEffect(() => {
         if (update) {
@@ -140,12 +144,14 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                                     </section>
                                     <aside className="flex flex-col space-y-2 text-white">
                                         <Button
+                                            aria-label="Aceptar"
                                             className="mt-4 bg-verde-700 hover:bg-verde-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-500 md:ml-4 md:mt-0"
                                             onClick={() => prestar(orde.id)}
                                         >
                                             Aceptar
                                         </Button>
                                         <Button
+                                            aria-label="Cancelar"
                                             className="mt-4 bg-red-600 hover:bg-red-500 dark:text-white dark:hover:bg-red-500 md:ml-4 md:mt-0"
                                             onClick={() => cancelar(orde.id)}
                                         >
@@ -166,6 +172,7 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                 </p>
                 <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
             </div>
+            {message && <ToastSuccess titulo={message} />}
         </div >
     );
 }

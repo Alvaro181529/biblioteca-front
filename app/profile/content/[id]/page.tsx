@@ -9,6 +9,7 @@ import { ComponentModalCreate } from "@/components/Modal/Modal";
 import { notFound } from "next/navigation";
 import { FormBorrowed } from "./crud/borrowed";
 import { languages } from "@/app/dashboard/books/Interface/Types";
+import { User } from "next-auth";
 
 export default function ContentId({ params }: { params: { id: number } }) {
 
@@ -46,7 +47,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
 }) => {
     const [title, setTitle] = useState("Prestamo");
     const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'view' | 'borrowed'>('create');
-
+    const { data: userData } = FetchUser(Number(id))
     const closeModal = () => {
         setOpenModal(false);
         setTitle("Añadir contenido")
@@ -65,7 +66,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
                 <div className="flex justify-between">
                     <h1 className=" my-auto text-xl font-bold">Contenido</h1>
                     <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={false}>
-                        {modalType === "borrowed" && <FormBorrowed id={id} setOpenModal={closeModal} />}
+                        {modalType === "borrowed" && <FormBorrowed user={userData} id={id} setOpenModal={closeModal} />}
                     </ComponentModalCreate>
                 </div>
                 <nav className="grid gap-3">
@@ -203,5 +204,24 @@ const useBooksData = (id: number) => {
             fetchData();
         }
     }, [id])
+    return { data }
+}
+
+const FetchUser = (id: number) => {
+    const [data, setData] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const url = `/api/users/me`;
+                const res = await fetch(url);
+                const result = await res.json();
+                setData(result)
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, [])
     return { data }
 }

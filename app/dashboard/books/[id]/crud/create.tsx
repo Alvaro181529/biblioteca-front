@@ -60,6 +60,7 @@ export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data
                 {!view && (
                     <button
                         type="button"
+                        aria-label="Agregar contenido"
                         className={`group relative flex items-center justify-center rounded-md border 
             border-gray-300 bg-white p-2 text-sm font-medium text-gray-900 
             transition duration-200 hover:bg-gray-100 focus:outline-none focus:ring-4 

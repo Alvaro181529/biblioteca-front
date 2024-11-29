@@ -93,11 +93,11 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
     }
     return (
         <div className="grid gap-4">
-            <Button className="w-full bg-verde-700 font-semibold" onClick={onBorrowed}>Prestar</Button>
+            <Button aria-label="Prestar" className="w-full bg-verde-700 font-semibold" onClick={onBorrowed}>Prestar</Button>
             <Card>
                 <div className="mb-4 flex justify-between">
                     <h1 className=" my-auto text-xl font-bold">Contenido</h1>
-                    <Button onClick={handleCreate} color={"light"}>Agregar</Button>
+                    <Button aria-label="Agregar" onClick={handleCreate} color={"light"}>Agregar</Button>
                     <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
                         {modalType === "create" && <FormCreate setOpenModal={closeModal} id={id} />}
                         {modalType === "edit" && <FormCreate setOpenModal={closeModal} id={id} data={actual} view={view} />}
@@ -118,6 +118,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
                             <div className="flex justify-end gap-2">
                                 <Tooltip content="Editar">
                                     <button
+                                        aria-label="Editar"
                                         onClick={() => onEdit(content.id, content)}
                                         className="m-auto text-verde-600 hover:underline dark:text-verde-300"
                                     >
@@ -126,6 +127,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
                                 </Tooltip>
                                 <Tooltip content="Eliminar">
                                     <button
+                                        aria-label="Eliminar"
                                         onClick={() => onDelete(content.id, content.content_sectionTitle)}
                                         className="m-auto text-red-600 hover:underline dark:text-verde-300"
                                     >
@@ -177,7 +179,7 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
                     </div>
                     <div>
                         <dt className="font-semibold">Cantidad:</dt>
-                        <dd className="text-gray-700">{data?.book_quantity || "N/A"}</dd>
+                        <dd className="text-gray-700">{data?.book_quantity || "0"}</dd>
                     </div>
                     <div>
                         <dt className="font-semibold">Precio original:</dt>

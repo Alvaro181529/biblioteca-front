@@ -104,7 +104,7 @@ export default function Books({ searchParams }: SerchParams) {
                     <option value="OTRO" > OTRO</option>
                 </Select>
                 <div className='w-full py-2'>
-                    <Button className='w-full bg-red-600' onClick={reportBook}>Reporte</Button>
+                    <Button aria-label='Reporte' className='w-full bg-red-600' onClick={reportBook}>Reporte</Button>
                 </div>
             </div>
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />

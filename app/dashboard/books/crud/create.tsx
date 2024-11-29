@@ -9,6 +9,22 @@ import { Instrument } from "../../instruments/Interface/Interface";
 import { Categories } from "../../categories/Interface/Interface";
 export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<BookFormData | null>(null)
+    const [imageFile, setImageFile] = useState<File | null>(null); // Estado para imagen
+    const [documentFile, setDocumentFile] = useState<File | null>(null); // Estado para documento
+
+    const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setImageFile(e.target.files[0]); // Asignar el archivo de la imagen
+            console.log("Imagen seleccionada:", e.target.files[0]);
+        }
+    };
+
+    const onDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setDocumentFile(e.target.files[0]); // Asignar el archivo del documento
+            console.log("Imagen seleccionada:", e.target.files[0]);
+        }
+    };
     useEffect(() => {
         const fetchData = async () => {
             if (id) {
@@ -19,7 +35,13 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         fetchData();
     }, [id])
 
-    const onSave = async () => {
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        if (imageFile) formData.append("files", imageFile); // Agregar la imagen
+        if (documentFile) formData.append("files", documentFile); // Agregar el documento
+
+        await createBook(formData);
         setTimeout(() => {
             setOpenModal(false);
         }, 500);
@@ -27,7 +49,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
 
     if (fetch == null && id) return <h1>Cargando</h1>
     return (
-        <form id="submit-form" action={createBook} onSubmit={onSave}>
+        <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-6" >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="mb-4">
@@ -222,8 +244,10 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 <Label htmlFor="book_imagen" value="Imagen " />
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <FileInput
+                                    accept="image/*"
                                     // defaultValue={fetch?.book_imagen}
                                     id="book_imagen"
+                                    onChange={onImageChange}
                                 />
                             </Tabs.Item>
                         </Tabs>
@@ -246,7 +270,9 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 <Label htmlFor="book_document" value="Documento " />
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <FileInput
+                                    accept="pdf"
                                     id="book_document"
+                                    onChange={onDocumentChange}
                                 // defaultValue={fetch?.book_imagen}
                                 />
                             </Tabs.Item>

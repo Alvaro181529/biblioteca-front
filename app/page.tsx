@@ -320,6 +320,7 @@ function NavbarDropdown() {
       <div className="flex gap-2">
         <DarkThemeToggle className="text-white ring-verde-400 hover:bg-verde-600 hover:text-amber-100 "></DarkThemeToggle>
         <Button
+          aria-label="Iniciar sesion"
           className="bg-verde-600 text-white ring-verde-400 transition-colors duration-200 hover:bg-verde-500 hover:text-amber-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:ring-gray-600"
           onClick={() => signIn()}
         >

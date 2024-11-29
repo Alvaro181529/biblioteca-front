@@ -6,11 +6,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
-export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
+export function FormBorrowed({ user, id, setOpenModal }: { user: User | any, id?: number, setOpenModal: (open: boolean) => void }) {
     const router = useRouter()
-    const { data } = FetchUser(Number(id))
     const handleClick = async () => {
-        if (!data?.register.register_ci && !data?.register.register_professor) {
+        if (!user?.register.register_ci && !user?.register.register_professor) {
             alert("Necesita llenar los campos")
             router.push("/profile/settings")
         }
@@ -27,7 +26,7 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
     return (
         <div className="text-center">
             <form id="submit-borrowed" action={createOrder} onSubmit={onSave}>
-                <input name="id" id="id" hidden defaultValue={data?.id} />
+                <input name="id" id="id" hidden defaultValue={Number(user?.id)} />
                 <input name="book" id="book" hidden defaultValue={id} />
             </form>
             <HiOutlineExclamationCircle className="mx-auto mb-4 size-14 text-gray-400 dark:text-gray-200" />
@@ -38,7 +37,8 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
                 <Button type="submit" onClick={handleClick} className="bg-verde-700" form="submit-borrowed">
                     {"Sí, estoy seguro"}
                 </Button>
-                <Button color="gray" onClick={handleCerrar}>
+                <Button color="gray" onClick={handleCerrar} aria-label="No">
+
                     No, cancelar
                 </Button>
             </div>
@@ -47,23 +47,23 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
 
     )
 }
-const FetchUser = (id: number) => {
-    const [data, setData] = useState<User | null>(null);
+// const FetchUser = (id: number) => {
+//     const [data, setData] = useState<User | null>(null);
 
-    useEffect(() => {
-        if (id) {
-            const fetchData = async () => {
-                try {
-                    const url = `/api/users/me`;
-                    const res = await fetch(url);
-                    const result = await res.json();
-                    setData(result)
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                }
-            };
-            fetchData();
-        }
-    }, [id])
-    return { data }
-}
+//     useEffect(() => {
+//         if (id) {
+//             const fetchData = async () => {
+//                 try {
+//                     const url = `/api/users/me`;
+//                     const res = await fetch(url);
+//                     const result = await res.json();
+//                     setData(result)
+//                 } catch (error) {
+//                     console.error("Error fetching data:", error);
+//                 }
+//             };
+//             fetchData();
+//         }
+//     }, [id])
+//     return { data }
+// }

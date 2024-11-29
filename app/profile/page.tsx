@@ -17,12 +17,11 @@ export default function DashboardPage({ searchParams }: SerchParams) {
     };
     return (
         <section>
-            <h2 className="mb-4 text-2xl font-semibold">Recomendados para ti</h2>
+            <h2 className="mb-4 text-2xl font-semibold dark:text-white">Recomendados para ti</h2>
             <CardInfo />
 
-            <h2 className="mb-4 text-2xl font-semibold">Nuevas Adquisiciones</h2>
+            <h2 className="mb-4 text-2xl font-semibold dark:text-white">Nuevas adquisiciones</h2>
             <CardNew />
-
         </section>
     )
 }

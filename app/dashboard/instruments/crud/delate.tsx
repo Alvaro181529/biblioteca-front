@@ -20,10 +20,11 @@ export function FormDelete({ instrumento, data, setOpenModal }: deleteProps) {
                 ¿Esta seguro de eliminar el intrumento {instrumento}
             </h3>
             <div className="flex justify-center gap-4">
-                <Button onClick={handleClick} color="failure">
+                <Button onClick={handleClick} color="failure" aria-label="Si">
                     {"Sí, estoy seguro"}
                 </Button>
-                <Button color="gray" onClick={handleCerrar}>
+                <Button color="gray" onClick={handleCerrar} aria-label="No">
+
                     No, cancelar
                 </Button>
             </div>
