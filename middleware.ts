@@ -14,10 +14,6 @@ export default withAuth((req) => {
 
     const currentTime = Math.floor(Date.now() / 1000);
     const tokenExpirationTime = Number(token.exp);
-
-    console.log("currentTime:", currentTime);
-    console.log("tokenExpirationTime:", tokenExpirationTime);
-
     if (tokenExpirationTime < currentTime) {
         return NextResponse.redirect(new URL("/auth/login", req.url));
     }
