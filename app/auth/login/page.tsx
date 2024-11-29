@@ -51,8 +51,8 @@ export default function Home() {
             redirect: false
         });
         if (res?.error) {
-                setSignin(false)
-                setError(res.error);
+            setSignin(false)
+            setError(res.error);
         } else {
             const user = await fetch('/api/auth/session').then(res => res.json());
             if (user) {
@@ -104,6 +104,7 @@ export default function Home() {
                                 onChange={handleChange}
                             />
                             <button
+                                aria-label="login"
                                 type="button"
                                 onClick={togglePasswordVisibility}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"

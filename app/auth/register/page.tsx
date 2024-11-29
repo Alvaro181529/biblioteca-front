@@ -3,6 +3,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createUser } from "@/app/dashboard/users/lib/createUser";
 import { Button } from "flowbite-react";
+import { AiOutlineLoading } from "react-icons/ai";
 import AuthComponent from "@/components/auth/Auth";
 
 interface Signin {
@@ -13,6 +14,7 @@ interface Signin {
 }
 
 export default function Login() {
+    const [signin, setSignin] = useState(false);
     const [formData, setFormData] = useState<Signin>({
         name: "",
         email: "",
@@ -42,6 +44,7 @@ export default function Login() {
 
     const onSubmit = async (e: FormEvent) => {
         if (!validate()) return;
+        setSignin(true)
         setTimeout(() => {
             router.push("/auth/login");
         }, 500);
@@ -109,7 +112,12 @@ export default function Login() {
                         )}
                     </div>
                     <div className="mt-8 flex flex-col">
-                        <Button type="submit" className="rounded bg-verde-700 px-4 text-sm font-semibold text-white hover:bg-verde-400">
+                        <Button
+                            isProcessing={signin}
+                            type="submit"
+                            aria-label="Ingresar"
+                            processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
+                            className="rounded bg-verde-700 px-4 text-sm font-semibold text-white hover:bg-verde-400">
                             Ingresar
                         </Button>
                     </div>
