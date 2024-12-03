@@ -1,5 +1,5 @@
 import { TextInput, Label } from "flowbite-react";
-import { createCategory } from "../lib/createCategory";
+import { createCategory } from "@/lib/createCategory";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     let defaultName
