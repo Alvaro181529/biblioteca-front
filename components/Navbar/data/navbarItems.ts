@@ -17,7 +17,7 @@ export const adminItems: NavbarItem[] = [
 export const personalItems: NavbarItem[] = [
     { href: "/profile", label: "Inicio" },
     { href: "/profile/content", label: "Contenido" },
+    { href: "/profile/publications", label: "Publicaciones" },
     { href: "/profile/orders", label: "Mis prestamos" },
     { href: "/profile/history", label: "Historial" },
-    { href: "/profile/publications", label: "Publicaciones" },
 ];
