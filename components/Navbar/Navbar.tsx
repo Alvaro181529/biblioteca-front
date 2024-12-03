@@ -1,13 +1,15 @@
 
 "use client";
 
-import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { Avatar, Dropdown, Navbar, useThemeMode } from "flowbite-react";
 import Image from "next/image";
 import { NavbarItem } from "./types/navbarItems";
+import { HiSun, HiMoon } from "react-icons/hi";
 import { adminItems, personalItems } from "./data/navbarItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
 interface NavbarLinksProps {
     items: NavbarItem[];
 }
@@ -17,7 +19,7 @@ export function ComponentNavbar({ rol }: { rol: boolean }) {
     return (
         <Navbar fluid className="bg-verde-700 text-white dark:bg-gray-900">
             <Navbar.Toggle className="text-white hover:bg-verde-600" />
-            <Navbar.Brand href={"http://localhost:3000/dashboard"}>
+            <Navbar.Brand href={"/"}>
                 <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
                 <span className="self-center whitespace-nowrap text-xl font-semibold">Biblioteca</span>
             </Navbar.Brand>
@@ -48,10 +50,17 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
 function NavbarDropdown() {
     type Role = 'ADMIN' | 'ROOT' | 'USUARIO EXTERNO' | 'ESTUDIANTE' | 'ESTUDIANTIL' | 'COLEGIAL' | 'DOCENTE';
     const { data: session, status } = useSession()
+    const { mode, toggleMode, setMode } = useThemeMode();
+    const [textMode, setTextMode] = useState(mode === "dark" ? "Modo Claro" : "Modo Oscuro");
     const user = session?.user?.name
     const email = session?.user?.email
     const rol = session?.user?.rols as Role | undefined; // Asegúrate de que rol es de tipo Role o undefined
 
+
+    const ModeToggle = () => {
+        toggleMode();
+        setTextMode(mode === "dark" ? "Modo Oscuro" : "Modo Claro");
+    }
     const roleToHref = {
         ADMIN: "/dashboard",
         ROOT: "/dashboard",
@@ -85,6 +94,15 @@ function NavbarDropdown() {
                 <span className="block text-sm">{user}</span>
                 <span className="block truncate text-sm font-medium">{email}</span>
             </Dropdown.Header>
+            <Dropdown.Item as={Link} href="#" onClick={ModeToggle} className="flex items-center justify-between">
+                {textMode}
+
+                {mode === "dark" ? (
+                    <HiSun className="ml-2" />
+                ) : (
+                    <HiMoon className="ml-2" />
+                )}
+            </Dropdown.Item>
             <Dropdown.Item
                 as={Link}
                 href={Dashboard}
