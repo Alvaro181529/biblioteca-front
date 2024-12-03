@@ -1,11 +1,12 @@
 "use client"
-import { BookFormData } from "@/app/dashboard/books/Interface/Interface"
-import { ComponentSearch } from "@/components/Search/Search";
+import { BookFormData } from "@/interface/Interface";
+import { ComponentSearch } from "@/components/Search";
 import { Card, Select } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
-import { InvoicesCardSkeleton } from "@/components/Skeleton/skeletons";
-import { ComponentPagination } from "@/components/Pagination/Pagination";
+import { InvoicesCardSkeleton } from "@/components/skeletons";
+import { ComponentPagination } from "@/components/Pagination";
+import { isValidUrl } from "@/lib/validateURL";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -63,6 +64,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
+
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {
@@ -90,52 +92,61 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
 
     return (
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
-            {data?.map((book, index) => (
-                <Card
-                    key={index}
-                    className="w-full cursor-pointer"
-                    imgSrc={book?.book_imagen?.toLowerCase() === "null" || !book?.book_imagen ? "/svg/placeholder.svg" : book.book_imagen}
-                    onClick={() => router.push(`content/${book.id}`)}
+            {data?.map((book, index) => {
+                const imageUrl = String(book?.book_imagen);
+                const imageSrc = isValidUrl(imageUrl)
+                    ? imageUrl // Si es una URL válida, usamos la URL
+                    : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+                        ? `/api/books/image/${imageUrl}`
+                        : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
 
-                >
-                    <div className="flex w-full items-center justify-between">
-                        <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                            {book.book_title_original || "Titulo del libro"}
-                        </h5>
-                        <div>
-                            {book.book_quantity > 0 ? (
-                                <div className="flex items-center">
-                                    <p className="text-green-500">Disponible</p>
-                                    <span className="ml-2 size-3 rounded-full bg-green-500"></span>
-                                </div>
-                            ) : (
-                                <div className="flex items-center">
-                                    <p className="text-red-500">No disponible</p>
-                                    <span className="ml-2 size-3 rounded-full bg-red-500"></span>
-                                </div>
-                            )}
+                return (
+                    <Card
+                        key={index}
+                        className="w-full cursor-pointer"
+                        imgSrc={imageSrc}
+                        onClick={() => router.push(`content/${book.id} `)}
+
+                    >
+                        <div className="flex w-full items-center justify-between">
+                            <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                {book.book_title_original || "Titulo del libro"}
+                            </h5>
+                            <div>
+                                {book.book_quantity > 0 ? (
+                                    <div className="flex items-center">
+                                        <p className="text-green-500">Disponible</p>
+                                        <span className="ml-2 size-3 rounded-full bg-green-500"></span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center">
+                                        <p className="text-red-500">No disponible</p>
+                                        <span className="ml-2 size-3 rounded-full bg-red-500"></span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                        <span className="font-semibold">Tipo: </span> {book.book_type}
-                    </p>
+                        <p className="font-normal text-gray-700 dark:text-gray-400">
+                            <span className="font-semibold">Tipo: </span> {book.book_type}
+                        </p>
 
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                        <span className="font-semibold">Autor: </span>
-                        {book.book_authors?.map((author, index) => (
-                            <p key={index}>{author.author_name}</p>
-                        ))}
-                    </p>
+                        <p className="font-normal text-gray-700 dark:text-gray-400">
+                            <span className="font-semibold">Autor: </span>
+                            {book.book_authors?.map((author, index) => (
+                                <p key={index}>{author.author_name}</p>
+                            ))}
+                        </p>
 
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                        <span className="font-semibold">Categoría: </span>
-                        {book.book_category?.map((category, index) => (
-                            <p key={index}>{category.category_name}</p>
-                        ))}
-                    </p>
-                </Card>
-            ))}
+                        <p className="font-normal text-gray-700 dark:text-gray-400">
+                            <span className="font-semibold">Categoría: </span>
+                            {book.book_category?.map((category, index) => (
+                                <p key={index}>{category.category_name}</p>
+                            ))}
+                        </p>
+                    </Card>
+                )
+            })}
         </div>
     );
 }
