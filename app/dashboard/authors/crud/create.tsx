@@ -1,5 +1,5 @@
 import { TextInput, Label, Textarea } from "flowbite-react";
-import { createAuthor } from "../lib/createAuthor";
+import { createAuthor } from "@/lib/createAuthor";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     let defaultName
@@ -19,6 +19,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                     <div className="mb-4">
                         <Label htmlFor="author_name" value="Nombre del Autor" />
                         <TextInput
+                            required
                             name="author_name"
                             id="author_name"
                             placeholder="Amedus Mozart"
