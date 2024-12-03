@@ -1,12 +1,12 @@
 "use client"
-import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, ListGroup } from "flowbite-react";
-import { bookTypes, currencies, languages } from "../Interface/Types";
-import { createBook } from "@/app/dashboard/books/lib/createBook";
-import { BookFormData } from "../Interface/Interface";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { Author } from "../../authors/Interface/Interface";
-import { Instrument } from "../../instruments/Interface/Interface";
-import { Categories } from "../../categories/Interface/Interface";
+import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, ListGroup, Spinner } from "flowbite-react";
+import { bookTypes, currencies, languages } from "@/types/types";
+import { createBook } from "@/lib/createBook";
+import { BookFormData } from "@/interface/Interface";
+import { useEffect, useState } from "react";
+import { Author } from "@/interface/Interface";
+import { Instrument } from "@/interface/Interface";
+import { Categories } from "@/interface/Interface";
 export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<BookFormData | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null); // Estado para imagen
@@ -14,15 +14,13 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
 
     const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setImageFile(e.target.files[0]); // Asignar el archivo de la imagen
-            console.log("Imagen seleccionada:", e.target.files[0]);
+            setImageFile(e.target.files[0]);
         }
     };
 
     const onDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setDocumentFile(e.target.files[0]); // Asignar el archivo del documento
-            console.log("Imagen seleccionada:", e.target.files[0]);
+            setDocumentFile(e.target.files[0]);
         }
     };
     useEffect(() => {
@@ -47,12 +45,23 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         }, 500);
     }
 
-    if (fetch == null && id) return <h1>Cargando</h1>
+    if (fetch == null && id) return (
+        <div className="text-center">
+            <Spinner color="success" aria-label="Success spinner" size="xl" />
+        </div >
+    )
+    const transformToSuggestions = (items: any[] = []): Suggestion[] => {
+        return items.map(item => ({
+            id: item.id,
+            name: item.instrument_name || item.category_name || item.author_name || '', // Dependiendo del tipo de item
+        }));
+    };
+
     return (
         <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-6" >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_title_original" value="Título Original" />
                         <TextInput
                             name="book_title_original"
@@ -63,7 +72,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                         />
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_title_parallel" value="Título Paralelo" />
                         <TextInput
                             name="book_title_parallel"
@@ -72,7 +81,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             defaultValue={fetch?.book_title_parallel}
                         />
                     </div>
-                    <div className="col-span-2 grid grid-cols-4 gap-4">
+                    <div className="col-span-2 gap-4 md:grid md:grid-cols-4 ">
                         <div className="col-span-2 mb-4">
                             <Label htmlFor="book_editorial" value="Editorial" />
                             <TextInput
@@ -112,7 +121,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                         />
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_condition" value="Condición" />
                         <Select id="book_condition" name="book_condition"
                             defaultValue={String(fetch?.book_condition)}
@@ -122,7 +131,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             <option>MALO</option>
                         </Select>
                     </div>
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_language" value="Idioma" />
                         <Select id="book_language" name="book_language"
                             defaultValue={String(fetch?.book_language)}
@@ -135,7 +144,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                         </Select>
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_location" value="Signatura tipografica" />
                         <TextInput
                             name="book_location"
@@ -144,7 +153,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             defaultValue={fetch?.book_location}
                         />
                     </div>
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
                         <Datepicker
                             minDate={new Date(2023, 0, 1)} maxDate={new Date(2023, 3, 30)}
@@ -152,12 +161,12 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             id="book_acquisition_date"
                         />
                     </div>
-                    <div className="col-span-full">
-                        <section className="grid grid-cols-3 gap-2">
+                    <div className="col-span-2">
+                        <section className="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
                             <div className="mb-4">
                                 <Label htmlFor="book_price_type" value="Tipo de Precio" />
                                 <Select id="book_price_type" name="book_price_type"
-                                    defaultValue={String(fetch?.book_price_type)}
+                                    defaultValue={fetch?.book_price_type}
                                     required>
                                     {currencies.map(currency => (
                                         <option key={currency.code} value={currency.code}>
@@ -195,33 +204,36 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                         </section>
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <AutocompleteSuggestion
                             id="book_category"
                             name="Categorías"
                             placeholder="Ingrese categorías separadas por comas"
                             type="categories"
+                            initialSelectedItems={transformToSuggestions(fetch?.book_category) ?? []}
                         />
 
                     </div>
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <AutocompleteSuggestion
                             id="book_authors"
                             name="Autores"
                             placeholder="Ingrese autores separados por comas"
                             type="authors"
+                            initialSelectedItems={transformToSuggestions(fetch?.book_authors) ?? []}
                         />
 
                     </div>
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <AutocompleteSuggestion
                             id="book_instruments"
                             name="Instrumentos"
                             placeholder="Ingrese instrumentos separados por comas"
                             type="instruments"
+                            initialSelectedItems={transformToSuggestions(fetch?.book_instruments) ?? []}
                         />
                     </div>
-                    <div className=" mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_includes" value="Incluye" />
                         <Textarea
                             name="book_includes"
@@ -229,7 +241,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             defaultValue={fetch?.book_includes}
                         />
                     </div>
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Tabs aria-label="Tabs with underline" style="underline" >
                             <Tabs.Item active title="URL">
                                 <Label htmlFor="book_imagen" value="Imagen " />
@@ -253,7 +265,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                         </Tabs>
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-4 max-sm:col-span-2">
                         <Tabs aria-label="Tabs with underline" style="underline">
                             <Tabs.Item active title="URL">
                                 <Label htmlFor="book_document" value="Documento " />
@@ -309,22 +321,27 @@ type SuggestionProps = {
     name: string
     placeholder: string
     type: 'categories' | 'authors' | 'instruments'
+    initialSelectedItems: Suggestion[]
 }
 
 type Suggestion = {
     id: number;
     name: string;
 }
-function AutocompleteSuggestion({ id, name, placeholder, type }: SuggestionProps) {
+function AutocompleteSuggestion({ id, name, placeholder, type, initialSelectedItems }: SuggestionProps) {
     const [value, setValue] = useState('')
-    const [selectedItems, setSelectedItems] = useState<Suggestion[]>([])
+    const [selectedItems, setSelectedItems] = useState<Suggestion[]>(initialSelectedItems)
     const [search, setSearch] = useState('')
     const suggestions = useFetchSuggestions(type, search)
+    useEffect(() => {
+        if (selectedItems.length > 0) {
+            setValue(selectedItems.map(item => item.name).join(', ') + ', ');
+        }
+    }, [selectedItems]); // Dependencia en selectedItems
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const inputValue = e.target.value
         setValue(inputValue)
-
         const lastWord = inputValue.split(', ').pop()?.trim() || ''
         setSearch(lastWord)
     }
@@ -335,7 +352,6 @@ function AutocompleteSuggestion({ id, name, placeholder, type }: SuggestionProps
         setValue(newSelectedItems.map(item => item.name).join(', ') + ', ')
         setSearch('') // Resetear búsqueda después de seleccionar
     }
-
     return (
         <div className="relative mb-4">
             <Label htmlFor={id} className="block text-sm font-medium text-gray-700">
@@ -349,6 +365,7 @@ function AutocompleteSuggestion({ id, name, placeholder, type }: SuggestionProps
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
             />
+
             {suggestions.length > 0 && (
                 <ul className="absolute z-10 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
                     {suggestions.map((suggestion) => (
@@ -366,7 +383,7 @@ function AutocompleteSuggestion({ id, name, placeholder, type }: SuggestionProps
             <input
                 type="hidden"
                 name={`${id}_ids`}
-                value={selectedItems.map(item => item.id).join(',')}
+                defaultValue={selectedItems.map(item => item.id).join(',')}
             />
         </div>
     )
