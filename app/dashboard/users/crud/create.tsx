@@ -1,7 +1,5 @@
 import { TextInput, Label, Select } from "flowbite-react";
-import { createUser } from "../lib/createUser";
-import { useEffect, useState } from "react";
-import { User } from "../Interface/Interface";
+import { createUser } from "@/lib/createUser";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     let email
@@ -64,9 +62,10 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                             required
                         >
                             <option value={"ESTUDIANTE"}>Estudiante</option>
+                            <option value={"DOCENTE"}>Docente</option>
+                            <option value={"ADMINISTRADOR"}>Estudiante</option>
                             <option value={"ESTUDIANTIL"}>Estudiantil</option>
                             <option value={"USUARIO EXTERNO"}>Usuario Externo</option>
-                            <option value={"DOCENTE"}>Docente</option>
                             <option value={"COLEGIAL"}>Colegial</option>
                         </Select>
                     </div>
