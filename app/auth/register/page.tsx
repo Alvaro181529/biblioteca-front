@@ -1,10 +1,10 @@
 'use client'
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/app/dashboard/users/lib/createUser";
 import { Button } from "flowbite-react";
 import { AiOutlineLoading } from "react-icons/ai";
-import AuthComponent from "@/components/auth/Auth";
+import AuthComponent from "@/components/Auth";
+import { signup } from "@/lib/signup";
 
 interface Signin {
     name: string;
@@ -52,14 +52,14 @@ export default function Login() {
 
     return (
         <AuthComponent href="/auth/login">
-            <h1 className="text-center text-4xl font-extralight">Registro</h1>
+            <h1 className="text-center text-4xl font-extralight dark:text-white">Registro</h1>
             <div className="mt-4 w-full">
-                <form onSubmit={onSubmit} action={createUser} className="mx-auto w-3/4">
+                <form onSubmit={onSubmit} action={signup} className="mx-auto w-3/4">
                     <div className="mt-4 flex">
                         <input
                             type="text"
                             name="name"
-                            className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             placeholder="Nombre"
                             value={formData.name}
                             onChange={handleChange}
@@ -73,7 +73,7 @@ export default function Login() {
                             id="email"
                             type="email"
                             name="email"
-                            className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             placeholder="Correo"
                             value={formData.email}
                             onChange={handleChange}
@@ -87,7 +87,7 @@ export default function Login() {
                         <input
                             type="password"
                             name="password"
-                            className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             placeholder="Contraseña"
                             value={formData.password}
                             onChange={handleChange}
@@ -101,7 +101,7 @@ export default function Login() {
                         <input
                             type="password"
                             name="confirmPass"
-                            className="h-8 grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             placeholder="Confirmar Contraseña"
                             value={formData.confirmPass}
                             onChange={handleChange}
@@ -117,8 +117,8 @@ export default function Login() {
                             type="submit"
                             aria-label="Ingresar"
                             processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
-                            className="rounded bg-verde-700 px-4 text-sm font-semibold text-white hover:bg-verde-400">
-                            Ingresar
+                            className="w-full rounded bg-verde-600 px-4 text-sm font-semibold text-white ring-1 ring-verde-100 hover:bg-verde-700  focus:border-verde-100 focus:outline-verde-200">
+                            Registrar
                         </Button>
                     </div>
                 </form>
