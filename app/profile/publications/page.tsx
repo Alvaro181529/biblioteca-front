@@ -1,32 +1,40 @@
 "use client"
-import { Publication } from "@/app/dashboard/publications/Interface/Interface";
-import { ComponentPagination } from "@/components/Pagination/Pagination";
+import { Publication } from "@/interface/Interface";
+import { ComponentPagination } from "@/components/Pagination";
 import { Card } from "flowbite-react";
 import { useEffect, useState } from "react";
+import { isValidUrl } from "@/lib/validateURL";
 
 export default function PublicacionsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [size, setSize] = useState(10);
-    const [isExpanded, setIsExpanded] = useState(false)
+    const [isExpanded, setIsExpanded] = useState(null)
     const { data, pages } = FetchData(currentPage, size)
-    const maxLength = 100
+    const maxLength = 20
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
-    const toggleExpand = () => {
-        setIsExpanded(!isExpanded)
+    const toggleExpand = (index: any) => {
+        setIsExpanded(isExpanded === index ? null : index);  // Si la publicación está expandida, la colapsamos, si no, la expandimos
     }
+
 
     return (
         <div>
             <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {data.map((publication, index) => {
-                    const displayContent = isExpanded
+                    const isCurrentlyExpanded = isExpanded === index;  // Verificamos si esta publicación está expandida
+                    const displayContent = isCurrentlyExpanded
                         ? publication.publication_content
                         : publication.publication_content.slice(0, maxLength) + '...'
-
+                    const imageUrl = String(publication?.publication_imagen);
+                    const imageSrc = isValidUrl(imageUrl)
+                        ? imageUrl // Si es una URL válida, usamos la URL
+                        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+                            ? `/api/publications/image/${imageUrl}`
+                            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
                     return (
-                        <Card key={index} imgSrc={String(publication.publication_imagen || "/svg/placeholder.svg")} imgAlt={publication?.publication_title}
+                        <Card key={index} className="dark:text-white" imgSrc={imageSrc} imgAlt={publication?.publication_title}
                         >
                             <h2 className="mb-2 text-xl font-bold">{publication?.publication_title}</h2>
                             <div className="prose max-w-none">
