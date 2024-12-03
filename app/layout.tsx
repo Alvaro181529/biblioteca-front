@@ -28,7 +28,7 @@ export default async function RootLayout({
       <head>
         <ThemeModeScript />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className + "dark:bg-gray-700"} >
         <SessionAuthProvider session={session}>
           {children}
         </SessionAuthProvider>
