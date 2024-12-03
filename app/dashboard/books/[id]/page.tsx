@@ -3,42 +3,61 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookFormData } from "../Interface/Interface";
+import { BookFormData } from "@/interface/Interface";
 import { Button, Card, Tooltip } from "flowbite-react";
-import { ComponentModalCreate } from "@/components/Modal/Modal";
+import { ComponentModalCreate } from "@/components/Modal";
 import { FormCreate } from "./crud/create";
 import { MdModeEditOutline, MdDelete } from "react-icons/md";
 import { FormDelete } from "./crud/delete";
-import { notFound } from "next/navigation";
-import { languages } from "../Interface/Types";
+import { notFound, useRouter } from "next/navigation";
+import { languages } from "@/types/types";
 import { FormBorrowed } from "./crud/borrowed";
+import { isValidUrl } from "@/lib/validateURL";
 
 export default function BooksId({ params }: { params: { id: number } }) {
-
     const [openModal, setOpenModal] = useState(false);
     const { data } = useBooksData(params.id, openModal)
+    const router = useRouter()
     if (data?.statusCode == 404) return notFound()
+    const imageUrl = String(data?.book_imagen);
+    const imageSrc = isValidUrl(imageUrl)
+        ? imageUrl // Si es una URL válida, usamos la URL
+        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+            ? `/api/books/image/${imageUrl}`
+            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+
+    const documentUrl = () => {
+        const documentUrl = String(data?.book_document);
+
+        if (isValidUrl(documentUrl)) {
+            router.push(documentUrl);
+        } else {
+            const pdfUrl = `/api/books/document/${documentUrl}`;
+            router.push(pdfUrl);
+        }
+    }
     return (
         <div className="mx-auto max-w-6xl px-4 py-2 md:px-2">
             <div className="mb-2 flex items-center justify-between">
                 <section>
-                    <h1 className="mb-2 text-2xl font-bold">{data?.book_title_original || "Título no disponible"}</h1>
+                    <h1 className="mb-2 text-2xl font-bold dark:text-white">{data?.book_title_original || "Título no disponible"}</h1>
                     <p className=" text-gray-500 dark:text-gray-400">{data?.book_title_parallel}</p>
                 </section>
                 <p className="p-2 text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">Fecha de adquicision: </span>
+                    <span className="font-semibold dark:text-white">Fecha de adquicision: </span>
                     {data?.book_acquisition_date ? data?.book_acquisition_date.toString() : "S/F"}
                 </p>
             </div>
-            <div className="grid items-start gap-4 md:grid-cols-2">
-                <div className="m-auto mt-0 grid gap-6">
+            <div className="grid items-start gap-x-4 md:grid-cols-2">
+                <div className="m-auto mt-0 grid w-full gap-6">
                     <Image
                         width={600}
                         height={800}
-                        className="aspect-[3/4] w-full rounded-lg object-cover"
+                        className="aspect-[3/4] rounded-lg object-cover"
                         alt={String(data?.book_title_original)}
-                        src={data?.book_imagen?.toLowerCase() === "null" || !data?.book_imagen ? "/svg/placeholder.svg" : data.book_imagen}
+                        src={imageSrc}
                     />
+                    <Button aria-label="Prestar" className="mt-0  bg-red-700 font-semibold" onClick={documentUrl} >Ver pdf</Button>
                 </div>
                 <CardContent id={params.id} data={data || null} setOpenModal={setOpenModal} openModal={openModal} />
             </div>
@@ -96,7 +115,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
             <Button aria-label="Prestar" className="w-full bg-verde-700 font-semibold" onClick={onBorrowed}>Prestar</Button>
             <Card>
                 <div className="mb-4 flex justify-between">
-                    <h1 className=" my-auto text-xl font-bold">Contenido</h1>
+                    <h1 className=" my-auto text-xl font-bold dark:text-white">Contenido</h1>
                     <Button aria-label="Agregar" onClick={handleCreate} color={"light"}>Agregar</Button>
                     <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
                         {modalType === "create" && <FormCreate setOpenModal={closeModal} id={id} />}
@@ -105,13 +124,18 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
                         {modalType === "borrowed" && <FormBorrowed id={id} setOpenModal={closeModal} />}
                     </ComponentModalCreate>
                 </div>
-                <nav className="grid gap-3">
+                <nav className="grid gap-3 text-base  md:text-sm">
                     {data?.book_contents && data?.book_contents.map((content: any) => (
-                        <div key={content.id} className="grid grid-cols-5 text-gray-500">
-                            <Link href="#" className="col-span-2 text-wrap hover:underline" prefetch={false}>
-                                {content.content_sectionTitle}
-                            </Link>
-                            <div className="col-span-2 justify-self-end text-sm text-gray-500 dark:text-gray-400">
+                        <div key={content.id} className="grid grid-cols-5  text-gray-500 dark:text-gray-200">
+                            <div className=" col-span-2 grid text-wrap ">
+                                <Link href="#" className="hover:underline" prefetch={false}>
+                                    {content.content_sectionTitle}
+                                </Link>
+                                <Link href="#" className="hover:underline" prefetch={false}>
+                                    {content.content_sectionTitleParallel}
+                                </Link>
+                            </div>
+                            <div className="col-span-2 justify-self-end ">
                                 <span>Página</span>
                                 <span className="ml-3 ">{content.content_pageNumber}</span>
                             </div>
@@ -120,7 +144,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
                                     <button
                                         aria-label="Editar"
                                         onClick={() => onEdit(content.id, content)}
-                                        className="m-auto text-verde-600 hover:underline dark:text-verde-300"
+                                        className="m-auto text-verde-600 hover:underline dark:text-verde-400"
                                     >
                                         <MdModeEditOutline className="text-xl" />
                                     </button>
@@ -129,7 +153,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
                                     <button
                                         aria-label="Eliminar"
                                         onClick={() => onDelete(content.id, content.content_sectionTitle)}
-                                        className="m-auto text-red-600 hover:underline dark:text-verde-300"
+                                        className="m-auto text-red-600 hover:underline dark:text-red-700"
                                     >
                                         <MdDelete className="text-xl" />
                                     </button>
@@ -147,58 +171,68 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
     return (
         <div className="my-4 grid grid-cols-2 gap-4">
             <Card>
-                <h1 className=" mb-auto text-2xl font-bold">Detalles del libro</h1>
+                <h1 className=" mb-auto text-2xl font-bold dark:text-white">Detalles del libro</h1>
                 <dl className="grid grid-cols-2 gap-5">
                     <div>
-                        <dt className="font-semibold">ISBN:</dt>
-                        <dd className="text-gray-700">{data?.book_isbn || "N/A"}</dd>
+                        <dt className="font-semibold dark:text-white">ISBN:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_isbn || "N/A"}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Inventario:</dt>
-                        <dd className="text-gray-700">{data?.book_inventory || "N/A"}</dd>
+                        <dt className="font-semibold dark:text-white">Inventario:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_inventory || "N/A"}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Ubicación:</dt>
-                        <dd className="text-gray-700">{data?.book_location || "N/A"}</dd>
+                        <dt className="font-semibold dark:text-white">Ubicación:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_location || "N/A"}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Idioma:</dt>
-                        <dd className="text-gray-700">{getLanguageName(String(data?.book_language))}</dd>
+                        <dt className="font-semibold dark:text-white">Idioma:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{getLanguageName(String(data?.book_language))}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Editorial:</dt>
-                        <dd className="text-gray-700">{String(data?.book_editorial)}</dd>
+                        <dt className="font-semibold dark:text-white">Editorial:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{String(data?.book_editorial)}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Tipo:</dt>
-                        <dd className="text-gray-700">{data?.book_type || "N/A"}</dd>
+                        <dt className="font-semibold dark:text-white">Tipo:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_type || "N/A"}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Condición:</dt>
-                        <dd className="text-gray-700">{data?.book_condition || "N/A"}</dd>
+                        <dt className="font-semibold dark:text-white">Condición:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_condition || "N/A"}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Cantidad:</dt>
-                        <dd className="text-gray-700">{data?.book_quantity || "0"}</dd>
+                        <dt className="font-semibold dark:text-white">Cantidad:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_quantity || "0"}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Precio original:</dt>
-                        <dd className="text-gray-700">{data?.book_original_price ? `${data?.book_original_price} (${data?.book_price_type})` : "N/A"}</dd>
+                        <dt className="font-semibold dark:text-white">Precio original:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_original_price ? `${data?.book_original_price} (${data?.book_price_type})` : "N/A"}</dd>
                     </div>
                     <div>
-                        <dt className="font-semibold">Precio en bolivianos:</dt>
-                        <dd className="text-gray-700">{data?.book_price_in_bolivianos || "N/A"}</dd>
+                        <dt className="font-semibold dark:text-white">Precio en bolivianos:</dt>
+                        <dd className="text-gray-700 dark:text-gray-400">{data?.book_price_in_bolivianos || "N/A"}</dd>
+                    </div>
+                    <div className="col-span-2 font-normal ">
+                        <span className="font-semibold dark:text-white">Encabezados: </span>
+                        <ul className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-400">
+                            {data?.book_includes && data.book_includes.length > 0 ? (data?.book_headers?.map((header, index) => (
+                                <p key={index} className="mt-2 rounded-full bg-amarillo-100 px-3 py-1 text-base ">{header}</p>
+                            ))) : (
+                                <p className="mt-2 text-base">No hay encabezados disponibles</p>
+                            )}
+                        </ul>
                     </div>
                 </dl>
             </Card>
             <div className="mt-0 grid gap-2 pt-0">
                 <div className="  grid grid-cols-2 gap-3">
                     <Card>
-                        <h1 className=" mb-auto text-xl font-bold">Autores</h1>
-                        <ul className="flex flex-wrap gap-2 text-gray-600">
+                        <h1 className=" mb-auto text-xl font-bold dark:text-white">Autores</h1>
+                        <ul className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-400">
                             {data?.book_authors && data.book_authors.length > 0 ? (
                                 data.book_authors.map((author) => (
-                                    <li key={author.id} className="rounded-full bg-amarillo-50 px-3 py-1 text-sm">
+                                    <li key={author.id} className="rounded-full bg-amarillo-100 px-3 py-1 text-base">
                                         {author.author_name}
                                     </li>
                                 ))
@@ -208,11 +242,11 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
                         </ul>
                     </Card>
                     <Card>
-                        <h1 className=" mb-auto text-xl font-bold">Categorias</h1>
-                        <ul className="flex flex-wrap gap-2 text-gray-700">
+                        <h1 className=" mb-auto text-xl font-bold dark:text-white">Categorias</h1>
+                        <ul className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-400">
                             {data?.book_category && data.book_category.length > 0 ? (
                                 data.book_category.map((category) => (
-                                    <li key={category.id} className="rounded-full bg-amarillo-50 px-3 py-1 text-sm">
+                                    <li key={category.id} className="rounded-full bg-amarillo-100 px-3 py-1 text-base">
                                         {category.category_name}
                                     </li>
                                 ))
@@ -222,11 +256,11 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
                         </ul>
                     </Card>
                     <Card>
-                        <h1 className=" mb-auto text-xl font-bold">Instrumentos</h1>
-                        <ul className="flex flex-wrap gap-2 text-gray-600">
+                        <h1 className=" mb-auto text-xl font-bold dark:text-white">Instrumentos</h1>
+                        <ul className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-400">
                             {data?.book_instruments && data.book_instruments.length > 0 ? (
                                 data.book_instruments.map((instrument) => (
-                                    <li key={instrument.id} className="rounded-full bg-amarillo-50 px-3 py-1 text-sm">
+                                    <li key={instrument.id} className="rounded-full bg-amarillo-100 px-3 py-1 text-base">
                                         {instrument.instrument_name}
                                     </li>
                                 ))
@@ -236,11 +270,11 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
                         </ul>
                     </Card>
                     <Card>
-                        <h1 className=" mb-auto text-xl font-bold">Incluye</h1>
-                        <ul className="flex flex-wrap gap-2 text-gray-600">
+                        <h1 className=" mb-auto text-xl font-bold dark:text-white">Incluye</h1>
+                        <ul className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-400">
                             {data?.book_includes && data.book_includes.length > 0 ? (
                                 data.book_includes.map((include, index) => (
-                                    <li key={index} className="rounded-full bg-amarillo-50 px-3 py-1 text-sm">
+                                    <li key={index} className="rounded-full bg-amarillo-100 px-3 py-1 text-base">
                                         {include}
                                     </li>
                                 ))
@@ -251,13 +285,13 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
                     </Card>
                 </div>
                 <Card>
-                    <h1 className=" mb-auto text-xl font-bold">Obeservacion</h1>
-                    <p className="text-gray-600">{data?.book_observation || "No hay observaciones."}</p>
+                    <h1 className=" mb-auto text-xl font-bold dark:text-white">Obeservacion</h1>
+                    <p className="text-gray-700 dark:text-gray-400">{data?.book_observation || "No hay observaciones."}</p>
                 </Card>
             </div>
             <Card className="col-span-2">
-                <h1 className=" mb-auto  text-xl font-bold">Descripción</h1>
-                <p className="text-gray-600">{data?.book_description || "No hay descripción disponible."}</p>
+                <h1 className=" mb-auto  text-xl font-bold dark:text-white">Descripción</h1>
+                <p className="text-gray-700 dark:text-gray-400">{data?.book_description || "No hay descripción disponible."}</p>
             </Card>
         </div>
 
