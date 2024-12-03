@@ -1,17 +1,30 @@
 "use client"
-import { TextInput, Label, Tabs, FileInput, Textarea, Select } from "flowbite-react";
-import { createPublication } from "../lib/createPublications";
+import { TextInput, Label, Tabs, FileInput, Textarea, Select, Spinner } from "flowbite-react";
+import { createPublication } from "@/lib/createPublications";
 import { useEffect, useState } from "react";
-import { Publication } from "../Interface/Interface";
+import { Publication } from "@/interface/Interface";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<Publication | null>(null)
+    const [imageFile, setImageFile] = useState<File | null>(null);
     let defaultActive
     if (data) {
         defaultActive = data[3]
         defaultActive = defaultActive == "Publicacion esta visible" ? "true" : "false"
     }
-    const onSave = async () => {
+
+    const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setImageFile(e.target.files[0]);
+            console.log(e.target.files[0]);
+        }
+    };
+
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        if (imageFile) formData.append("file", imageFile);
+        await createPublication(formData)
         setTimeout(() => {
             setOpenModal(false);
         }, 500);
@@ -25,8 +38,14 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
         }
         fetchData()
     }, [id])
+
+    if (fetch == null && id) return (
+        <div className="text-center">
+            <Spinner color="success" aria-label="Success spinner" size="xl" />
+        </div >
+    )
     return (
-        <form id="submit-form" action={createPublication} onSubmit={onSave}>
+        <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-6" >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="col-span-2 mb-4">
@@ -62,7 +81,9 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                                 <Label htmlFor="publication_imagen" value="Imagen " />
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <FileInput
-                                    id="publication_imagen"
+                                    accept="image/*"
+                                    id="imagen"
+                                    onChange={onImageChange}
                                     defaultValue={fetch?.publication_imagen}
                                 />
                             </Tabs.Item>
