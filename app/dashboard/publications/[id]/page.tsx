@@ -1,12 +1,18 @@
 "use client"
 import { MdCalendarToday } from "react-icons/md";
 import { useEffect, useState } from "react";
-import { Publication } from "../Interface/Interface";
+import { Publication } from "@/interface/Interface";
 import Image from "next/image";
 import { Badge } from "flowbite-react";
-
+import { isValidUrl } from "@/lib/validateURL";
 export default function PublicationPage({ params }: { params: { id: number } }) {
     const { data } = usePublicationData(params.id)
+    const imageUrl = String(data?.publication_imagen);
+    const imageSrc = isValidUrl(imageUrl)
+        ? imageUrl // Si es una URL válida, usamos la URL
+        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+            ? `/api/publications/image/${imageUrl}`
+            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
     const importanceColorMap: { [key: string]: string } = {
         'ALTO': 'failure',
         'MEDIO': 'warning',
@@ -16,21 +22,21 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
     const publicationDate = data?.publication_update_at ? new Date(data.publication_update_at) : null;
 
     return (
-        <article className="mx-5 overflow-hidden rounded-lg shadow-lg">
+        <article className="mx-5 overflow-hidden rounded-lg shadow-lg dark:text-white">
             {
                 data?.publication_imagen != "null" && (
                     <Image
-                        src={String(data?.publication_imagen || "/svg/placeholder.svg")}
+                        src={imageSrc}
                         alt={String(data?.publication_title)}
                         width={800}
                         height={400}
-                        className="h-auto w-full object-cover"
+                        className="aspect-[3/2] h-auto w-full object-contain"
                     />
                 )
             }
             <div className="p-6">
                 <h1 className="mb-4 text-3xl font-bold">{data?.publication_title}</h1>
-                <div className="mb-4 flex items-center text-gray-500">
+                <div className="mb-4 flex items-center text-gray-500 dark:text-gray-400">
                     <MdCalendarToday className="mr-2 size-4" />
                     <span className="mr-4">{formatDate(publicationDate)}</span>
                 </div>
@@ -42,7 +48,7 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
                         {data?.publication_importance}
                     </Badge>
                     {!data?.publication_active && (
-                        <span className="text-sm text-gray-500">Inactivo</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Inactivo</span>
                     )}
                 </div>
             </div>
