@@ -1,12 +1,14 @@
 "use client"
 import { useState, useEffect, act } from 'react';
-import { ComponentTable } from "@/components/Table/table"
-import { ComponentPagination } from '@/components/Pagination/Pagination';
-import { ComponentSearch } from '@/components/Search/Search';
-import { Instrument } from './Interface/Interface';
-import { ComponentModalCreate } from '@/components/Modal/Modal';
+import { ComponentTable } from "@/components/Table"
+import { ComponentPagination } from '@/components/Pagination';
+import { ComponentSearch } from '@/components/Search';
+import { Instrument } from '@/interface/Interface';
+import { ComponentModalCreate } from '@/components/Modal';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delate';
+import { Button, Tooltip } from 'flowbite-react';
+import { FiRefreshCcw } from "react-icons/fi"
 
 interface SerchParams {
     searchParams: {
@@ -27,7 +29,8 @@ export default function Instruments({ searchParams }: SerchParams) {
     const [size, setSize] = useState(10);
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState(false)
-    const { data, columns, pages, infoData } = useInstrumentData(size, currentPage, searchQuery, openModal);
+    const [refresh, setRefresh] = useState(false);
+    const { data, columns, pages, infoData } = useInstrumentData(size, currentPage, searchQuery, openModal, refresh);
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -72,11 +75,32 @@ export default function Instruments({ searchParams }: SerchParams) {
         setTitle("Crear Instrumento")
         setModalType('create');
     };
+    const Refresh = () => {
+        setRefresh(true)
+        setTimeout(() => {
+            setRefresh(false);
+        }, 2800);
+    }
     return (
         <div>
             <ComponentSearch onChange={handleSizeChange} size={size} />
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
-            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+            <div className="flex w-full items-center justify-between">
+                <Tooltip className='z-50' content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
+                <div>
+                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+                </div>
+            </div>
             <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
                 {modalType === 'create' && <FormCreate setOpenModal={closeModal} />}
                 {modalType === 'edit' && <FormCreate setOpenModal={closeModal} id={Number(actualData)} data={dataUpdate} />}
@@ -87,7 +111,7 @@ export default function Instruments({ searchParams }: SerchParams) {
     )
 }
 
-const useInstrumentData = (size: number, currentPage: number, query: string, openModal: boolean) => {
+const useInstrumentData = (size: number, currentPage: number, query: string, openModal: boolean, refresh: boolean) => {
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
@@ -111,7 +135,7 @@ const useInstrumentData = (size: number, currentPage: number, query: string, ope
     };
 
     useEffect(() => {
-        if (!openModal) {
+        if (!openModal || refresh) {
 
             const fetchData = async () => {
                 try {
@@ -128,6 +152,6 @@ const useInstrumentData = (size: number, currentPage: number, query: string, ope
             };
             fetchData();
         }
-    }, [currentPage, size, query, openModal]);
+    }, [currentPage, size, query, openModal, refresh]);
     return { data, columns, pages, infoData };
 };
