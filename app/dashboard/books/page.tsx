@@ -1,14 +1,15 @@
 "use client"
 import { useState, useEffect, act } from 'react';
-import { ComponentTable } from "@/components/Table/table"
-import { ComponentModalCreate } from '@/components/Modal/Modal';
-import { ComponentPagination } from '@/components/Pagination/Pagination';
-import { ComponentSearch } from '@/components/Search/Search';
-import { BookFormData } from './Interface/Interface';
+import { ComponentTable } from "@/components/Table"
+import { ComponentModalCreate } from '@/components/Modal';
+import { ComponentPagination } from '@/components/Pagination';
+import { ComponentSearch } from '@/components/Search';
+import { BookFormData } from '@/interface/Interface';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delete';
 import { useRouter } from 'next/navigation';
-import { Button, Select } from 'flowbite-react';
+import { Button, Select, Tooltip } from 'flowbite-react';
+import { FiRefreshCcw } from "react-icons/fi"
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -27,8 +28,9 @@ export default function Books({ searchParams }: SerchParams) {
     const [currentPage, setCurrentPage] = useState(1);
     const [type, setType] = useState("");
     const [size, setSize] = useState(10);
+    const [refresh, setRefresh] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-    const { data, columns, pages, infoData } = useBooksData(size, currentPage, searchQuery, type, openModal);
+    const { data, columns, pages, infoData } = useBooksData(size, currentPage, searchQuery, type, openModal, refresh);
     const router = useRouter();
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -71,6 +73,12 @@ export default function Books({ searchParams }: SerchParams) {
         setTitle("Crear Libro")
         setModalType('create');
     };
+    const Refresh = () => {
+        setRefresh(true)
+        setTimeout(() => {
+            setRefresh(false);
+        }, 2800);
+    }
     const reportBook = async () => {
         const api = `/api/reports?page=books`;
         const res = await fetch(api);
@@ -108,7 +116,22 @@ export default function Books({ searchParams }: SerchParams) {
                 </div>
             </div>
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
-            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+            <div className="flex w-full items-center justify-between">
+                <Tooltip className="z-50" content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
+                <div className="mx-auto">
+                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+                </div>
+            </div>
             <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
                 {modalType === 'create' && <FormCreate setOpenModal={closeModal} />}
                 {modalType === 'edit' && <FormCreate setOpenModal={closeModal} id={actualData} />}
@@ -119,7 +142,7 @@ export default function Books({ searchParams }: SerchParams) {
     )
 }
 
-const useBooksData = (size: number, currentPage: number, query: string, type: string, openModal: boolean) => {
+const useBooksData = (size: number, currentPage: number, query: string, type: string, openModal: boolean, refresh: boolean) => {
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
@@ -153,7 +176,7 @@ const useBooksData = (size: number, currentPage: number, query: string, type: st
     };
 
     useEffect(() => {
-        if (!openModal) {
+        if (!openModal || refresh) {
             const fetchData = async () => {
                 try {
                     const url = `/api/books?type=${type}&page=${currentPage}&size=${size}&query=${query}`;
@@ -171,7 +194,7 @@ const useBooksData = (size: number, currentPage: number, query: string, type: st
 
             fetchData();
         }
-    }, [currentPage, size, query, openModal, type]);
+    }, [currentPage, size, query, openModal, type, refresh]);
 
     return { data, columns, pages, infoData };
 };
