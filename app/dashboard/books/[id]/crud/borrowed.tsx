@@ -1,8 +1,8 @@
 "use client"
 import { TextInput, Label, ListGroup } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { User } from "@/app/dashboard/users/Interface/Interface";
-import { createOrder } from "../lib/createOrder";
+import { User } from "@/interface/Interface";
+import { createOrder } from "@/lib/createOrder";
 
 export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
     const [search, setSearch] = useState("");
@@ -54,7 +54,7 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
                                 >
                                     <div className="grid w-full grid-cols-2 gap-5">
                                         <span className="text-left">{user.name}</span>
-                                        <span className="text-left text-gray-600">{user.email}</span>
+                                        <span className="text-left text-gray-600 dark:text-gray-300">{user.email}</span>
                                     </div>
                                 </ListGroup.Item>
                             ))}
