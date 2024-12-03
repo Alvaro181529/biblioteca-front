@@ -1,5 +1,5 @@
 "use client"
-import { ComponentCard } from "@/components/Card/Card"
+import { ComponentCard } from "@/components/Card"
 import { useEffect, useState } from "react"
 
 export default function ContentsPage() {
