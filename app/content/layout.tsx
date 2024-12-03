@@ -8,7 +8,7 @@ export default function DashboardLayout({
     return (
         <section className="flex flex-col dark:bg-gray-600">
             <ComponentNavbar />
-            <div className="mt-14 flex flex-1 overflow-hidden">
+            <div className="mt-20 flex flex-1 overflow-hidden">
                 <main className="flex-1 overflow-y-auto p-1">
                     {children}
                 </main>
