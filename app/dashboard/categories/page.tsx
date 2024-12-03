@@ -1,12 +1,14 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { ComponentTable } from "@/components/Table/table"
-import { ComponentPagination } from '@/components/Pagination/Pagination';
-import { ComponentSearch } from '@/components/Search/Search';
-import { Categories } from './Interface/Interface';
-import { ComponentModalCreate } from '@/components/Modal/Modal';
+import { ComponentTable } from "@/components/Table"
+import { ComponentPagination } from '@/components/Pagination';
+import { ComponentSearch } from '@/components/Search';
+import { Categories } from '@/interface/Interface';
+import { ComponentModalCreate } from '@/components/Modal';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delate';
+import { Button, Tooltip } from 'flowbite-react';
+import { FiRefreshCcw } from "react-icons/fi"
 
 interface SerchParams {
     searchParams: {
@@ -25,10 +27,10 @@ export default function Category({ searchParams }: SerchParams) {
     const [dataUpdate, setDataUpdate] = useState<(string | number)[]>([]);
     const [actualData, setActualData] = useState(0);
     const [size, setSize] = useState(10);
-    const [view, setView] = useState(false)
+    const [view, setView] = useState(false);
+    const [refresh, setRefresh] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-    const { data, columns, pages, infoData } = useCategoryData(size, currentPage, searchQuery, openModal);
-
+    const { data, columns, pages, infoData } = useCategoryData(size, currentPage, searchQuery, openModal, refresh);
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -72,11 +74,32 @@ export default function Category({ searchParams }: SerchParams) {
         setTitle("Crear Categoria")
         setModalType('create');
     };
+    const Refresh = () => {
+        setRefresh(true)
+        setTimeout(() => {
+            setRefresh(false);
+        }, 2800);
+    }
     return (
         <div>
             <ComponentSearch onChange={handleSizeChange} size={size} />
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
-            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+            <div className="flex w-full items-center justify-between">
+                <Tooltip className="z-50" content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
+                <div>
+                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+                </div>
+            </div>
             <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
                 {modalType === 'create' && <FormCreate setOpenModal={closeModal} />}
                 {modalType === 'edit' && <FormCreate setOpenModal={closeModal} id={Number(actualData)} data={dataUpdate} />}
@@ -87,7 +110,7 @@ export default function Category({ searchParams }: SerchParams) {
     )
 }
 
-const useCategoryData = (size: number, currentPage: number, query: string, openModal: boolean) => {
+const useCategoryData = (size: number, currentPage: number, query: string, openModal: boolean, refresh: boolean) => {
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
@@ -111,7 +134,7 @@ const useCategoryData = (size: number, currentPage: number, query: string, openM
     };
 
     useEffect(() => {
-        if (!openModal) {
+        if (!openModal || refresh) {
             const fetchData = async () => {
                 try {
                     const url = `/api/categories?page=${currentPage}&size=${size}&query=${query}`;
@@ -127,6 +150,6 @@ const useCategoryData = (size: number, currentPage: number, query: string, openM
             };
             fetchData();
         }
-    }, [currentPage, size, query, openModal]);
+    }, [currentPage, size, query, openModal, refresh]);
     return { data, columns, pages, infoData };
 };
