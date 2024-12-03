@@ -1,5 +1,5 @@
 "use client"
-import { ToastSuccess } from "@/components/Toast/Toast";
+import { ToastSuccess } from "@/components/Toast";
 import { Button } from "flowbite-react";
 import { redirect, useRouter } from "next/navigation";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
