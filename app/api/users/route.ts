@@ -36,7 +36,6 @@ export async function GET(request: any) {
 
 export async function DELETE(request: any) {
     const token = await getTokenFromSession()
-    console.log(token);
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/delete-account`,
             {
