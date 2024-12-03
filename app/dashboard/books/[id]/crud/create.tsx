@@ -1,19 +1,19 @@
 "use client"
 import { TextInput, Label } from "flowbite-react";
-import { createContent } from "../lib/createContent";
+import { createContent } from "@/lib/createContent";
 import { useState } from "react";
 
 export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data?: any, setOpenModal: (open: boolean) => void, view?: boolean }) {
     let title: any;
+    let titleParallel: any;
     let number: any;
     let idData: any;
+    if (data) ({ id: idData, content_sectionTitle: title, content_sectionTitleParallel: titleParallel, content_pageNumber: number } = data);
 
-    if (data) ({ id: idData, content_sectionTitle: title, content_pageNumber: number } = data);
-
-    const [contents, setContents] = useState([{ sectionTitle: title, pageNumber: number }]);
+    const [contents, setContents] = useState([{ sectionTitle: title, sectionTitleParallel: titleParallel, pageNumber: number }]);
 
     const handleAddContent = () => {
-        setContents([...contents, { sectionTitle: '', pageNumber: 0 }]);
+        setContents([...contents, { sectionTitle: '', sectionTitleParallel: '', pageNumber: 0 }]);
     };
 
     const handleChange = (index: any, field: any, value: any) => {
@@ -40,6 +40,14 @@ export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data
                                 placeholder="Contenido"
                                 defaultValue={title}
                                 onChange={(e) => handleChange(index, 'sectionTitle', e.target.value)}
+                            />
+                            <Label htmlFor={`content_sectionTitleParallel_${index}`} value="Seccion" />
+                            <TextInput
+                                name={`content_sectionTitleParallel_${index}`}
+                                id={`content_sectionTitleParallel_${index}`}
+                                placeholder="Contenido"
+                                defaultValue={titleParallel}
+                                onChange={(e) => handleChange(index, 'sectionTitleParallel', e.target.value)}
                             />
                         </div>
                         <div className="mb-4">
