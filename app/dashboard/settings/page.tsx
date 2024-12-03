@@ -1,10 +1,11 @@
 "use client"
-import { Button, Card, Label, TextInput, Tooltip } from "flowbite-react"
+import { Button, Card, Label, Spinner, TextInput, Tooltip } from "flowbite-react"
 import { useEffect, useState } from "react"
 import { PiEye, PiEyeClosed } from "react-icons/pi";
-import { User } from "@/app/dashboard/users/Interface/Interface"
-import { updatePass, updateSession } from "./lib/updateSession"
-import { signOut } from "next-auth/react";
+import { User } from "@/interface/Interface";
+import { updatePass, updateSession } from "@/lib/updateSession";
+import { ComponentModalCreate } from "@/components/Modal";
+import { FormDelete } from "./delete";
 
 export default function SettingPage() {
     const { data } = FetchUser()
@@ -19,6 +20,18 @@ export default function SettingPage() {
 }
 
 const SectionSession = ({ data }: { data?: User | null }) => {
+    if (!data) {
+        return (
+            <Card >
+                <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
+                    Informacion del Usuario
+                </h5>
+                <div className="text-center">
+                    <Spinner color="success" aria-label="Success spinner" size="xl" />
+                </div>
+            </Card>
+        )
+    }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
             <form action={updateSession}>
@@ -59,7 +72,7 @@ const SectionPass = () => {
                 <div className="relative">
                     <Button
                         onClick={togglePasswordVisibility}
-                        className="absolute right-4 -translate-y-8 text-gray-600"
+                        className="absolute right-4 -translate-y-8 text-gray-600 dark:text-gray-300"
                         aria-label="Mostrar/Ocultar Contraseña"
                         type="button"
                     >
@@ -95,38 +108,30 @@ const SectionPass = () => {
 }
 
 const SectionAccountDelete = () => {
+    const [openModal, setOpenModal] = useState(false);
+    const Modal = () => {
+        setOpenModal(true)
+    }
+    const closeModal = () => {
+        setOpenModal(false);
+    };
     return (
         <Card className="mb-2 w-full  max-sm:grid-cols-1">
             <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                 Eliminar cuenta
             </h5>
+            <ComponentModalCreate title={"Eliminacion de cuenta"} openModal={openModal} setOpenModal={closeModal} status={false}>
+                <FormDelete setOpenModal={closeModal} />
+            </ComponentModalCreate>
             <section className="mt-2 flex">
-                <Button aria-label="Eliminar" onClick={DeleteAccount} className="bg-red-600 dark:bg-red-700">Eliminar</Button>
+                <Button aria-label="Eliminar" onClick={Modal} className="bg-red-600 dark:bg-red-700">Eliminar</Button>
             </section>
+
         </Card>
     )
 }
 
-const DeleteAccount = async () => {
-    try {
-        const url = '/api/users';  // Aquí llamas al API del backend que define el DELETE
-        const res = await fetch(url, {
-            method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (res.ok) {
-            const result = await res.json();
-            console.log(result);
-            signOut()
-        } else {
-            console.error("Error al eliminar la cuenta:", res.statusText);
-        }
-    } catch (error) {
-        console.error("Error fetching data:", error);
-    }
-}
+
 
 
 const FetchUser = () => {
