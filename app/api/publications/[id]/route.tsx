@@ -6,7 +6,7 @@ interface interfaceParams {
     id: number
 }
 export async function GET(request: any, { params }: { params: interfaceParams }) {
-    const token = getTokenFromSession()
+    const token = await getTokenFromSession()
     const res = await fetch(`${env.NEXT_PUBLIC_URL_API}publications/${params.id}`,
         {
             method: "GET",
@@ -20,7 +20,7 @@ export async function GET(request: any, { params }: { params: interfaceParams })
     return NextResponse.json(book)
 }
 export async function DELETE(request: any, { params }: { params: interfaceParams }) {
-    const token = getTokenFromSession()
+    const token = await getTokenFromSession()
     const response = await fetch(`${env.NEXT_PUBLIC_URL_API}publications/${params.id}`, {
         method: 'DELETE',
         headers: {
