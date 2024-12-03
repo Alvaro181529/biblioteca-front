@@ -1,9 +1,10 @@
 "use client"
 import { Card, Tooltip } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { BookFormData } from "../dashboard/books/Interface/Interface";
+import { BookFormData } from "@/interface/Interface";
 import { useRouter } from "next/navigation";
-import { InvoicesCardSkeleton } from "@/components/Skeleton/skeletons";
+import { InvoicesCardSkeleton } from "@/components/skeletons";
+import { isValidUrl } from "@/lib/validateURL";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -11,10 +12,7 @@ interface SerchParams {
     };
 }
 export default function DashboardPage({ searchParams }: SerchParams) {
-    const searchQuery = searchParams?.query || ""
-    const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedSize = Number(event.target.value)
-    };
+
     return (
         <section>
             <h2 className="mb-4 text-2xl font-semibold dark:text-white">Recomendados para ti</h2>
@@ -31,6 +29,7 @@ const CardNew = () => {
     const { data } = FetchDataBookNew();
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
+    console.log(data);
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {
@@ -60,50 +59,58 @@ const CardNew = () => {
     }
     return (
         <div>
-            <section className="flex space-x-4 overflow-x-auto pb-4">
-                {data?.map((book, index) => (
-                    <Card
-                        key={index}
-                        imgSrc={book?.book_imagen?.toLowerCase() === "null" || !book?.book_imagen ? "/svg/placeholder.svg" : book.book_imagen}
-                        className="w-[240px] shrink-0 cursor-pointer"
-                        onClick={() => router.push(`profile/content/${book.id}`)}>
-                        <div className="flex w-full items-center justify-between">
-                            <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {book.book_title_original || "Titulo del libro"}
-                            </h5>
-                            <div>
-                                {book.book_quantity > 0 ? (
-                                    <Tooltip content="Disponible">
-                                        <div className="flex items-center">
-                                            <span className="ml-2 size-3 rounded-full bg-green-500"></span>
-                                        </div>
-                                    </Tooltip>
-                                ) : (
-                                    <Tooltip content="No disponible">
-                                        <div className="flex items-center">
-                                            <span className="ml-2 size-3 rounded-full bg-red-500"></span>
-                                        </div>
-                                    </Tooltip>
-                                )}
+            <section className="flex space-x-4 overflow-x-auto pb-4 hover:cursor-grab">
+                {Array.isArray(data) && data?.map((book, index) => {
+                    const imageUrl = String(book?.book_imagen);
+                    const imageSrc = isValidUrl(imageUrl)
+                        ? imageUrl // Si es una URL válida, usamos la URL
+                        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+                            ? `/api/books/image/${imageUrl}`
+                            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+                    return (
+                        <Card
+                            key={index}
+                            imgSrc={imageSrc}
+                            className="w-[240px] shrink-0 cursor-pointer"
+                            onClick={() => router.push(`profile/content/${book.id}`)}>
+                            <div className="flex w-full items-center justify-between">
+                                <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    {book.book_title_original || "Titulo del libro"}
+                                </h5>
+                                <div>
+                                    {book.book_quantity > 0 ? (
+                                        <Tooltip content="Disponible">
+                                            <div className="flex items-center">
+                                                <span className="ml-2 size-3 rounded-full bg-green-500"></span>
+                                            </div>
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip content="No disponible">
+                                            <div className="flex items-center">
+                                                <span className="ml-2 size-3 rounded-full bg-red-500"></span>
+                                            </div>
+                                        </Tooltip>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <p className="text-sm text-gray-600">{new Date(book.book_create_at).toLocaleDateString()}</p>
+                            <p className="text-sm text-gray-600">{new Date(book.book_create_at).toLocaleDateString()}</p>
 
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
-                            <span className="font-semibold">Autor: </span>
-                            {book.book_authors?.map((author, index) => (
-                                <p key={index}>{author.author_name}</p>
-                            ))}
-                        </p>
+                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                                <span className="font-semibold">Autor: </span>
+                                {book.book_authors?.map((author, index) => (
+                                    <p key={index}>{author.author_name}</p>
+                                ))}
+                            </p>
 
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
-                            <span className="font-semibold">Categoría: </span>
-                            {book.book_category?.map((category, index) => (
-                                <p key={index}>{category.category_name}</p>
-                            ))}
-                        </p>
-                    </Card>
-                ))}
+                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                                <span className="font-semibold">Categoría: </span>
+                                {book.book_category?.map((category, index) => (
+                                    <p key={index}>{category.category_name}</p>
+                                ))}
+                            </p>
+                        </Card>
+                    )
+                })}
             </section>
         </div>
     )
@@ -142,48 +149,56 @@ const CardInfo = () => {
     }
     return (
         <div>
-            <section className="flex space-x-4 overflow-x-auto pb-4">
-                {data?.map((book, index) => (
-                    <Card
-                        key={index}
-                        imgSrc={book?.book_imagen?.toLowerCase() === "null" || !book?.book_imagen ? "/svg/placeholder.svg" : book.book_imagen}
-                        className="w-[240px] shrink-0 cursor-pointer"
-                        onClick={() => router.push(`profile/content/${book.id}`)}>
-                        <div className="flex w-full items-center justify-between">
-                            <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {book.book_title_original || "Titulo del libro"}
-                            </h5>
-                            <div>
-                                {book.book_quantity > 0 ? (
-                                    <Tooltip content="Disponible">
-                                        <div className="flex items-center">
-                                            <span className="ml-2 size-3 rounded-full bg-green-500"></span>
-                                        </div>
-                                    </Tooltip>
-                                ) : (
-                                    <Tooltip content="No disponible">
-                                        <div className="flex items-center">
-                                            <span className="ml-2 size-3 rounded-full bg-red-500"></span>
-                                        </div>
-                                    </Tooltip>
-                                )}
+            <section className="flex space-x-4 overflow-x-auto pb-4 hover:cursor-grab">
+                {Array.isArray(data) && data?.map((book, index) => {
+                    const imageUrl = String(book?.book_imagen);
+                    const imageSrc = isValidUrl(imageUrl)
+                        ? imageUrl // Si es una URL válida, usamos la URL
+                        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+                            ? `/api/books/image/${imageUrl}`
+                            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+                    return (
+                        <Card
+                            key={index}
+                            imgSrc={imageSrc}
+                            className="w-[240px] shrink-0 cursor-pointer"
+                            onClick={() => router.push(`profile/content/${book.id}`)}>
+                            <div className="flex w-full items-center justify-between">
+                                <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    {book.book_title_original || "Titulo del libro"}
+                                </h5>
+                                <div>
+                                    {book.book_quantity > 0 ? (
+                                        <Tooltip content="Disponible">
+                                            <div className="flex items-center">
+                                                <span className="ml-2 size-3 rounded-full bg-green-500"></span>
+                                            </div>
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip content="No disponible">
+                                            <div className="flex items-center">
+                                                <span className="ml-2 size-3 rounded-full bg-red-500"></span>
+                                            </div>
+                                        </Tooltip>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
-                            <span className="font-semibold">Autor: </span>
-                            {book.book_authors?.map((author, index) => (
-                                <p key={index}>{author.author_name}</p>
-                            ))}
-                        </p>
+                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                                <span className="font-semibold">Autor: </span>
+                                {book.book_authors?.map((author, index) => (
+                                    <p key={index}>{author.author_name}</p>
+                                ))}
+                            </p>
 
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
-                            <span className="font-semibold">Categoría: </span>
-                            {book.book_category?.map((category, index) => (
-                                <p key={index}>{category.category_name}</p>
-                            ))}
-                        </p>
-                    </Card>
-                ))}
+                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                                <span className="font-semibold">Categoría: </span>
+                                {book.book_category?.map((category, index) => (
+                                    <p key={index}>{category.category_name}</p>
+                                ))}
+                            </p>
+                        </Card>
+                    )
+                })}
             </section>
         </div>
     )
