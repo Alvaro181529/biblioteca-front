@@ -1,13 +1,15 @@
 "use client"
-import { ComponentSearch } from "@/components/Search/Search";
-import { Button, Card, List, Select, Table } from "flowbite-react";
+import { ComponentSearch } from "@/components/Search";
+import { Button, Card, List, Select, Table, Tooltip } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
-import { Orders } from "./Interface/Interface";
+import { Orders } from "@/interface/Interface";
 import { IoReloadSharp } from "react-icons/io5";
-import { orderBorrowed } from "./lib/updateOrder";
-import { ComponentPagination } from "@/components/Pagination/Pagination";
-import { InvoicesTableSkeleton } from "@/components/Skeleton/skeletons";
+import { orderBorrowed } from "../../../lib/updateOrder";
+import { ComponentPagination } from "@/components/Pagination";
+import { InvoicesTableSkeleton } from "@/components/skeletons";
 import { HiArrowSmRight } from "react-icons/hi";
+import { FiRefreshCcw } from "react-icons/fi"
+
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -19,7 +21,8 @@ export default function OrderPage({ searchParams }: SerchParams) {
     const [type, setType] = useState("PRESTADO");
     const [size, setSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
-    const { data, total, fetchData } = FetchData(type, size, currentPage, searchQuery)
+    const [refresh, setRefresh] = useState(false);
+    const { data, total, fetchData } = FetchData(type, size, currentPage, searchQuery, refresh)
     const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSize = Number(event.target.value)
         setSize(selectedSize);
@@ -44,6 +47,12 @@ export default function OrderPage({ searchParams }: SerchParams) {
         window.open(url, '_blank');
         window.URL.revokeObjectURL(url);
     };
+    const Refresh = () => {
+        setRefresh(true)
+        setTimeout(() => {
+            setRefresh(false);
+        }, 2800);
+    }
     return (
         <div>
             <div className="grid grid-cols-7 gap-2">
@@ -62,7 +71,22 @@ export default function OrderPage({ searchParams }: SerchParams) {
                 </div>
             </div>
             <TableOrders data={data} page={currentPage} size={size} fetchData={fetchData} />
-            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={total} />
+            <div className="flex w-full items-center justify-between">
+                <Tooltip className="z-50" content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
+                <div>
+                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={total} />
+                </div>
+            </div>
         </div>
     )
 }
@@ -182,7 +206,7 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
 }
 
 
-const FetchData = (type: string, size: number, currentPage: number, query: string) => {
+const FetchData = (type: string, size: number, currentPage: number, query: string, refresh: boolean) => {
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);
 
@@ -201,7 +225,7 @@ const FetchData = (type: string, size: number, currentPage: number, query: strin
 
     useEffect(() => {
         fetchData();
-    }, [fetchData]);
+    }, [fetchData, refresh]);
 
     return { data, total, fetchData };
 };
