@@ -22,7 +22,7 @@ export const adminItems: SidebarItemGroup = [
 export const personalItems: SidebarItemGroup = [
     { href: "/profile", icon: MdHome, label: "Inicio" },
     { href: "/profile/content", icon: ImBooks, label: "Contenido" },
+    { href: "/profile/publications", icon: MdNewspaper, label: "Publicaciones" },
     { href: "/profile/orders", icon: FaBookOpenReader, label: "Mis prestamos" },
     { href: "/profile/history", icon: BiSolidBookBookmark, label: "Historial" },
-    { href: "/profile/publications", icon: MdNewspaper, label: "Publicaciones" },
 ];
