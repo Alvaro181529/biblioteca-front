@@ -43,16 +43,23 @@ export default function Home({ searchParams }: {
 }
 
 function ComponentContent() {
+  const { data: contLibro } = ContentData("LIBRO")
+  const { data: contRevista } = ContentData("REVISTA")
+  const { data: contDVD } = ContentData("DVD")
+  const { data: contCD } = ContentData("CD")
+  const { data: contCasset } = ContentData("CASSETTE")
+  const { pages } = FetchDataPublications()
+  const multimediaTotal = Number(contCD) + Number(contDVD) + Number(contCasset)
   return (
     <section className="w-full bg-gray-100 py-9 text-center dark:bg-gray-800 md:py-6 lg:py-20">
       <div className="space-y-4">
         <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">Contenido</h2>
       </div>
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 self-center p-5  max-sm:justify-items-center sm:grid-cols-2 lg:grid-cols-4">
-        <CardDashboard title="Libros" href="" count={1000} />
-        <CardDashboard title="Contenido" href="" count={1000} />
-        <CardDashboard title="Contenido" href="" count={1000} />
-        <CardDashboard title="Contenido" href="" count={1000} />
+        <CardDashboard title="Libros" href="" count={Number(contLibro)} />
+        <CardDashboard title="Revistas" href="" count={Number(contRevista)} />
+        <CardDashboard title="Publicaciones" href="" count={Number(pages)} />
+        <CardDashboard title="Multimendia" href="" count={multimediaTotal} />
       </div>
     </section>
   )
@@ -394,6 +401,8 @@ const FetchDataBook = (size: number, currentPage: number, query: string, type: s
 }
 const FetchDataPublications = () => {
   const [data, setData] = useState<Publication[] | []>([])
+  const [pages, setPages] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -401,6 +410,8 @@ const FetchDataPublications = () => {
         const res = await fetch(url);
         const result = await res.json();
         setData(result.data);
+        setPages(result.totalPages || 0)
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -408,5 +419,23 @@ const FetchDataPublications = () => {
 
     fetchData();
   }, []);
+  return { data, pages }
+}
+const ContentData = (type: string) => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const url = `/api/books?type=${type}`;
+        const res = await fetch(url);
+        const result = await res.json();
+        setData(result.total)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, [type])
   return { data }
 }
