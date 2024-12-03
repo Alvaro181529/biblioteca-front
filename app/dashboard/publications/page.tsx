@@ -1,13 +1,15 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { ComponentTable } from "@/components/Table/table"
-import { ComponentPagination } from '@/components/Pagination/Pagination';
-import { ComponentSearch } from '@/components/Search/Search';
-import { Publication } from './Interface/Interface';
-import { ComponentModalCreate } from '@/components/Modal/Modal';
+import { ComponentTable } from "@/components/Table"
+import { ComponentPagination } from '@/components/Pagination';
+import { ComponentSearch } from '@/components/Search';
+import { Publication } from '@/interface/Interface';
+import { ComponentModalCreate } from '@/components/Modal';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delate';
 import { useRouter } from 'next/navigation';
+import { Button, Tooltip } from 'flowbite-react';
+import { FiRefreshCcw } from "react-icons/fi"
 
 interface SerchParams {
     searchParams: {
@@ -27,7 +29,8 @@ export default function Publications({ searchParams }: SerchParams) {
     const [actualData, setActualData] = useState(0);
     const [size, setSize] = useState(10);
     const [openModal, setOpenModal] = useState(false);
-    const { data, columns, pages, infoData } = usePublicationsData(size, currentPage, searchQuery, openModal);
+    const [refresh, setRefresh] = useState(false);
+    const { data, columns, pages, infoData } = usePublicationsData(size, currentPage, searchQuery, openModal, refresh);
     const router = useRouter();
 
     const handlePageChange = (page: number) => {
@@ -68,11 +71,32 @@ export default function Publications({ searchParams }: SerchParams) {
         setTitle("Crear Publicacion")
         setModalType('create');
     };
+    const Refresh = () => {
+        setRefresh(true)
+        setTimeout(() => {
+            setRefresh(false);
+        }, 2800);
+    }
     return (
         <div>
             <ComponentSearch onChange={handleSizeChange} size={size} />
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
-            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+            <div className="flex w-full items-center justify-between">
+                <Tooltip className="z-50" content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
+                <div>
+                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+                </div>
+            </div>
             <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
                 {modalType === 'create' && <FormCreate setOpenModal={closeModal} />}
                 {modalType === 'edit' && <FormCreate setOpenModal={closeModal} id={Number(actualData)} data={dataUpdate} />}
@@ -82,7 +106,7 @@ export default function Publications({ searchParams }: SerchParams) {
     )
 }
 
-const usePublicationsData = (size: number, currentPage: number, query: string, openModal: boolean) => {
+const usePublicationsData = (size: number, currentPage: number, query: string, openModal: boolean, refresh: boolean) => {
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
@@ -92,14 +116,13 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
             publications.id,
         ]);
     };
-    const transformData = (publication: Publication[]) => {
-        return publication.map((publications) => [
-            publications.publication_title,
-            publications.publication_content,
-            publications.publication_importance,
-            publications.publication_active ? 'Publicacion esta visible' : 'Publicacion no esta visible'
-        ]);
+    const truncateContent = (content: string, wordLimit: number) => {
+        const words = content.split(" ");
+        return words.length > wordLimit
+            ? `${words.slice(0, wordLimit).join(" ")} ...`
+            : content;
     };
+
     const configureColumns = () => {
         setColumns([
             "TITULO",
@@ -110,12 +133,20 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
     };
 
     useEffect(() => {
-        if (!openModal) {
+        if (!openModal || refresh) {
             const fetchData = async () => {
                 try {
                     const url = `/api/publications?page=${currentPage}&size=${size}&query=${query}`;
                     const res = await fetch(url);
                     const result = await res.json();
+                    const transformData = (publication: Publication[]) => {
+                        return publication.map((publications) => [
+                            publications.publication_title,
+                            truncateContent(publications.publication_content, 8),
+                            publications.publication_importance,
+                            publications.publication_active ? 'Publicación está visible' : 'Publicación no está visible'
+                        ]);
+                    };
                     configureColumns();
                     setInfoData(info(result.data || []))
                     setData(transformData(result.data || []));
@@ -126,6 +157,6 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
             };
             fetchData();
         }
-    }, [currentPage, size, query, openModal]);
+    }, [currentPage, size, query, openModal, refresh]);
     return { data, columns, pages, infoData };
 };
