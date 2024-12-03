@@ -1,13 +1,13 @@
 'use client'
 import { AiOutlineLoading } from "react-icons/ai";
-import { ToastDanger } from "@/components/Toast/Toast";
+import { ToastDanger } from "@/components/Toast";
 import { Button } from "flowbite-react";
 import { signIn } from "next-auth/react";
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, ChangeEvent, FormEvent } from "react";
-import AuthComponent from "@/components/auth/Auth";
+import AuthComponent from "@/components/Auth";
 
 interface Signin {
     email: string;
@@ -73,14 +73,14 @@ export default function Home() {
             {error && (
                 <ToastDanger titulo={error} />
             )}
-            <h1 className="text-center text-4xl font-light">Bienvenido</h1>
+            <h1 className="text-center text-4xl font-light dark:text-white">Bienvenido</h1>
             <div className="mt-4 w-full">
                 <form className="mx-auto w-3/4" onSubmit={onSubmit}>
-                    <div className="mt-4 flex">
+                    <div className="mt-4 flex ">
                         <input
                             id="email"
                             type="email"
-                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             name="email"
                             required
                             placeholder="Correo"
@@ -96,7 +96,7 @@ export default function Home() {
                             <input
                                 id="password"
                                 type={passwordVisible ? "text" : "password"}
-                                className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-600 focus:border-verde-100 focus:outline-none"
+                                className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                                 name="password"
                                 required
                                 placeholder="Contraseña"
@@ -109,7 +109,7 @@ export default function Home() {
                                 onClick={togglePasswordVisibility}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
                             >
-                                {passwordVisible ? <PiEyeClosed className="size-5" /> : <PiEye className="size-5" />}
+                                {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-200" /> : <PiEye className="size-5 dark:text-gray-200" />}
                             </button>
                         </div>
                         {errors.password && (
@@ -118,7 +118,7 @@ export default function Home() {
                     </div>
                     <div className="mt-4 flex items-center">
                         <input type="checkbox" name="remember" id="remember" className="mr-2" />
-                        <label htmlFor="remember" className="text-sm text-gray-700">Remember Me</label>
+                        <label htmlFor="remember" className="text-sm text-gray-700 dark:text-white">Remember Me</label>
                     </div>
                     <div className="mt-8 flex flex-col items-center">
                         <Button
@@ -131,10 +131,10 @@ export default function Home() {
                     </div>
                 </form>
                 <div className="mt-4 text-center">
-                    <a className="text-xs text-green-800 no-underline hover:underline" href="#">
+                    <a className="text-xs text-green-800 no-underline hover:underline dark:text-white" href="#">
                         ¿Olvidaste tu Contraseña?
                     </a>
-                    <Link className="mx-3 text-xs text-green-800 no-underline hover:underline" href="/auth/register">
+                    <Link className="mx-3 text-xs text-green-800 no-underline hover:underline dark:text-white" href="/auth/register">
                         Registrar
                     </Link>
                 </div>
