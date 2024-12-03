@@ -1,6 +1,6 @@
 "use client"
-import { createOrder } from "@/app/dashboard/books/[id]/lib/createOrder";
-import { User } from "@/app/dashboard/users/Interface/Interface";
+import { createOrder } from "@/lib/createOrder";
+import { User } from "@/interface/Interface";
 import { Button } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
