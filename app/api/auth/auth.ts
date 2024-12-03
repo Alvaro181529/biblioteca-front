@@ -1,5 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
+import jwt from "jsonwebtoken";
 declare module "next-auth" {
     interface Session {
         user: {
@@ -91,10 +92,9 @@ export const authOptions: NextAuthOptions = {
     ],
     session: {
         maxAge: 60 * 60,
-        updateAge: 30 * 60,
+        updateAge: 60 * 60,
     },
     jwt: {
-        secret: process.env.NEXTAUTH_SECRET,
         maxAge: 60 * 60,
     },
     callbacks: {
@@ -103,9 +103,10 @@ export const authOptions: NextAuthOptions = {
                 token.accessToken = user.accessToken;
                 token.refreshToken = user.refreshToken
                 token.rols = user.rols;
+
             }
-            const isTokenExpired = token.exp && !isNaN(token.exp) && token.exp < Math.floor(Date.now() / 1000);
-            if (isTokenExpired && token.refreshToken) {
+            const tokenExpired = isTokenExpired(String(token.accessToken))
+            if (tokenExpired && token.refreshToken) {
                 try {
                     const response = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/refresh-token`, {
                         method: 'POST',
@@ -139,3 +140,36 @@ export const authOptions: NextAuthOptions = {
         signOut: "/",
     },
 };
+function isTokenExpired(token: string): boolean {
+    try {
+        const decoded: any = jwt.decode(token);
+
+        if (!decoded || !decoded.exp) {
+            return false;
+        }
+        const currentTime = Math.floor(Date.now() / 1000);
+        return currentTime >= decoded.exp;
+    } catch (error) {
+        console.error('Error decodificando el token:', error);
+        return true;
+    }
+}
+// function isTokenExpired(token: string): boolean {
+//     try {
+//         const parts = token.split('.');
+//         if (parts.length !== 3) {
+//             throw new Error('Token no válido');
+//         }
+//         const payloadBase64 = parts[1];
+//         const payloadJson = atob(payloadBase64);  // atob() decodifica Base64 a texto
+//         const payload = JSON.parse(payloadJson);
+//         if (!payload.exp) {
+//             return false; // Si no existe "exp", no podemos determinar la expiración
+//         }
+//         const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+//         return currentTime >= payload.exp; // Si el tiempo actual es mayor o igual a "exp", el token ha expirado
+//     } catch (error) {
+//         console.error('Error decodificando el token:', error);
+//         return true; // Si hay un error, asumimos que el token ha expirado o es inválido
+//     }
+// }
