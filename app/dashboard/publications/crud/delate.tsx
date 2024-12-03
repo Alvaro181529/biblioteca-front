@@ -1,6 +1,5 @@
 "use client"
 import { Button } from "flowbite-react";
-import { redirect, useRouter } from "next/navigation";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 interface deleteProps { publication: string, data: any, setOpenModal: (open: boolean) => void }
 export function FormDelete({ publication, data, setOpenModal }: deleteProps) {
