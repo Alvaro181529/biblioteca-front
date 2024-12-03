@@ -1,6 +1,6 @@
 import { TextInput, Label, Select } from "flowbite-react";
-import { createInstrument } from "../lib/createIntrument";
-import { family } from "../Interface/Types";
+import { createInstrument } from "@/lib/createIntrument";
+import { family } from "@/types/types";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     let defaultName
