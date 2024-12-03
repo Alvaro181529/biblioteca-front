@@ -1,17 +1,19 @@
 "use client"
-import { Avatar, Button, Card, DarkThemeToggle, Dropdown, Navbar, Select, Tabs, TextInput } from "flowbite-react";
+import { Card, Select, Tabs, TextInput } from "flowbite-react";
 import { FaWhatsapp, FaYoutube, FaFacebook } from "react-icons/fa";
 
 import Image from "next/image";
 import Link from "next/link";
 import { HiBookOpen } from "react-icons/hi";
+
 import { useEffect, useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { BookFormData } from "./dashboard/books/Interface/Interface";
-import { ComponentPagination } from "@/components/Pagination/Pagination";
+import { BookFormData, Publication } from "@/interface/Interface";
+import { ComponentPagination } from "@/components/Pagination";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from 'use-debounce';
-import { InvoicesCardPageSkeleton } from "@/components/Skeleton/skeletons";
+import { InvoicesCardPageSkeleton } from "@/components/skeletons";
+import { ComponentNavbar } from "@/components/Home/Navbar";
+import { isValidUrl } from "@/lib/validateURL";
 
 interface propsSelect {
   size: number;
@@ -33,6 +35,7 @@ export default function Home({ searchParams }: {
       <ComponentNavbar />
       <ComponentHeader />
       <ComponentContent />
+      <ComponentPublications />
       <ComponentTabs searchQuery={searchParams.query} />
       <ComponentFooter />
     </main>
@@ -72,7 +75,7 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
     setCurrentPage(page);
   };
   return (
-    <section className="w-full py-12 md:py-9 lg:py-16 " id="publicacion">
+    <section className="w-full py-12 dark:bg-gray-800 md:py-9 lg:py-16" id="libros">
       <Tabs className=" mx-auto max-w-7xl select-none items-center justify-center " aria-label="Default tabs" style="underline"  >
         <Tabs.Item active title="Libros" icon={HiBookOpen} className="dark:text-white">
           <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
@@ -102,7 +105,7 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
                 </div>
               </div>
             </div>
-            <div className="grid gap-4 text-start max-lg:grid-cols-4 max-sm:grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 text-start sm:grid-cols-2 xl:grid-cols-3 ">
               <CardInventario data={data} />
             </div>
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={page} />
@@ -115,9 +118,16 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
 const CardInventario = ({ data }: { data: BookFormData[] }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasNoResults, setHasNoResults] = useState(false);
-
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
   useEffect(() => {
-    if (!data || data.length === 0) {
+    if (!Array.isArray(data)) {
       const timer = setTimeout(() => {
         setHasNoResults(true);
         setIsLoading(false);
@@ -144,30 +154,28 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
 
   return (
     <>
-      {data?.map((book, index) => (
-        <div key={index}>
-          <div className="overflow-hidden rounded-lg bg-white shadow-lg">
-            <div className="flex">
-              <Image
-                src="/svg/placeholder.svg"
-                alt="Program Cover"
-                width={60}
-                height={70}
-                className="h-36 w-24 rounded-s-md object-cover max-sm:h-44 max-sm:w-32"
-              />
-              <div className="ml-4 py-2 pe-3">
-                <h1 className="text-lg font-semibold">{book.book_title_original}</h1>
-                <h5 className="text-sm text-gray-600">{book.book_title_parallel}</h5>
-                <div className="mt-2 text-gray-600">
-                  {book?.book_authors?.map((author, index) => (
-                    <h5 key={index} className="text-sm">{author.author_name}</h5>
-                  ))}
-                </div>
+      {Array.isArray(data) && data?.map((book, index) => {
+        const imageUrl = String(book?.book_imagen);
+        const imageSrc = isValidUrl(imageUrl)
+          ? imageUrl // Si es una URL válida, usamos la URL
+          : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+            ? `/api/books/image/${imageUrl}`
+            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+
+        return (
+          <Card key={index} imgSrc={imageSrc} horizontal>
+            <div className="ml-4 pe-3">
+              <h1 className="text-lg font-semibold dark:text-white">{book.book_title_original}</h1>
+              <h5 className="text-sm text-gray-600 dark:text-white">{book.book_title_parallel}</h5>
+              <div className="mt-2 text-gray-600  dark:text-white">
+                {Array.isArray(book?.book_authors) && book?.book_authors?.map((author, index) => (
+                  <h5 key={index} className="text-sm">{author.author_name}</h5>
+                ))}
               </div>
             </div>
-          </div>
-        </div>
-      ))}
+          </Card>
+        )
+      })}
     </>
   )
 }
@@ -182,10 +190,8 @@ const ComponentSearch = ({ onChange, size }: propsSelect) => {
     } else {
       params.delete('query')
     }
-    replace(`${pathname}?${params}`)
+    replace(`${pathname}?${params}`, { scroll: false })
   }, 320)
-
-
 
   return (
     <div className="flex flex-row items-center gap-2 py-2">
@@ -206,26 +212,59 @@ const ComponentSearch = ({ onChange, size }: propsSelect) => {
     </div>
   )
 }
-const FetchDataBook = (size: number, currentPage: number, query: string, type: string) => {
-  const [data, setData] = useState<BookFormData[] | []>([])
-  const [page, setPage] = useState(0)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = `/api/books?query=${query || ""}&page=${currentPage}&size=${size}&type=${type}`;
-        const res = await fetch(url);
-        const result = await res.json();
-        setData(result.data);
-        setPage(result.totalPages)
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
 
-    fetchData();
-  }, [currentPage, size, query, type]);
-  return { data, page }
+
+function ComponentPublications() {
+  const [expandedIndex, setExpandedIndex] = useState(null);  // Estado para saber qué publicación está expandida
+  const maxLength = 20;
+
+  const toggleExpand = (index: any) => {
+    setExpandedIndex(expandedIndex === index ? null : index);  // Si la publicación está expandida, la colapsamos, si no, la expandimos
+  }
+
+  const { data } = FetchDataPublications();
+
+  return (
+    <div className="mx-auto w-full max-w-7xl py-12 dark:bg-gray-700 md:py-9 lg:py-16" id="publicacion">
+      <div className="space-y-4">
+        <h2 className="text-center text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">Publicaciones</h2>
+      </div>
+      <section className="mt-7 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {data.map((publication, index) => {
+          const isCurrentlyExpanded = expandedIndex === index;  // Verificamos si esta publicación está expandida
+          const displayContent = isCurrentlyExpanded
+            ? publication.publication_content
+            : publication.publication_content.slice(0, maxLength) + '...';
+
+          const imageUrl = String(publication?.publication_imagen);
+          const imageSrc = isValidUrl(imageUrl)
+            ? imageUrl
+            : imageUrl && imageUrl.toLowerCase() !== "null"
+              ? `/api/publications/image/${imageUrl}`
+              : "/svg/placeholder.svg";
+
+          return (
+            <Card key={index} className="dark:text-white" imgSrc={imageSrc} imgAlt={publication?.publication_title}>
+              <h2 className="mb-2 text-xl font-bold">{publication?.publication_title}</h2>
+              <div className="prose max-w-none">
+                <p>{displayContent}</p>
+                {publication.publication_content.length > maxLength && (
+                  <a
+                    onClick={() => toggleExpand(index)}  // Pasamos el índice de la publicación a la función
+                    className="inline cursor-pointer font-medium text-verde-600 no-underline decoration-solid underline-offset-2 hover:underline dark:text-verde-500"
+                  >
+                    {isCurrentlyExpanded ? 'Ver menos' : 'Ver más'}
+                  </a>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </section>
+    </div>
+  );
 }
+
 function CardDashboard({ title, count, href }: dashProps) {
   return (
     <Card href={href} className="max-w-sm max-sm:px-32">
@@ -254,18 +293,18 @@ function ComponentHeader() {
             </h5>
             <div className="space-x-4">
               <Link
-                href="#publicacion"
+                href="#libros"
                 className="inline-flex h-9 items-center justify-center rounded-md bg-verde-700 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-verde-600/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 prefetch={false}
               >
                 Explora Mas
               </Link>
               <Link
-                href="#"
+                href="#publicacion"
                 className="inline-flex h-9 items-center justify-center rounded-md border border-gray-200 bg-white  px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
                 prefetch={false}
               >
-                Admissions
+                Publicaciones
               </Link>
             </div>
           </div>
@@ -281,98 +320,7 @@ function ComponentHeader() {
     </section>
   )
 }
-function ComponentNavbar() {
-  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
-  const [lastScrollTop, setLastScrollTop] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollTop = window.scrollY;
-      if (currentScrollTop > lastScrollTop) {
-        setIsNavbarVisible(false);
-      } else {
-        setIsNavbarVisible(true);
-      }
-      setLastScrollTop(currentScrollTop);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollTop]);
-  return (
-    <Navbar className={`fixed top-0 z-50 m-1 w-[calc(100%-1rem)] rounded-xl bg-verde-700 text-white transition-transform duration-300 ease-in-out sm:w-[calc(100%-1rem)] ${isNavbarVisible ? 'translate-y-0' : '-translate-y-20'}`} rounded>
-      {/* <Navbar.Toggle className="text-white hover:bg-verde-600" /> */}
-      <Navbar.Brand >
-        <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
-        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Biblioteca</span>
-      </Navbar.Brand>
-      <NavbarDropdown />
-    </Navbar>
-  )
-}
-
-function NavbarDropdown() {
-  type Role = 'ADMIN' | 'ROOT' | 'USUARIO' | 'ESTUDIANTE';
-
-  const { data: session, status } = useSession()
-  if (status === "unauthenticated") {
-    return (
-      <div className="flex gap-2">
-        <DarkThemeToggle className="text-white ring-verde-400 hover:bg-verde-600 hover:text-amber-100 "></DarkThemeToggle>
-        <Button
-          aria-label="Iniciar sesion"
-          className="bg-verde-600 text-white ring-verde-400 transition-colors duration-200 hover:bg-verde-500 hover:text-amber-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:ring-gray-600"
-          onClick={() => signIn()}
-        >
-          Iniciar sesión
-        </Button>
-      </div>
-    )
-  }
-
-  const user = session?.user?.name
-  const email = session?.user?.email
-  const rol = session?.user?.rols as Role | undefined; // Asegúrate de que rol es de tipo Role o undefined
-
-  const roleToHref = {
-    ADMIN: "/dashboard",
-    ROOT: "/dashboard",
-    USUARIO: "/profile",
-    ESTUDIANTE: "/profile",
-  };
-  const settingToHref = {
-    ADMIN: "/dashboard/settings",
-    ROOT: "/dashboard/settings",
-    USUARIO: "/profile/settings",
-    ESTUDIANTE: "/profile/settings",
-  };
-  const Dashboard = typeof rol === 'string' && rol in roleToHref ? roleToHref[rol] : "/";
-  const Setting = typeof rol === 'string' && rol in settingToHref ? settingToHref[rol] : "/";
-
-  return (
-    <Dropdown
-      arrowIcon={false}
-      inline
-      label={
-        <Avatar alt="User settings" img="" rounded />
-      }
-    >
-      <Dropdown.Header>
-        <span className="block text-sm">{user}</span>
-        <span className="block truncate text-sm font-medium">{email}</span>
-      </Dropdown.Header>
-      <Dropdown.Item
-        as={Link}
-        href={Dashboard}
-      >
-        Inicio
-      </Dropdown.Item>
-      < Dropdown.Item as={Link} href={Setting}>Ajustes</Dropdown.Item >
-      <Dropdown.Divider />
-      <Dropdown.Item onClick={() => signOut()}>Cerrar sesión</Dropdown.Item>
-    </Dropdown >
-  )
-}
 function ComponentFooter() {
   return (
     <footer className="w-full bg-gray-200 p-6 dark:bg-gray-500 dark:text-white md:py-12" id="contactos">
@@ -417,9 +365,48 @@ function ComponentFooter() {
           </Link>
         </div>
       </div>
-      <div className="container mx-auto mt-8 grid max-w-7xl text-xs">
+      <div className="container mx-auto mt-8 grid max-w-7xl text-center text-xs">
         &copy; 2024 Concervatorio plurinacional de musica
       </div>
     </footer>
   )
+}
+
+const FetchDataBook = (size: number, currentPage: number, query: string, type: string) => {
+  const [data, setData] = useState<BookFormData[] | []>([])
+  const [page, setPage] = useState(0)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const url = `/api/books?query=${query || ""}&page=${currentPage}&size=${size}&type=${type}`;
+        const res = await fetch(url);
+        const result = await res.json();
+        setData(result.data);
+        setPage(result.totalPages)
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, size, query, type]);
+  return { data, page }
+}
+const FetchDataPublications = () => {
+  const [data, setData] = useState<Publication[] | []>([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const url = `/api/publications?page=1&size=4`;
+        const res = await fetch(url);
+        const result = await res.json();
+        setData(result.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  return { data }
 }
