@@ -1,7 +1,5 @@
 "use client"
-import { ComponentModalCreate } from "@/components/Modal/Modal";
 import { Button } from "flowbite-react";
-import { redirect, useRouter } from "next/navigation";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 export function FormDelete({ contnet, data, setOpenModal }: { contnet: string, data: any, setOpenModal: (open: boolean) => void }) {
 
