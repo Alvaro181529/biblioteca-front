@@ -1,12 +1,12 @@
 "use client"
-import { ComponentCard } from "@/components/Card/Card";
-import { ComponentPagination } from "@/components/Pagination/Pagination";
-import { ComponentSearch } from "@/components/Search/Search";
+import { ComponentCard } from "@/components/Card";
+import { ComponentPagination } from "@/components/Pagination";
+import { ComponentSearch } from "@/components/Search";
 import { Accordion, Button, Badge, List } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { orderBorrowed } from "./orders/lib/updateOrder";
-import { Orders } from "./orders/Interface/Interface";
-import { ToastSuccess } from "@/components/Toast/Toast";
+import { orderBorrowed } from "../../lib/updateOrder";
+import { Orders } from "@/interface/Interface";
+import { ToastSuccess } from "@/components/Toast";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -90,13 +90,16 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
 
     if (!data || data.length === 0) {
         return (
-            <Accordion collapseAll>
-                <Accordion.Panel>
-                    <div className="p-4 text-gray-500 dark:text-gray-400">
-                        No hay órdenes disponibles.
-                    </div>
-                </Accordion.Panel>
-            </Accordion>
+            <div>
+                <ComponentSearch onChange={handleSizeChange} size={size} />
+                <Accordion collapseAll>
+                    <Accordion.Panel>
+                        <div className="p-4 text-gray-500 dark:text-gray-400">
+                            No hay órdenes disponibles.
+                        </div>
+                    </Accordion.Panel>
+                </Accordion>
+            </div>
         );
     }
 
@@ -119,7 +122,7 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                             </Accordion.Title>
                             <Accordion.Content className="dark:bg-gray-700">
                                 <article className="flex w-full items-start justify-between space-y-2">
-                                    <section className="grid w-full grid-cols-2 gap-y-2 text-gray-500 dark:text-gray-400">
+                                    <section className="grid w-full grid-cols-1 gap-y-2 text-gray-500 dark:text-gray-300 md:grid-cols-2">
                                         <div>
                                             <span className="font-semibold">Usuario:</span> {orde.user.name}
                                         </div>
@@ -165,7 +168,7 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                 })}
             </Accordion>
             <div className="m-auto flex justify-between">
-                <p className="my-auto text-center text-gray-600">
+                <p className="my-auto text-center text-gray-600 dark:text-gray-400">
                     <span className="ml-3 font-bold">
                         En espera:
                     </span>  {countData}
