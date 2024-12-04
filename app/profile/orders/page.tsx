@@ -3,11 +3,13 @@ import { Orders, Respuest } from "@/interface/Interface";
 import { ComponentPagination } from "@/components/Pagination";
 import { ComponentSearch } from "@/components/Search";
 import { InvoicesCardUserSkeleton } from "@/components/skeletons";
-import { Card, Select } from "flowbite-react";
+import { Button, Card, Select, Tooltip } from "flowbite-react";
 import { useEffect, useState } from "react"
 import OrderCard from "@/components/Order/Order";
 import { orderBorrowed } from "@/lib/updateOrder";
 import { toast } from "sonner";
+import { FiRefreshCcw } from "react-icons/fi"
+
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -20,7 +22,8 @@ export default function OrderPage({ searchParams }: SerchParams) {
     const [type, setType] = useState("ESPERA");
     const [size, setSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
-    const { data, total } = FetchData(size, currentPage, searchQuery, type)
+    const [refresh, setRefresh] = useState(false);
+    const { data, total } = FetchData(refresh, size, currentPage, searchQuery, type)
     const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setType(event.target.value);
         setCurrentPage(1);
@@ -33,6 +36,12 @@ export default function OrderPage({ searchParams }: SerchParams) {
         setSize(selectedSize);
         setCurrentPage(1);
     };
+    const Refresh = () => {
+        setRefresh(true)
+        setTimeout(() => {
+            setRefresh(false);
+        }, 2800);
+    }
     return (
         <section>
             <div className="grid grid-cols-7 gap-2">
@@ -44,12 +53,27 @@ export default function OrderPage({ searchParams }: SerchParams) {
                     <option value="PRESTADO">Prestados</option>
                 </Select>
             </div>
-            <CardBook data={data} page={currentPage} size={size} />
-            <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={total} />
+            <CardBook data={data} page={currentPage} size={size} refresh={Refresh} />
+            <div className="flex w-full items-center justify-between">
+                <Tooltip className="z-50" content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
+                <div>
+                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={total} />
+                </div>
+            </div>
         </section>
     );
 }
-const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
+const CardBook = ({ data, page, size, refresh }: { data: Orders[], page: number, size: number, refresh: () => void; }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
 
@@ -72,7 +96,9 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
             return
         }
         toast.success(result.message);
+        refresh()
     }
+
     if (isLoading) {
         return <InvoicesCardUserSkeleton />;
     }
@@ -99,25 +125,28 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
         </div>)
 };
 
-const FetchData = (size: number, currentPage: number, query: string, type: string) => {
+const FetchData = (refresh: boolean, size?: number, currentPage?: number, query?: string, type?: string) => {
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const url = `/api/orders?term=${type}&size=${size}&page=${currentPage}&query=${query || ""}`;
-                const res = await fetch(url);
-                const result = await res.json();
-                setData(Array.isArray(result.data) ? result.data : []);
-                setTotal(result.totalPages || 0);
-            } catch (error) {
-                console.error(error);
-                setData([]);
-            }
-        };
-        fetchData();
-    }, [size, currentPage, query, type]);
+        if (refresh) {
+
+            const fetchData = async () => {
+                try {
+                    const url = `/api/orders?term=${type || "ESPERA"}&size=${size || 10}&page=${currentPage || 1}&query=${query || ""}`;
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    setData(Array.isArray(result.data) ? result.data : []);
+                    setTotal(result.totalPages || 0);
+                } catch (error) {
+                    console.error(error);
+                    setData([]);
+                }
+            };
+            fetchData();
+        }
+    }, [size, currentPage, query, type, refresh]);
 
     return { data, total };
 };

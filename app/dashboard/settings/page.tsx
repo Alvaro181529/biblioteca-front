@@ -10,7 +10,6 @@ import { toast } from "sonner";
 
 export default function SettingPage() {
     const { data } = FetchUser()
-    console.log(data);
     return (
         <section>
             <SectionSession data={data} />

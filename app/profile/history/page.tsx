@@ -1,12 +1,13 @@
 "use client"
-import { Orders } from "@/interface/Interface";
+import { Orders, Respuest } from "@/interface/Interface";
 import { ComponentPagination } from "@/components/Pagination";
 import { ComponentSearch } from "@/components/Search";
 import { InvoicesCardUserSkeleton } from "@/components/skeletons";
 import { Card, Select } from "flowbite-react";
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation";
 import OrderCard from "@/components/Order/Order";
+import { orderBorrowed } from "@/lib/updateOrder";
+import { toast } from "sonner";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -52,7 +53,6 @@ export default function HistoryPage({ searchParams }: SerchParams) {
 const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
-    const router = useRouter()
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {
@@ -65,7 +65,15 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
             setHasNoResults(false);
         }
     }, [data]);
-
+    const handleCancelar = async (id: number) => {
+        const result: Respuest = await orderBorrowed(id, "CANCELADO")
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+        FetchData();
+    }
     if (isLoading) {
         return <InvoicesCardUserSkeleton />;
     }
@@ -82,17 +90,17 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
             {data.map((order, index) => (
                 <OrderCard
                     index={index}
-                    key={index} // Accedes al id de cada libro
+                    key={index}
                     order={order}
                     page={page}
                     size={size}
+                    handleCancelar={handleCancelar}
                 />
-            ))}
             ))}
         </div>
     )
 }
-const FetchData = (size: number, currentPage: number, query: string, type: string) => {
+const FetchData = (size?: number, currentPage?: number, query?: string, type?: string) => {
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);
 

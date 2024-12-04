@@ -92,8 +92,6 @@ const create = async (validatedData: any) => {
         }
         return { success: true, message: 'Articulo del inventario añadido correctamente' };
     } catch (error) {
-        console.log(error);
-        console.log(validatedData);
         return { success: false, message: 'Error al añadir el articulo del inventario' };
     }
 };

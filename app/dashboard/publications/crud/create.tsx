@@ -17,7 +17,6 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
     const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setImageFile(e.target.files[0]);
-            console.log(e.target.files[0]);
         }
     };
 

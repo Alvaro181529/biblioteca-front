@@ -18,8 +18,8 @@ export async function createOrder(formData: FormData): Promise<Respuest> {
         userId: Number(formData.get("id")) || null, // Asegúrate de convertir a número
     };
 
-    const validatedData = orderSchema.parse(data);
     try {
+        const validatedData = orderSchema.parse(data);
         return await create(validatedData);
     } catch (error) {
         return { success: false, message: 'Error en la solicitud de prestamo' };
@@ -39,7 +39,6 @@ const create = async (validatedData: any): Promise<Respuest> => {
             body: JSON.stringify(validatedData),
         });
         const result = await res.json()
-        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo realizar la solicitud del prestamo' };
         }

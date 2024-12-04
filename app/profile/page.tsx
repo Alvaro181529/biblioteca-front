@@ -29,7 +29,6 @@ const CardNew = () => {
     const { data } = FetchDataBookNew();
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
-    console.log(data);
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {

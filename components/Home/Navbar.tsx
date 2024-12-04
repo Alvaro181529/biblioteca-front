@@ -11,7 +11,6 @@ export function ComponentNavbar() {
     const [isNavbarVisible, setIsNavbarVisible] = useState(true);
     const [lastScrollTop, setLastScrollTop] = useState(0);
     const pathname = usePathname();
-    console.log(pathname);
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollTop = window.scrollY;

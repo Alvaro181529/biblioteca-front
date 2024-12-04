@@ -60,7 +60,7 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
     const { data: userData } = FetchUser(Number(id))
 
     useEffect(() => {
-        if (userData === undefined) {
+        if (!userData) {
             setProcess(true);
         } else {
             setProcess(false);
@@ -233,17 +233,19 @@ const FetchUser = (id: number) => {
     const [data, setData] = useState<User | null>(null);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const url = `/api/users/me`;
-                const res = await fetch(url);
-                const result = await res.json();
-                setData(result)
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-        fetchData();
-    }, [])
+        if (id) {
+            const fetchData = async () => {
+                try {
+                    const url = `/api/users/me`;
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    setData(result)
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            fetchData();
+        }
+    }, [id])
     return { data }
 }

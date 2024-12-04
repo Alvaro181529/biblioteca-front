@@ -54,7 +54,6 @@ const update = async (validatedData: any, id: string): Promise<Respuest> => {
             body: JSON.stringify(validatedData),
         });
         const result = await res.json();
-        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo actualizar el usuario ' };
         }
