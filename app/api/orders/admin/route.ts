@@ -22,12 +22,6 @@ export async function GET(request: any) {
                 }
             }
         );
-
-        if (!res.ok) {
-            console.error("Error fetching data:", res.statusText);
-            return NextResponse.json({ message: "Error en la conexión" }, { status: 500 });
-        }
-
         const book = await res.json();
         return NextResponse.json(book);
     } catch (error) {

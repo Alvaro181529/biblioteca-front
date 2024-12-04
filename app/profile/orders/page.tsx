@@ -44,11 +44,11 @@ export default function OrderPage({ searchParams }: SerchParams) {
     }
     return (
         <section>
-            <div className="grid grid-cols-7 gap-2">
-                <div className="col-span-6">
+            <div className="grid grid-cols-9 gap-2  md:grid-cols-7">
+                <div className="col-span-6 md:col-span-5 lg:col-span-6">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
-                <Select onChange={handleTypeChange} className=" py-2">
+                <Select onChange={handleTypeChange} className="col-span-3 py-2 md:col-span-2 lg:col-span-1">
                     <option value="ESPERA">En espera</option>
                     <option value="PRESTADO">Prestados</option>
                 </Select>
@@ -130,7 +130,7 @@ const FetchData = (refresh: boolean, size?: number, currentPage?: number, query?
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        if (refresh) {
+        if (refresh || type) {
 
             const fetchData = async () => {
                 try {

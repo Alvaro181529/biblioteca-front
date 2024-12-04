@@ -11,13 +11,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "apexcharts": "^3.54.1",
+    "apexcharts": "^4.1.0",
     "flowbite-react": "^0.8.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^14.2.15",
     "next-auth": "^4.24.10",
     "react": "^18",
-    "react-apexcharts": "^1.4.1",
+    "react-apexcharts": "^1.7.0",
     "react-dom": "^18",
     "sharp": "^0.33.5",
     "sonner": "^1.7.0",

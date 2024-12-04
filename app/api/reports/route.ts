@@ -15,11 +15,6 @@ export async function GET(request: Request) {
             },
         });
 
-        if (!res.ok) {
-            console.error("Error fetching data:", res.statusText);
-            return NextResponse.json({ message: "Error en la conexión" }, { status: 500 });
-        }
-
         const blob = await res.blob(); // Obtener el blob (archivo binario)
         const headers = new Headers();
         headers.set('Content-Type', 'application/pdf'); // Aseguramos que la respuesta tenga el tipo correcto

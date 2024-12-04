@@ -28,10 +28,6 @@ export async function DELETE(request: any, { params }: { params: interfaceParams
             'Authorization': `Bearer ${token}`
         },
     });
-    if (!response.ok) {
-        const errorMessage = JSON.parse(await response.text()); // Captura el mensaje de error del servidor
-        return NextResponse.json({ error: errorMessage || 'Error al eliminar el order' }, { status: response.status });
-    }
-    const deletedBook = await response.json();
-    return NextResponse.json(deletedBook);
+    const deleted = await response.json();
+    return NextResponse.json(deleted);
 }
