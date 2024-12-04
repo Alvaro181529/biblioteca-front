@@ -1,5 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth"
+import { Respuest } from "@/interface/Interface"
 import { z } from "zod"
 const rolesPermitidos = ['USUARIO EXTERNO', 'ADMIN', 'COLEGIAL', 'ESTUDIANTIL', 'ESTUDIANTE', 'DOCENTE', 'ROOT'] as const
 const IntrumentSchema = z.object({
@@ -10,7 +11,7 @@ const IntrumentSchema = z.object({
     rols: z.optional(z.enum(rolesPermitidos)),
 })
 
-export async function createUser(formData: FormData) {
+export async function createUser(formData: FormData): Promise<Respuest> {
     const data = {
         id: String(formData.get("id")) || "null",
         name: String(formData.get("name")) || null,
@@ -33,12 +34,13 @@ export async function createUser(formData: FormData) {
     const validatedData = IntrumentSchema.parse(data);
     const validatedUpdate = IntrumentSchema.parse(update);
     try {
-        await save(String(data.id), validatedData, validatedUpdate);
+        return await save(String(data.id), validatedData, validatedUpdate);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al crear el usuario' };
+
     }
 }
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users`, {
@@ -50,17 +52,18 @@ const create = async (validatedData: any) => {
             body: JSON.stringify(validatedData),
         });
 
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al crear el usuario: ' + res.statusText);
+            return { success: false, message: 'No se pudo añadir el usuario' };
         }
-        return await res.json();
+        return { success: true, message: 'Usuario añadido correctamente' };
     } catch (error) {
         console.error(error);
-        throw error;
+        return { success: false, message: 'Error al añadir el usuario' };
     }
 };
 
-const update = async (id: string, validatedData: any) => {
+const update = async (id: string, validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/${id}`, {
@@ -71,13 +74,15 @@ const update = async (id: string, validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
+
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al actualizar el usuario: ' + res.statusText);
+            return { success: false, message: 'No se pudo actualizar el usuario' };
         }
-        return await res.json();
+        return { success: true, message: 'Usuario actualizado correctamente' };
     } catch (error) {
         console.error(error);
-        throw error;
+        return { success: false, message: 'Error al actualizar el usuario' };
     }
 };
 const save = async (id: string, validatedData: any, validatedUpdate: any) => {

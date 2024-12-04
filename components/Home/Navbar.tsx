@@ -28,10 +28,10 @@ export function ComponentNavbar() {
     }, [lastScrollTop]);
     return (
         <Navbar className={`fixed top-0 z-50 m-1 w-[calc(100%-.5rem)] rounded-xl bg-verde-700 text-white transition-transform duration-300 ease-in-out sm:w-[calc(100%-.3rem)] ${isNavbarVisible ? 'translate-y-0' : '-translate-y-20'}`} rounded >
-            <Navbar.Toggle className="text-white hover:bg-verde-600" />
             <Navbar.Brand >
+                <Navbar.Toggle className="text-white hover:bg-verde-600" />
                 <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
-                <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white max-sm:hidden">Biblioteca</span>
+                <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white md:text-xl">Biblioteca</span>
             </Navbar.Brand>
             <div className="flex md:order-2">
                 <NavbarDropdown />

@@ -1,5 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth"
+import { Respuest } from "@/interface/Interface"
 import { z } from "zod"
 const IntrumentSchema = z.object({
     author_name: z.optional(z.string()),
@@ -7,7 +8,7 @@ const IntrumentSchema = z.object({
     id: z.optional(z.string())
 })
 
-export async function createAuthor(formData: FormData) {
+export async function createAuthor(formData: FormData): Promise<Respuest> {
     const data = {
         id: formData.get("id") || "null",
         author_name: String(formData.get("author_name")) || null,
@@ -15,14 +16,14 @@ export async function createAuthor(formData: FormData) {
     }
     const validatedData = IntrumentSchema.parse(data);
     try {
-        await save(String(data.id), validatedData);
-
+        return await save(String(data.id), validatedData);
     } catch (error) {
         console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al crear el autor' };
     }
 }
 
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}authors`, {
@@ -33,19 +34,18 @@ const create = async (validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
-
+        const result = await res.json();
         if (!res.ok) {
-            throw new Error('Error al crear el instrumento: ' + res.statusText);
+            return { success: false, message: 'No se pudo crear el autor' };
         }
-
-        return await res.json();
+        return { success: true, message: 'Autor creado exitosamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al crear el autor' };
     }
 };
 
-const update = async (id: string, validatedData: any) => {
+const update = async (id: string, validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}authors/${id}`, {
@@ -56,13 +56,14 @@ const update = async (id: string, validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al actualizar el instrumento: ' + res.statusText);
+            return { success: false, message: 'No se pudo crear el autor' };
         }
-        return await res.json();
+        return { success: true, message: 'Autor actualizado correctamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al actualizar el autor' };
     }
 };
 const save = async (id: string, validatedData: any) => {

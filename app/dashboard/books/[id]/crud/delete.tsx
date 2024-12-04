@@ -1,6 +1,7 @@
 "use client"
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 export function FormDelete({ contnet, data, setOpenModal }: { contnet: string, data: any, setOpenModal: (open: boolean) => void }) {
 
     const handleClick = async () => {
@@ -37,7 +38,9 @@ const fetchData = async (id: number) => {
     });
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        toast.error('No se pudo eliminar el contenido')
+        return;
     }
-    return data;
+    toast.success('Contenido eliminado correctamente')
+    return data
 }

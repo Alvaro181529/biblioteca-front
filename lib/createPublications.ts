@@ -1,5 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth";
+import { Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
     file: z.instanceof(File).nullable(),
@@ -11,7 +12,7 @@ const IntrumentSchema = z.object({
     id: z.optional(z.string())
 })
 
-export async function createPublication(formData: FormData) {
+export async function createPublication(formData: FormData): Promise<Respuest> {
     const data = {
         id: formData.get("id") || "null",
         file: formData.get("file") || null,
@@ -23,14 +24,13 @@ export async function createPublication(formData: FormData) {
     }
     const validatedData = IntrumentSchema.parse(data);
     try {
-        await save(String(data.id), validatedData);
-
+        return await save(String(data.id), validatedData);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al crear la publicacion' };
     }
 }
 
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
 
     const token = await getTokenFromSession()
     try {
@@ -42,18 +42,18 @@ const create = async (validatedData: any) => {
             body: validatedData
         });
 
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al crear la Publicacion: ' + res.statusText);
+            return { success: false, message: 'No se pudo añadir la publicacion' };
         }
-
-        return await res.json();
+        return { success: true, message: 'Publicacion añadida correctamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al añadir la publicacion' };
     }
 };
 
-const update = async (id: string, validatedData: any) => {
+const update = async (id: string, validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}publications/${id}`, {
@@ -63,16 +63,17 @@ const update = async (id: string, validatedData: any) => {
             },
             body: validatedData
         });
+        const result = await res.json();
         if (!res.ok) {
-            throw new Error('Error al actualizar la Publicacion: ' + res.statusText);
+            return { success: false, message: 'No se pudo añadir la publicacion' };
         }
-        return await res.json();
+        return { success: true, message: 'Publicacion actualizada correctamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al actualizar la publicacion' };
     }
 };
-const save = async (id: string, validatedData: any) => {
+const save = async (id: string, validatedData: any): Promise<Respuest> => {
     const formData = new FormData();
     for (const key in validatedData) {
         if (validatedData[key] !== null && validatedData[key] !== undefined) {

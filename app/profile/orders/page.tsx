@@ -1,12 +1,13 @@
 "use client"
-import { Orders } from "@/interface/Interface";
+import { Orders, Respuest } from "@/interface/Interface";
 import { ComponentPagination } from "@/components/Pagination";
 import { ComponentSearch } from "@/components/Search";
 import { InvoicesCardUserSkeleton } from "@/components/skeletons";
 import { Card, Select } from "flowbite-react";
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation";
 import OrderCard from "@/components/Order/Order";
+import { orderBorrowed } from "@/lib/updateOrder";
+import { toast } from "sonner";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -16,13 +17,13 @@ interface SerchParams {
 
 export default function OrderPage({ searchParams }: SerchParams) {
     const searchQuery = searchParams?.query || "";
-    const [type, setType] = useState("PRESTADO");
+    const [type, setType] = useState("ESPERA");
     const [size, setSize] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
     const { data, total } = FetchData(size, currentPage, searchQuery, type)
     const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setType(event.target.value);
-        setCurrentPage(1); // Reinicia a la primera página si cambias el tipo
+        setCurrentPage(1);
     };
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -39,8 +40,8 @@ export default function OrderPage({ searchParams }: SerchParams) {
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
                 <Select onChange={handleTypeChange} className=" py-2">
-                    <option value="PRESTADO">Prestados</option>
                     <option value="ESPERA">En espera</option>
+                    <option value="PRESTADO">Prestados</option>
                 </Select>
             </div>
             <CardBook data={data} page={currentPage} size={size} />
@@ -51,10 +52,7 @@ export default function OrderPage({ searchParams }: SerchParams) {
 const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: number }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
-    const router = useRouter()
-    const handleView = (id: number) => {
-        router.push(`content/${id}`)
-    };
+
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {
@@ -67,7 +65,14 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
             setHasNoResults(false);
         }
     }, [data]);
-
+    const handleCancelar = async (id: number) => {
+        const result: Respuest = await orderBorrowed(id, "CANCELADO")
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+    }
     if (isLoading) {
         return <InvoicesCardUserSkeleton />;
     }
@@ -75,7 +80,7 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
     if (hasNoResults) {
         return (
             <Card className="col-span-full">
-                <p className="text-gray-600 dark:text-gray-300">No hay resultados disponibles.</p>
+                <p className="text-gray-600 dark:text-gray-300">No se encontraron resultados.</p>
             </Card>
         );
     }
@@ -83,17 +88,17 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
         <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
             {data.map((order, index) => (
                 <OrderCard
-                    key={index}
-                    order={order}
                     index={index}
+                    key={index} // Accedes al id de cada libro
+                    order={order}
                     page={page}
                     size={size}
-                    handleView={handleView}
+                    handleCancelar={handleCancelar}
                 />
             ))}
-        </div >
-    )
-}
+        </div>)
+};
+
 const FetchData = (size: number, currentPage: number, query: string, type: string) => {
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);

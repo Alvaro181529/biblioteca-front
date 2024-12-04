@@ -36,7 +36,10 @@ export interface Content {
     content_sectionTitle: string;
     content_pageNumber: number;
 }
-
+export interface Respuest {
+    success: boolean
+    message: string
+}
 export interface BookFormData {
     id: number;
     book_imagen: string;

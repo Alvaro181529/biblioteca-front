@@ -10,7 +10,7 @@ export default function AuthComponent({ href, children }: { href?: string, child
                     <div className="flex w-full rounded-lg bg-white shadow-2xl shadow-black dark:bg-gray-700 sm:mx-0 sm:w-3/4 lg:w-1/2" style={{ height: "500px" }}>
                         <div className="flex w-full flex-col p-4 md:w-1/2">
                             <Link href={href || "/"} className="mx-4 my-2 flex size-7 items-center dark:text-white">
-                                <BsArrowLeftCircle className="text-gray-600 dark:text-gray-300" size="xl" />
+                                <BsArrowLeftCircle className="size-8 text-gray-600 dark:text-gray-300 " />
                             </Link>
                             <div className="mb-8 flex flex-1 flex-col justify-center">
                                 {children}

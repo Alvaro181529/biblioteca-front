@@ -1,5 +1,6 @@
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 
 interface deleteProps { libro: string; data: any; setOpenModal: (open: boolean) => void }
 export function FormDelete({ libro, data, setOpenModal }: deleteProps) {
@@ -39,7 +40,10 @@ const fetchData = async (id: number) => {
     });
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        toast.error('No se pudo elimnar el articulo del inventario')
+        return;
     }
+    toast.success('Articulo del inventario eliminada correctamente')
+
     return data;
 }

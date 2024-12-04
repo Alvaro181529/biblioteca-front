@@ -1,5 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth";
+import { Respuest } from "@/interface/Interface";
 
 import { z } from "zod"
 
@@ -13,7 +14,7 @@ const passSchema = z.object({
     newPassword: z.optional(z.string().nullable()),
     confirmedPassword: z.optional(z.string().nullable()),
 })
-export async function updateSession(formData: FormData) {
+export async function updateSession(formData: FormData): Promise<Respuest> {
     const data = {
         id: formData.get('id') || null,
         name: formData.get('name') || null,
@@ -22,12 +23,12 @@ export async function updateSession(formData: FormData) {
     const validatedData = userSchema.parse(data);
     const id = validatedData?.id || ""
     try {
-        await update(validatedData, id);
+        return await update(validatedData, id);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error con el usuario' };
     }
 }
-export async function updatePass(formData: FormData) {
+export async function updatePass(formData: FormData): Promise<Respuest> {
     const data = {
         currentPassword: formData.get('password-current') || null,
         newPassword: formData.get('password-new') || null,
@@ -35,16 +36,16 @@ export async function updatePass(formData: FormData) {
     }
     const validatedData = passSchema.parse(data);
     try {
-        await updatePassword(validatedData);
+        return await updatePassword(validatedData);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error con la contraseña' };
     }
 }
 
-const update = async (validatedData: any, id: string) => {
+const update = async (validatedData: any, id: string): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}/${id}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,16 +53,18 @@ const update = async (validatedData: any, id: string) => {
             },
             body: JSON.stringify(validatedData),
         });
+        const result = await res.json();
+        console.log(result);
         if (!res.ok) {
-            throw new Error('Error al actualizar el email o usuario: ' + res.statusText);
+            return { success: false, message: 'No se pudo actualizar el usuario ' };
         }
-        return await res.json();
+        return { success: true, message: 'Usuario actualizado correctamente' };
     } catch (error) {
         console.error(error);
-        throw error;
+        return { success: false, message: 'Error al actualizar el usuario' };
     }
 };
-const updatePassword = async (validatedData: any) => {
+const updatePassword = async (validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/update-password`, {
@@ -72,13 +75,13 @@ const updatePassword = async (validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
-
+        const result = await res.json();
         if (!res.ok) {
-            throw new Error('Error al actualizar la contraseña: ' + res.statusText);
+            return { success: false, message: 'No se pudo actualizar la contraseña' };
         }
-        return await res.json();
+        return { success: true, message: 'Contraseña actualizada correctamente' };
     } catch (error) {
         console.error(error);
-        throw error;
+        return { success: false, message: 'Error al actualizar la constraseña' };
     }
 };

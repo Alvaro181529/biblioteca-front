@@ -10,21 +10,15 @@ import { notFound } from "next/navigation";
 import { FormBorrowed } from "./crud/borrowed";
 import { languages } from "@/types/types";
 import { User } from "next-auth";
-const isValidUrl = (url: string) => {
-    try {
-        new URL(url);
-        return true;
-    } catch (e) {
-        return false;
-    }
-};
+import { isValidUrl } from "@/lib/validateURL";
+import { AiOutlineLoading } from "react-icons/ai";
+
 export default function ContentId({ params }: { params: { id: number } }) {
     const [openModal, setOpenModal] = useState(false);
     const { data } = useBooksData(params.id)
     if (data?.statusCode == 404) return notFound()
     const imageUrl = String(data?.book_imagen);
 
-    // Si 'imageUrl' es una URL válida, usamos esa URL; si no, generamos una ruta relativa de la API
     const imageSrc = isValidUrl(imageUrl)
         ? imageUrl // Si es una URL válida, usamos la URL
         : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
@@ -60,9 +54,19 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
     id: number, data: any, openModal: boolean,
     setOpenModal: (open: boolean) => void;
 }) => {
+    const [process, setProcess] = useState(true);
     const [title, setTitle] = useState("Prestamo");
     const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'view' | 'borrowed'>('create');
     const { data: userData } = FetchUser(Number(id))
+
+    useEffect(() => {
+        if (userData === undefined) {
+            setProcess(true);
+        } else {
+            setProcess(false);
+        }
+    }, [userData]);
+
     const closeModal = () => {
         setOpenModal(false);
         setTitle("Añadir contenido")
@@ -76,10 +80,10 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
     }
     return (
         <div className="grid gap-4">
-            <Button className="w-full bg-verde-700 font-semibold dark:text-white" onClick={onBorrowed}>Prestar</Button>
+            <Button className="w-full bg-verde-700 font-semibold dark:text-white" processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />} disabled={process} isProcessing={process} onClick={onBorrowed}>Prestar</Button>
             <Card>
                 <div className="flex justify-between">
-                    <h1 className=" my-auto text-xl font-bold dark:text-white">Contenido</h1>
+                    <h1 className=" my-auto text-xl font-bold dark:text-white">Inidce</h1>
                     <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={false}>
                         {modalType === "borrowed" && <FormBorrowed user={userData} id={id} setOpenModal={closeModal} />}
                     </ComponentModalCreate>

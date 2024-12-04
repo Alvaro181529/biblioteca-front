@@ -1,5 +1,7 @@
 import { TextInput, Label, Select } from "flowbite-react";
 import { createUser } from "@/lib/createUser";
+import { Respuest } from "@/interface/Interface";
+import { toast } from "sonner";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     let email
@@ -8,13 +10,19 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
     if (data) {
         [email, name, rol] = data
     }
-    const onSave = async () => {
-        setTimeout(() => {
-            setOpenModal(false);
-        }, 500);
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await createUser(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+        setOpenModal(false);
     }
     return (
-        <form id="submit-form" action={createUser} onSubmit={onSave}>
+        <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-6" >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="mb-4">

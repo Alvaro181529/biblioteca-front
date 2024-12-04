@@ -1,8 +1,7 @@
 "use client"
-import { ToastSuccess } from "@/components/Toast";
 import { Button } from "flowbite-react";
-import { redirect, useRouter } from "next/navigation";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 interface deleteProps { instrumento: string, data: number, setOpenModal: (open: boolean) => void }
 export function FormDelete({ instrumento, data, setOpenModal }: deleteProps) {
     const handleClick = async () => {
@@ -17,7 +16,7 @@ export function FormDelete({ instrumento, data, setOpenModal }: deleteProps) {
         <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 size-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                ¿Esta seguro de eliminar el intrumento {instrumento}
+                ¿Esta seguro de eliminar el intrumento {instrumento}?
             </h3>
             <div className="flex justify-center gap-4">
                 <Button onClick={handleClick} color="failure" aria-label="Si">
@@ -40,11 +39,9 @@ const fetchData = async (id: number) => {
     });
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        toast.error('No se pudo eliminar el instrumento')
+        return;
     }
-    if (data) {
-        return (
-            <ToastSuccess titulo="Eliminado Correctamente" />
-        )
-    }
+    toast.success('Publicacion eliminada correctamente')
+    return data
 }

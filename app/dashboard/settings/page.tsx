@@ -2,10 +2,11 @@
 import { Button, Card, Label, Spinner, TextInput, Tooltip } from "flowbite-react"
 import { useEffect, useState } from "react"
 import { PiEye, PiEyeClosed } from "react-icons/pi";
-import { User } from "@/interface/Interface";
+import { Respuest, User } from "@/interface/Interface";
 import { updatePass, updateSession } from "@/lib/updateSession";
 import { ComponentModalCreate } from "@/components/Modal";
 import { FormDelete } from "./delete";
+import { toast } from "sonner";
 
 export default function SettingPage() {
     const { data } = FetchUser()
@@ -32,9 +33,19 @@ const SectionSession = ({ data }: { data?: User | null }) => {
             </Card>
         )
     }
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await updateSession(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+    }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
-            <form action={updateSession}>
+            <form onSubmit={onSave}>
                 <input type="text" id="id" name="id" defaultValue={data?.id} hidden />
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Informacion del Usuario
@@ -63,15 +74,25 @@ const SectionPass = () => {
     const togglePasswordVisibility = () => {
         setPasswordVisible((prevState) => !prevState);
     };
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await updatePass(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+    }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
-            <form action={updatePass}>
+            <form onSubmit={onSave}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Actualizar constraseña
                 </h5>
                 <div className="relative">
                     <Button
-                        onClick={togglePasswordVisibility}
+                        onSubmit={togglePasswordVisibility}
                         className="absolute right-4 -translate-y-8 text-gray-600 dark:text-gray-300"
                         aria-label="Mostrar/Ocultar Contraseña"
                         type="button"
@@ -120,11 +141,16 @@ const SectionAccountDelete = () => {
             <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                 Eliminar cuenta
             </h5>
+            <p className="mt-2 text-base text-gray-800 dark:text-gray-400 ">
+                Esta acción es <strong>irreversible</strong> y eliminará permanentemente tu cuenta y todos los datos asociados.
+                <br />
+                Asegúrate de haber respaldado toda la información importante antes de continuar.
+            </p>
             <ComponentModalCreate title={"Eliminacion de cuenta"} openModal={openModal} setOpenModal={closeModal} status={false}>
                 <FormDelete setOpenModal={closeModal} />
             </ComponentModalCreate>
             <section className="mt-2 flex">
-                <Button aria-label="Eliminar" onClick={Modal} className="bg-red-600 dark:bg-red-700">Eliminar</Button>
+                <Button aria-label="Eliminar" onSubmit={Modal} className="bg-red-600 dark:bg-red-700">Eliminar</Button>
             </section>
 
         </Card>

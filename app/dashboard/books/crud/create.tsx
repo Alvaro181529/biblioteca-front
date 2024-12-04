@@ -2,11 +2,12 @@
 import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, ListGroup, Spinner } from "flowbite-react";
 import { bookTypes, currencies, languages } from "@/types/types";
 import { createBook } from "@/lib/createBook";
-import { BookFormData } from "@/interface/Interface";
+import { BookFormData, Respuest } from "@/interface/Interface";
 import { useEffect, useState } from "react";
 import { Author } from "@/interface/Interface";
 import { Instrument } from "@/interface/Interface";
 import { Categories } from "@/interface/Interface";
+import { toast } from "sonner";
 export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<BookFormData | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null); // Estado para imagen
@@ -39,10 +40,13 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         if (imageFile) formData.append("files", imageFile); // Agregar la imagen
         if (documentFile) formData.append("files", documentFile); // Agregar el documento
 
-        await createBook(formData);
-        setTimeout(() => {
-            setOpenModal(false);
-        }, 500);
+        const result: Respuest = await createBook(formData);
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+        setOpenModal(false);
     }
 
     if (fetch == null && id) return (

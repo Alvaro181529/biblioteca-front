@@ -2,13 +2,14 @@
 import { ComponentSearch } from "@/components/Search";
 import { Button, Card, List, Select, Table, Tooltip } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
-import { Orders } from "@/interface/Interface";
+import { Orders, Respuest } from "@/interface/Interface";
 import { IoReloadSharp } from "react-icons/io5";
 import { orderBorrowed } from "../../../lib/updateOrder";
 import { ComponentPagination } from "@/components/Pagination";
 import { InvoicesTableSkeleton } from "@/components/skeletons";
 import { HiArrowSmRight } from "react-icons/hi";
 import { FiRefreshCcw } from "react-icons/fi"
+import { toast } from "sonner";
 
 interface SerchParams {
     searchParams: {
@@ -122,15 +123,30 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
     }
 
     const handleDevolver = async (id: number) => {
-        await orderBorrowed(id, "DEVUELTO")
+        const result: Respuest = await orderBorrowed(id, "DEVUELTO")
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
         fetchData();
     }
     const handlePrestar = async (id: number) => {
-        await orderBorrowed(id, "PRESTADO")
+        const result: Respuest = await orderBorrowed(id, "PRESTADO")
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
         fetchData();
     }
     const handleCancelar = async (id: number) => {
-        await orderBorrowed(id, "CANCELADO")
+        const result: Respuest = await orderBorrowed(id, "CANCELADO")
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
         fetchData();
     }
     return (

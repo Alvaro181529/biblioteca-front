@@ -1,13 +1,14 @@
 "use server"
 
 import { getTokenFromSession } from "@/app/api/utils/auth";
+import { Respuest } from "@/interface/Interface";
 import { z } from "zod";
 
 const bookSchema = z.object({
     files: z.array(z.instanceof(File)).optional().nullable(),
     id: z.optional(z.string()),
-    book_imagen: z.optional(z.string()).nullable(),
-    book_document: z.optional(z.string()).nullable(),
+    book_imagen: z.optional(z.string()),
+    book_document: z.optional(z.string()),
     book_inventory: z.optional(z.string()),
     book_isbn: z.optional(z.string()),
     book_title_original: z.string(),
@@ -29,7 +30,7 @@ const bookSchema = z.object({
     book_instruments: z.optional(z.array(z.string())),
     book_editorial: z.optional(z.string()),
 })
-export async function createBook(formData: FormData) {
+export async function createBook(formData: FormData): Promise<Respuest> {
     const bookHeaders = String(formData.get('book_headers'));
     const bookIncludes = String(formData.get('book_includes'));
     const bookCategory = String(formData.get('book_category_ids'));
@@ -39,8 +40,8 @@ export async function createBook(formData: FormData) {
     const data = {
         files: formData.getAll('files') || null,
         id: formData.get('id') || "null",
-        book_imagen: String(formData.get('book_imagen')) || null,
-        book_document: String(formData.get('book_document')) || null,
+        book_imagen: String(formData.get('book_imagen')) || "S/I",
+        book_document: String(formData.get('book_document')) || "S/D",
         book_inventory: String(formData.get('book_inventory')) || undefined,
         book_editorial: String(formData.get('book_editorial')) || undefined,
         book_isbn: String(formData.get('book_isbn')) || undefined,
@@ -64,9 +65,9 @@ export async function createBook(formData: FormData) {
     };
     const validatedData = bookSchema.parse(data);
     try {
-        await save(String(data.id), validatedData);
+        return await save(String(data.id), validatedData);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al con el inventario' };
     }
 }
 const create = async (validatedData: any) => {
@@ -85,14 +86,19 @@ const create = async (validatedData: any) => {
             throw new Error('Error al crear el libro: ' + res.statusText);
         }
 
-        return await res.json();
+        const result = await res.json()
+        if (!res.ok) {
+            return { success: false, message: 'No se pudo añadir el articulo del inventario' };
+        }
+        return { success: true, message: 'Articulo del inventario añadido correctamente' };
     } catch (error) {
-        console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        console.log(error);
+        console.log(validatedData);
+        return { success: false, message: 'Error al añadir el articulo del inventario' };
     }
 };
 
-const update = async (id: string, validatedData: any) => {
+const update = async (id: string, validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books/${id}`, {
@@ -102,16 +108,17 @@ const update = async (id: string, validatedData: any) => {
             },
             body: validatedData
         });
+        const result = await res.json();
         if (!res.ok) {
-            throw new Error('Error al actualizar el libro: ' + res.statusText);
+            return { success: false, message: 'No se pudo añadir la articulo del inventario' };
         }
-        return await res.json();
+        return { success: true, message: 'articulo del inventario actualizada correctamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al actualizar la articulo del inventario' };
     }
 };
-const save = async (id: string, validatedData: any) => {
+const save = async (id: string, validatedData: any): Promise<Respuest> => {
     const formData = new FormData()
     if (Array.isArray(validatedData.files)) {
         validatedData.files.forEach((file: any) => {

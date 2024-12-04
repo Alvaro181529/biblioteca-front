@@ -1,5 +1,6 @@
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 
 interface deleteProps { instrumento: string; data: any; setOpenModal: (open: boolean) => void }
 
@@ -31,15 +32,22 @@ export function FormDelete({ instrumento, data, setOpenModal }: deleteProps) {
     )
 }
 const fetchData = async (id: number) => {
-    const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+    try {
+        const response = await fetch(`/api/categories/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        console.log(data);
+        if (!response.ok) {
+            toast.error('No se pudo elimnar la categoria')
+            return;
+        }
+        toast.success('Categoria eliminada correctamente')
+        return data;
+    } catch (error) {
+        toast.error('No se pudo elimnar la categoria')
     }
-    return data;
 }

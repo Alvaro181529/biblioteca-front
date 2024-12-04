@@ -1,5 +1,6 @@
 "use server";
 import { getTokenFromSession } from "@/app/api/utils/auth";
+import { Respuest } from "@/interface/Interface";
 import { z } from "zod";
 
 const contentSchema = z.object({
@@ -10,7 +11,7 @@ const contentSchema = z.object({
     id: z.optional(z.string())
 });
 
-export async function createContent(formData: FormData) {
+export async function createContent(formData: FormData): Promise<Respuest> {
     const contents = [];
     for (let i = 0; formData.get(`content_sectionTitle_${i}`) !== null; i++) {
         const data = {
@@ -29,14 +30,14 @@ export async function createContent(formData: FormData) {
             const validatedData = contentSchema.parse(content);
             validatedContents.push(validatedData);
         }
-        await save(contents[0]?.id, validatedContents);
+        return await save(contents[0]?.id, validatedContents);
     } catch (error) {
         console.error('Error en el guardado:', error);
-        // Maneja el error de validación aquí, si es necesario
+        return { success: false, message: 'Error en el contenido' };
     }
 }
 
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}contents`, {
@@ -48,18 +49,18 @@ const create = async (validatedData: any) => {
             body: JSON.stringify(validatedData),
         });
 
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al crear el contenido: ' + res.statusText);
+            return { success: false, message: 'No se pudo añadir el contenido' };
         }
-
-        return await res.json();
+        return { success: true, message: 'Contenido añadida correctamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al añadir el contenido' };
     }
 };
 
-const update = async (id: string, validatedData: any) => {
+const update = async (id: string, validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}contents/${id}`, {
@@ -70,13 +71,14 @@ const update = async (id: string, validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al actualizar el contenido: ' + res.statusText);
+            return { success: false, message: 'No se pudo actualizar el contenido' };
         }
-        return await res.json();
+        return { success: true, message: 'Contenido actualizado correctamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al actualizar el contenido' };
     }
 };
 

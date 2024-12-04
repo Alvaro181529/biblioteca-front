@@ -11,7 +11,7 @@ import { BookFormData, Publication } from "@/interface/Interface";
 import { ComponentPagination } from "@/components/Pagination";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from 'use-debounce';
-import { InvoicesCardPageSkeleton } from "@/components/skeletons";
+import { InvoicesCardPageSkeleton, InvoicesCardSkeleton } from "@/components/skeletons";
 import { ComponentNavbar } from "@/components/Home/Navbar";
 import { isValidUrl } from "@/lib/validateURL";
 
@@ -222,14 +222,39 @@ const ComponentSearch = ({ onChange, size }: propsSelect) => {
 
 
 function ComponentPublications() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasNoResults, setHasNoResults] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(null);  // Estado para saber qué publicación está expandida
   const maxLength = 20;
 
   const toggleExpand = (index: any) => {
     setExpandedIndex(expandedIndex === index ? null : index);  // Si la publicación está expandida, la colapsamos, si no, la expandimos
   }
-
   const { data } = FetchDataPublications();
+  useEffect(() => {
+    if (!Array.isArray(data)) {
+      const timer = setTimeout(() => {
+        setHasNoResults(true);
+        setIsLoading(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    } else {
+      setIsLoading(false);
+      setHasNoResults(false);
+    }
+  }, [data]);
+  if (isLoading) {
+    return <InvoicesCardSkeleton />;
+
+  }
+
+  if (hasNoResults) {
+    return (
+      <Card className="col-span-full">
+        <p className="text-gray-600">No se encontro contenido.</p>
+      </Card>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-7xl py-12 dark:bg-gray-700 md:py-9 lg:py-16" id="publicacion">

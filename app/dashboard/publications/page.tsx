@@ -51,7 +51,7 @@ export default function Publications({ searchParams }: SerchParams) {
         setModalState(true)
         setDataUpdate(data[rowIndex]);
         setActualData(actualNumber)
-        setTitle("Editar Publication ")
+        setTitle("Editar Publicacion ")
         setModalType('edit');
         setOpenModal(true);
     };

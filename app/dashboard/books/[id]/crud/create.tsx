@@ -1,7 +1,9 @@
 "use client"
 import { TextInput, Label } from "flowbite-react";
 import { createContent } from "@/lib/createContent";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Respuest } from "@/interface/Interface";
+import { toast } from "sonner";
 
 export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data?: any, setOpenModal: (open: boolean) => void, view?: boolean }) {
     let title: any;
@@ -21,14 +23,20 @@ export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data
         newContents[index][field] = value;
         setContents(newContents);
     };
-    const onSave = async () => {
-        setTimeout(() => {
-            setOpenModal(false);
-        }, 500);
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault()
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await createContent(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+        setOpenModal(false);
     }
 
     return (
-        <form id="submit-form" action={createContent} onSubmit={onSave}>
+        <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-2" >
                 {contents.map((content, index) => (
                     <div key={index} className="grid grid-cols-1 gap-4 md:grid-cols-4">

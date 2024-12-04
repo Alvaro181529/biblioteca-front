@@ -1,5 +1,6 @@
 "use server";
 import { getTokenFromSession } from "@/app/api/utils/auth";
+import { Respuest } from "@/interface/Interface";
 import { z } from "zod";
 
 const orderSchema = z.object({
@@ -9,7 +10,7 @@ const orderSchema = z.object({
     userId: z.number(),
 });
 
-export async function createOrder(formData: FormData) {
+export async function createOrder(formData: FormData): Promise<Respuest> {
     const data = {
         orders: [
             { id: Number(formData.get("book")) || null } // Asegúrate de convertir a número
@@ -19,14 +20,14 @@ export async function createOrder(formData: FormData) {
 
     const validatedData = orderSchema.parse(data);
     try {
-        await create(validatedData);
-
+        return await create(validatedData);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error en la solicitud de prestamo' };
+
     }
 }
 
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}orders`, {
@@ -37,15 +38,14 @@ const create = async (validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
-
+        const result = await res.json()
+        console.log(result);
         if (!res.ok) {
-            const errorBody = await res.text(); // O res.json() si esperas un JSON
-            throw new Error(`Error al crear el instrumento: ${res.statusText} - ${errorBody}`);
+            return { success: false, message: 'No se pudo realizar la solicitud del prestamo' };
         }
-
-        return await res.json();
+        return { success: true, message: 'Solicitud de prestamo realizada ' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error en la solicitud de prestamo' };
     }
 };

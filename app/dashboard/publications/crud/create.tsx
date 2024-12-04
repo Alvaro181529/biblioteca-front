@@ -2,7 +2,8 @@
 import { TextInput, Label, Tabs, FileInput, Textarea, Select, Spinner } from "flowbite-react";
 import { createPublication } from "@/lib/createPublications";
 import { useEffect, useState } from "react";
-import { Publication } from "@/interface/Interface";
+import { Publication, Respuest } from "@/interface/Interface";
+import { toast } from "sonner";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<Publication | null>(null)
@@ -24,10 +25,13 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
         if (imageFile) formData.append("file", imageFile);
-        await createPublication(formData)
-        setTimeout(() => {
-            setOpenModal(false);
-        }, 500);
+        const result: Respuest = await createPublication(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+        setOpenModal(false);
     }
     useEffect(() => {
         const fetchData = async () => {
@@ -54,7 +58,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                             name="publication_title"
                             id="publication_title"
                             placeholder="Sólfeo"
-                            defaultValue={fetch?.publication_title}
+                            defaultValue={fetch?.publication_title ?? ""}
                         />
                     </div>
                     <div className="col-span-2">
@@ -63,7 +67,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                             name="publication_content"
                             id="publication_content"
                             placeholder="Contenido"
-                            defaultValue={fetch?.publication_content}
+                            defaultValue={fetch?.publication_content ?? ""}
                         />
                     </div>
                     <div className="col-span-2 mb-4">
@@ -73,7 +77,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <TextInput
                                     name="publication_imagen"
-                                    defaultValue={fetch?.publication_imagen}
+                                    defaultValue={fetch?.publication_imagen ?? ""}
                                     placeholder="URL de la imagen"
                                 />
                             </Tabs.Item>
@@ -84,7 +88,6 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                                     accept="image/*"
                                     id="imagen"
                                     onChange={onImageChange}
-                                    defaultValue={fetch?.publication_imagen}
                                 />
                             </Tabs.Item>
                         </Tabs>

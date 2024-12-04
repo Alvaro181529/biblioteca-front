@@ -53,9 +53,6 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
     const router = useRouter()
-    const handleView = (id: number) => {
-        router.push(`content/${id}`)
-    };
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {
@@ -84,14 +81,15 @@ const CardBook = ({ data, page, size }: { data: Orders[], page: number, size: nu
         <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
             {data.map((order, index) => (
                 <OrderCard
-                    key={index}
-                    order={order}
                     index={index}
+                    key={index} // Accedes al id de cada libro
+                    order={order}
                     page={page}
                     size={size}
-                    handleView={handleView}
-                />))}
-        </div >
+                />
+            ))}
+            ))}
+        </div>
     )
 }
 const FetchData = (size: number, currentPage: number, query: string, type: string) => {

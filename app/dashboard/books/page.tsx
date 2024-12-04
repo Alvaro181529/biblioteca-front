@@ -167,7 +167,7 @@ const useBooksData = (size: number, currentPage: number, query: string, type: st
         setColumns([
             "INVENTARIO",
             "CONDICION",
-            "LOCACION",
+            "SIGNATURA TOPOGRAFICA",
             "TITULO ORIGINAL",
             "LENGUAJE",
             "CANTIDAD",

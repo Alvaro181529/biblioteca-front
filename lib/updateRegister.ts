@@ -24,9 +24,9 @@ export async function updateRegister(formData: FormData) {
     }
     const validatedData = bookSchema.parse(data);
     try {
-        await update(validatedData);
+        return await update(validatedData);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al registrar' };
     }
 }
 
@@ -41,12 +41,13 @@ const update = async (validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
+        const result = await res.json();
         if (!res.ok) {
-            throw new Error('Error al actualizar el registro: ' + res.statusText);
+            return { success: false, message: 'No se pudo registar la informacion' };
         }
-        return await res.json();
+        return { success: true, message: 'Informacion registrada correctamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al registrar la informacion' };
     }
 };

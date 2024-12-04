@@ -2,6 +2,7 @@
 import { Button } from "flowbite-react";
 import { signOut } from "next-auth/react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 interface deleteProps { setOpenModal: (open: boolean) => void }
 export function FormDelete({ setOpenModal }: deleteProps) {
     const handleCerrar = () => {
@@ -34,13 +35,15 @@ const DeleteAccount = async () => {
                 'Content-Type': 'application/json',
             },
         });
-        if (res.ok) {
-            const result = await res.json();
-            signOut()
-        } else {
-            console.error("Error al eliminar la cuenta:", res.statusText);
+        const data = await res.json();
+        if (!res.ok) {
+            toast.error('No se pudo elimnar la cuenta')
+            return;
         }
+        toast.success('Cuenta eliminada correctamente')
+        signOut()
+        return data;
     } catch (error) {
-        console.error("Error fetching data:", error);
+        toast.error('Error al elimnar la cuenta')
     }
 }

@@ -5,6 +5,7 @@ import "./globals.css";
 import SessionAuthProvider from "@/context/SessionAuthProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/auth";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +33,19 @@ export default async function RootLayout({
         <SessionAuthProvider session={session}>
           {children}
         </SessionAuthProvider>
+        <Toaster
+          closeButton
+          visibleToasts={2}
+          toastOptions={{
+            classNames: {
+              icon: 'dark:text-white',
+              toast: 'bg-white dark:bg-gray-700 border dark:border-gray-800',
+              title: 'text-black dark:text-white',
+              description: 'text-black dark:text-white',
+              closeButton: 'dark:bg-gray-900 dark:text-black',
+            },
+          }}
+        />
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth";
+import { Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
     instrument_name: z.optional(z.string()),
@@ -7,7 +8,7 @@ const IntrumentSchema = z.object({
     id: z.optional(z.string())
 })
 
-export async function createInstrument(formData: FormData) {
+export async function createInstrument(formData: FormData): Promise<Respuest> {
     const data = {
         id: formData.get("id") || "null",
         instrument_name: String(formData.get("instrument_name")) || null,
@@ -15,15 +16,14 @@ export async function createInstrument(formData: FormData) {
     }
     const validatedData = IntrumentSchema.parse(data);
     try {
-        await save(String(data.id), validatedData);
-
+        return await save(String(data.id), validatedData);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al crear el instrumento' };
     }
 }
 
 
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}instruments`, {
@@ -35,18 +35,20 @@ const create = async (validatedData: any) => {
             body: JSON.stringify(validatedData),
         });
 
-        if (!res.ok) {
-            throw new Error('Error al crear el instrumento: ' + res.statusText);
-        }
+        const result = await res.json()
 
-        return await res.json();
+        if (!res.ok) {
+            return { success: false, message: 'No se pudo añadir el instrumento' };
+        }
+        return { success: true, message: 'Instrumento añadida exitosamente' };
+
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al añadir el instrumento' };
     }
 };
 
-const update = async (id: string, validatedData: any) => {
+const update = async (id: string, validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}instruments/${id}`, {
@@ -57,13 +59,14 @@ const update = async (id: string, validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al actualizar el instrumento: ' + res.statusText);
+            return { success: false, message: 'No se pudo actualizar el instrumento' };
         }
-        return await res.json();
+        return { success: true, message: 'Instrumento actualizado exitosamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al actualizar el instrumento' };
     }
 };
 const save = async (id: string, validatedData: any) => {

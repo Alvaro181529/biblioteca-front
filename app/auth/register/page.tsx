@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "flowbite-react";
 import { AiOutlineLoading } from "react-icons/ai";
 import AuthComponent from "@/components/Auth";
+import { PiEye, PiEyeClosed } from "react-icons/pi";
 import { signup } from "@/lib/signup";
 
 interface Signin {
@@ -15,6 +16,8 @@ interface Signin {
 
 export default function Login() {
     const [signin, setSignin] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [passwordConfirmedVisible, setPasswordConfirmedVisible] = useState(false);
     const [formData, setFormData] = useState<Signin>({
         name: "",
         email: "",
@@ -41,7 +44,12 @@ export default function Login() {
             [name]: value
         }));
     };
-
+    const togglePasswordVisibility = () => {
+        setPasswordVisible((prevState) => !prevState);
+    };
+    const togglePasswordConfirmedVisibility = () => {
+        setPasswordConfirmedVisible((prevState) => !prevState);
+    };
     const onSubmit = async (e: FormEvent) => {
         if (!validate()) return;
         setSignin(true)
@@ -63,6 +71,7 @@ export default function Login() {
                             placeholder="Nombre"
                             value={formData.name}
                             onChange={handleChange}
+                            required
                         />
                         {errors.name && (
                             <span className="text-red-500">{errors.name}</span>
@@ -79,27 +88,45 @@ export default function Login() {
                             onChange={handleChange}
                             required
                         />
+                        <button
+                            aria-label="login"
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
+                        >
+                            {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
+                        </button>
                         {errors.email && (
                             <span className="text-red-500">{errors.email}</span>
                         )}
                     </div>
-                    <div className="mt-4 flex">
+                    <div className="relative mt-4 flex w-full">
                         <input
-                            type="password"
+                            type={passwordVisible ? "text" : "password"}
                             name="password"
                             className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             placeholder="Contraseña"
                             value={formData.password}
                             onChange={handleChange}
+                            aria-label="contraseña"
                             required
                         />
+                        <button
+                            aria-label="ver contraseña"
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
+                        >
+                            {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
+                        </button>
                         {errors.password && (
                             <span className="text-red-500">{errors.password}</span>
                         )}
                     </div>
-                    <div className="mt-4 flex">
+                    <div className="relative mt-4 flex w-full">
                         <input
-                            type="password"
+                            type={passwordConfirmedVisible ? "text" : "password"}
+                            aria-label="ver confirmacion contraseña"
                             name="confirmPass"
                             className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             placeholder="Confirmar Contraseña"
@@ -107,6 +134,14 @@ export default function Login() {
                             onChange={handleChange}
                             required
                         />
+                        <button
+                            aria-label="Confirmar Contraseña"
+                            type="button"
+                            onClick={togglePasswordConfirmedVisibility}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
+                        >
+                            {passwordConfirmedVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
+                        </button>
                         {errors.confirmPass && (
                             <span className="text-red-500">{errors.confirmPass}</span>
                         )}

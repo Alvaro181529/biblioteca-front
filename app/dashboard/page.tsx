@@ -5,8 +5,9 @@ import { ComponentSearch } from "@/components/Search";
 import { Accordion, Button, Badge, List } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { orderBorrowed } from "../../lib/updateOrder";
-import { Orders } from "@/interface/Interface";
+import { Orders, Respuest } from "@/interface/Interface";
 import { ToastSuccess } from "@/components/Toast";
+import { toast } from "sonner";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -53,7 +54,6 @@ const DashBoard = ({ update }: { update?: boolean }) => {
 
 const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: boolean; setUpdate: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [message, setMessage] = useState<string | null>(null);
     const [size, setSize] = useState(5);
     const { data, pages, count: countData } = useOrdersData(size, currentPage, searchParams.query, update);
     const handlePageChange = (page: number) => {
@@ -72,14 +72,22 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
     };
     const prestar = async (id: number) => {
         setUpdate(true)
-        await orderBorrowed(id, "PRESTADO")
-        setMessage("Prestado correctamente")
+        const result: Respuest = await orderBorrowed(id, "PRESTADO")
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
     }
 
     const cancelar = async (id: number) => {
         setUpdate(true)
-        await orderBorrowed(id, "CANCELADO")
-        setMessage("Cancelado")
+        const result: Respuest = await orderBorrowed(id, "CANCELADO")
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
     }
     useEffect(() => {
         if (update) {
@@ -175,7 +183,6 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                 </p>
                 <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
             </div>
-            {message && <ToastSuccess titulo={message} />}
         </div >
     );
 }

@@ -3,12 +3,11 @@ import { PiEye, PiEyeClosed } from "react-icons/pi";
 import { Button, Card, Label, Select, Spinner, TextInput } from "flowbite-react"
 import { updateRegister } from "@/lib/updateRegister";
 import { useEffect, useState } from "react"
-import { User } from "@/interface/Interface";
-import { updateSession } from "@/lib/updateSession";
-import { ToastSuccess } from "@/components/Toast"
-import { signOut } from "next-auth/react";
+import { Respuest, User } from "@/interface/Interface";
+import { updatePass, updateSession } from "@/lib/updateSession";
 import { ComponentModalCreate } from "@/components/Modal";
 import { FormDelete } from "./delete";
+import { toast } from "sonner";
 
 export default function SettingPage() {
     const { data } = FetchUser()
@@ -35,9 +34,20 @@ const SectionSession = ({ data }: { data?: User | null }) => {
             </Card>
         )
     }
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await updateSession(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+    }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
-            <form action={updateSession}>
+            <form onSubmit={onSave}>
+                <input type="text" id="id" name="id" defaultValue={data?.id} hidden />
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Informacion del Usuario
                 </h5>
@@ -45,13 +55,13 @@ const SectionSession = ({ data }: { data?: User | null }) => {
                     <div className="mb-2 block">
                         <Label htmlFor="name" value="Nombre" />
                     </div>
-                    <TextInput id="name" type="text" placeholder="ca esta tu nombre" defaultValue={data?.name} required />
+                    <TextInput id="name" name="name" type="text" placeholder="ca esta tu nombre" defaultValue={data?.name} required />
                 </div>
                 <div>
                     <div className="mb-2 block">
                         <Label htmlFor="email" value="Correo" />
                     </div>
-                    <TextInput id="email" type="email" placeholder="name@coplumu.com" defaultValue={data?.email} required />
+                    <TextInput id="email" name="email" type="email" placeholder="name@flowbite.com" defaultValue={data?.email} required />
                 </div>
                 <section className="mt-2 flex">
                     <Button aria-label="Guardar" type="submit" className="bg-verde-600 ">Guardar</Button>
@@ -91,9 +101,19 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
             </Card>
         )
     }
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await updateRegister(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+    }
     return (
         <Card className="mb-2 grid w-full grid-cols-2 max-sm:grid-cols-1">
-            <form action={updateRegister}>
+            <form onSubmit={onSave}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Informacion del perfil
                 </h5>
@@ -135,7 +155,7 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
                 </div>
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor="register_ubication" value="Ubicacion" />
+                        <Label htmlFor="register_ubication" value="Direccion" />
                     </div>
                     <TextInput id="register_ubication" name="register_ubication" type="text" placeholder="Z/ buenos aires N/ 1223" defaultValue={data?.register?.register_ubication || ""} />
                 </div>
@@ -163,9 +183,19 @@ const SectionMe = () => {
     const togglePasswordVisibility = () => {
         setPasswordVisible((prevState) => !prevState);
     };
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await updatePass(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+    }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  gap-2 max-sm:grid-cols-1">
-            <form action={updateSession}>
+            <form onSubmit={onSave}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Actualizar constraseña
                 </h5>
@@ -231,28 +261,6 @@ const SectionAccountDelete = () => {
 }
 
 
-
-const DeleteAccount = async () => {
-    try {
-        const url = '/api/users';
-        const res = await fetch(url, {
-            method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (res.ok) {
-            const result = await res.json();
-            console.log(result);
-            signOut()
-        } else {
-            console.error("Error al eliminar la cuenta:", res.statusText);
-        }
-        return <ToastSuccess titulo="Usuario eliminado" />
-    } catch (error) {
-        console.error("Error fetching data:", error);
-    }
-}
 
 const FetchUser = () => {
     const [data, setData] = useState<User | null>(null);

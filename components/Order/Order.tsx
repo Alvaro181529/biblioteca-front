@@ -1,18 +1,25 @@
 // components/OrderCard.js
 import React from "react";
-import { Card, Badge } from "flowbite-react"; // Si usas Flowbite
+import { Card, Badge, Button } from "flowbite-react"; // Si usas Flowbite
 import { RiCalendarLine, RiBookFill } from "react-icons/ri"; // Íconos de react-icons
 import { importanceColor, importanceColorMap } from "./Interface/type";
-import { Orders } from "@/interface/Interface";
+import { useRouter } from "next/navigation";
+import { Orders, Respuest } from "@/interface/Interface";
+import { toast } from "sonner";
+import { orderBorrowed } from "@/lib/updateOrder";
+
 interface PropsOrder {
     order: Orders,
     index: number,
     page: number,
     size: number,
-    handleView: (id: number) => void
+    handleCancelar: (id: number) => void;
 }
-const OrderCard = ({ order, index, page, size, handleView }: PropsOrder) => {
-    // Calcular el color del badge y la línea según el estado de la orden
+const OrderCard = ({ order, index, page, size, handleCancelar }: PropsOrder) => {
+    const router = useRouter()
+    const handleView = (id: number) => {
+        router.push(`content/${id}`);
+    };
     const badgeColor = importanceColorMap[String(order.order_status)] || 'default';
     const lineColor = importanceColor[String(order.order_status)] || 'default';
 
@@ -23,22 +30,30 @@ const OrderCard = ({ order, index, page, size, handleView }: PropsOrder) => {
                 <h2 className="text-lg font-semibold dark:text-white" >
                     Orden # {(page - 1) * size + index + 1}
                 </h2>
-                < Badge color={badgeColor} className="rounded-lg" >
-                    {order.order_status}
-                </Badge>
+                <div>
+                    < Badge color={badgeColor} className="rounded-lg" >
+                        {order.order_status}
+                    </Badge>
+
+                </div>
             </div>
-            < div className="flex items-center text-sm text-gray-600" >
-                <RiCalendarLine className="mr-2 size-4 dark:text-gray-400" />
-                <span className="dark:text-gray-400" >
-                    {new Date(order.order_at).toLocaleDateString()}
-                </span>
+            < div className="flex items-center justify-between text-sm text-gray-600" >
+                <div className="flex items-center">
+                    <RiCalendarLine className="mr-2 size-4 dark:text-gray-400" />
+                    <span className="dark:text-gray-400" >
+                        {new Date(order.order_at).toLocaleDateString()}
+                    </span>
+                </div>
+                {order.order_status === 'ESPERA' && (
+                    <Button color="failure" pill className="text-white" size="xs" onClick={() => handleCancelar(order.id)}>Cancelar</Button>
+                )}
             </div>
             {
                 order.books.map((book, bookIndex) => (
                     <Card
                         key={bookIndex}
                         className="cursor-pointer"
-                        onClick={() => handleView(Number(order.id))}
+                        onClick={() => handleView(Number(book.id))}
                     >
                         <div className="flex items-center" >
                             <RiBookFill className="mr-2 size-5 dark:text-gray-400" />

@@ -1,19 +1,25 @@
 import { TextInput, Label, Textarea } from "flowbite-react";
 import { createAuthor } from "@/lib/createAuthor";
-
+import { toast } from "sonner";
+import { Respuest } from "@/interface/Interface";
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     let defaultName
     let defaultBiografy
 
     if (data)
         [defaultName, defaultBiografy] = data;
-    const onSave = async () => {
-        setTimeout(() => {
-            setOpenModal(false);
-        }, 500);
+
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result: Respuest = await createAuthor(formData);
+        if (!result.success)
+            toast.error(result.message);
+        toast.success(result.message);
+        setOpenModal(false);
     }
     return (
-        <form id="submit-form" action={createAuthor} onSubmit={onSave}>
+        <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-6" >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
                     <div className="mb-4">

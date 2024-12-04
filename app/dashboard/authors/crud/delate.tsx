@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "flowbite-react";
-import { redirect, useRouter } from "next/navigation";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 interface deleteProps { author: string, data: any, setOpenModal: (open: boolean) => void }
 export function FormDelete({ author, data, setOpenModal }: deleteProps) {
     const handleClick = async () => {
@@ -16,7 +16,7 @@ export function FormDelete({ author, data, setOpenModal }: deleteProps) {
         <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 size-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                ¿Esta seguro de eliminar el autor {author}
+                ¿Esta seguro de eliminar el autor {author}?
             </h3>
             <div className="flex justify-center gap-4">
                 <Button onClick={handleClick} color="failure" aria-label="Si">
@@ -38,7 +38,8 @@ const fetchData = async (id: number) => {
     });
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        toast.error("Error al eliminar")
     }
+    toast.success("Eliminado correctamente")
     return data;
 }

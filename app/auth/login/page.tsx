@@ -6,8 +6,9 @@ import { signIn } from "next-auth/react";
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import AuthComponent from "@/components/Auth";
+import { toast } from "sonner";
 
 interface Signin {
     email: string;
@@ -56,6 +57,7 @@ export default function Home() {
         } else {
             const user = await fetch('/api/auth/session').then(res => res.json());
             if (user) {
+                toast.success("Credenciales correctas");
                 setSignin(true)
                 if (user.user.rols.includes('ADMIN') || user.user.rols.includes('ROOT')) {
                     router.push("/dashboard");
@@ -67,12 +69,15 @@ export default function Home() {
             }
         }
     };
+    useEffect(() => {
+        if (error) {
+            toast.error("Usuario o Contraseña equivocados");
+            setError(null)
+        }
+    }, [error]);
 
     return (
         <AuthComponent>
-            {error && (
-                <ToastDanger titulo={error} />
-            )}
             <h1 className="text-center text-4xl font-light dark:text-white">Bienvenido</h1>
             <div className="mt-4 w-full">
                 <form className="mx-auto w-3/4" onSubmit={onSubmit}>
@@ -91,27 +96,25 @@ export default function Home() {
                             <span>{errors.email}</span>
                         )}
                     </div>
-                    <div className="mt-4 flex">
-                        <div className="relative w-full">
-                            <input
-                                id="password"
-                                type={passwordVisible ? "text" : "password"}
-                                className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
-                                name="password"
-                                required
-                                placeholder="Contraseña"
-                                defaultValue={formData.password}
-                                onChange={handleChange}
-                            />
-                            <button
-                                aria-label="login"
-                                type="button"
-                                onClick={togglePasswordVisibility}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
-                            >
-                                {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-200" /> : <PiEye className="size-5 dark:text-gray-200" />}
-                            </button>
-                        </div>
+                    <div className="relative mt-4 flex w-full">
+                        <input
+                            id="password"
+                            type={passwordVisible ? "text" : "password"}
+                            className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
+                            name="password"
+                            required
+                            placeholder="Contraseña"
+                            defaultValue={formData.password}
+                            onChange={handleChange}
+                        />
+                        <button
+                            aria-label="login"
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
+                        >
+                            {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
+                        </button>
                         {errors.password && (
                             <span>{errors.password}</span>
                         )}

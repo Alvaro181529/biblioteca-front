@@ -60,6 +60,7 @@ const CardContent = ({ data }: {
     return (
         <div className="grid gap-4">
             <Card>
+                <h1 className=" my-auto text-xl font-bold dark:text-white">Inidce</h1>
                 <nav className="grid gap-3">
                     {data?.book_contents && data?.book_contents.map((content: any) => (
                         <div key={content.id} className="grid grid-cols-5 text-gray-500 dark:text-gray-300">

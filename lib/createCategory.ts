@@ -1,5 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth";
+import { Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
     category_name: z.optional(z.string()),
@@ -7,7 +8,7 @@ const IntrumentSchema = z.object({
     id: z.optional(z.string())
 })
 
-export async function createCategory(formData: FormData) {
+export async function createCategory(formData: FormData): Promise<Respuest> {
     const data = {
         id: formData.get("id") || "null",
         category_name: String(formData.get("category_name")) || null,
@@ -15,14 +16,14 @@ export async function createCategory(formData: FormData) {
     }
     const validatedData = IntrumentSchema.parse(data);
     try {
-        await save(String(data.id), validatedData);
+        return await save(String(data.id), validatedData);
 
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al crear la categoria' };
     }
 }
 
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}categories`, {
@@ -33,19 +34,19 @@ const create = async (validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
+        const result = await res.json()
 
         if (!res.ok) {
-            throw new Error('Error al crear el instrumento: ' + res.statusText);
+            return { success: false, message: 'No se pudo añadir la categoria' };
         }
-
-        return await res.json();
+        return { success: true, message: 'Categoria añadida exitosamente' };
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al añadir la categoria' };
     }
 };
 
-const update = async (id: string, validatedData: any) => {
+const update = async (id: string, validatedData: any): Promise<Respuest> => {
     const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}categories/${id}`, {
@@ -56,13 +57,15 @@ const update = async (id: string, validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
+        const result = await res.json();
         if (!res.ok) {
-            throw new Error('Error al actualizar el instrumento: ' + res.statusText);
+            return { success: false, message: 'No se pudo añadir la categoria' };
         }
-        return await res.json();
+        return { success: true, message: 'Categoria actualizada correctamente' };
+
     } catch (error) {
         console.error(error);
-        throw error; // Opcional: lanzar el error para manejarlo más arriba
+        return { success: false, message: 'Error al actualizar la categoria' };
     }
 };
 const save = async (id: string, validatedData: any) => {

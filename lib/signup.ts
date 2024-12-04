@@ -23,9 +23,9 @@ export async function signup(formData: FormData) {
 
     const validatedData = IntrumentSchema.parse(data);
     try {
-        await create(validatedData);
+        return await create(validatedData);
     } catch (error) {
-        console.error('Error en el guardado:', error);
+        return { success: false, message: 'Error al crear el usuario' };
     }
 }
 const create = async (validatedData: any) => {
@@ -37,13 +37,13 @@ const create = async (validatedData: any) => {
             },
             body: JSON.stringify(validatedData),
         });
-
+        const result = await res.json()
         if (!res.ok) {
-            throw new Error('Error al crear el usuario: ' + res.statusText);
+            return { success: false, message: 'No se pudo registrar el usuario' };
         }
-        return await res.json();
+        return { success: true, message: 'Usuario registrado correctamente' };
     } catch (error) {
         console.error(error);
-        throw error;
+        return { success: false, message: 'Error al registrar el usuario' };
     }
 };

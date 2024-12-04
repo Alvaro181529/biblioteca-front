@@ -1,6 +1,7 @@
 "use client"
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 interface deleteProps { publication: string, data: any, setOpenModal: (open: boolean) => void }
 export function FormDelete({ publication, data, setOpenModal }: deleteProps) {
     const handleClick = async () => {
@@ -9,7 +10,7 @@ export function FormDelete({ publication, data, setOpenModal }: deleteProps) {
     };
 
     const handleCerrar = () => {
-        setOpenModal(false); // Cerrar el modal al cancelar
+        setOpenModal(false);
     };
     return (
         <div className="text-center">
@@ -38,7 +39,9 @@ const fetchData = async (id: number) => {
     });
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        toast.error('No se pudo elimnar la publicacion')
+        return;
     }
+    toast.success('Publicacion eliminada correctamente')
     return data;
 }

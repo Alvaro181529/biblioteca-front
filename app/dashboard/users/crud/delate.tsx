@@ -1,5 +1,6 @@
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { toast } from "sonner";
 interface deleteProps { user: string, data: any, setOpenModal: (open: boolean) => void }
 export function FormDelete({ user, data, setOpenModal }: deleteProps) {
     const handleClick = async () => {
@@ -36,8 +37,9 @@ const fetchData = async (id: number) => {
     });
     const data = await response.json();
     if (!response.ok) {
-        alert(data.error.message);
-        return { error: data.message };
+        toast.error('No se pudo eliminar el usuario')
+        return;
     }
-    return data;
+    toast.success('Usuario eliminada correctamente')
+    return data
 }

@@ -3,6 +3,7 @@ import { TextInput, Label, ListGroup } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { User } from "@/interface/Interface";
 import { createOrder } from "@/lib/createOrder";
+import { toast } from "sonner";
 
 export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
     const [search, setSearch] = useState("");
@@ -16,10 +17,16 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
         }
     }, [data, search]);
 
-    const onSave = async () => {
-        setTimeout(() => {
-            setOpenModal(false);
-        }, 500);
+    const onSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const result = await createOrder(formData)
+        if (!result.success) {
+            toast.error(result.message);
+            return
+        }
+        toast.success(result.message);
+        setOpenModal(false);
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +41,7 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
     };
 
     return (
-        <form id="submit-form" action={createOrder} onSubmit={onSave}>
+        <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-2">
                 <div className="grid grid-cols-1 gap-4">
                     <div>
