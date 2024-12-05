@@ -9,7 +9,7 @@ import { toast } from "sonner";
 export function FormBorrowed({ user, id, setOpenModal }: { user: User | any, id?: number, setOpenModal: (open: boolean) => void }) {
     const router = useRouter()
     const handleClick = async () => {
-        if (!user?.register.register_ci && !user?.register.register_professor) {
+        if (!user?.register.register_ci && !user?.register.register_contact) {
             toast('¡Faltan campos por completar!', {
                 description: 'Para poder continuar, necesitamos que completes tu informacion',
                 action: {
