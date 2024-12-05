@@ -16,7 +16,7 @@ export default function SettingPage() {
             <SectionSession data={data || null} />
             <SectionAccount data={data || null} />
             <SectionMe />
-            <SectionAccountDelete />
+            <SectionAccountDelete data={data || null} />
         </section>
     )
 }
@@ -39,10 +39,14 @@ const SectionSession = ({ data }: { data?: User | null }) => {
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await updateSession(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
     }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
@@ -106,10 +110,14 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await updateRegister(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
     }
     return (
         <Card className="mb-2 grid w-full grid-cols-2 max-sm:grid-cols-1">
@@ -188,10 +196,14 @@ const SectionMe = () => {
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await updatePass(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
     }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  gap-2 max-sm:grid-cols-1">
@@ -236,7 +248,7 @@ const SectionMe = () => {
     )
 }
 
-const SectionAccountDelete = () => {
+const SectionAccountDelete = ({ data }: { data: User | null }) => {
     const [openModal, setOpenModal] = useState(false);
     const Modal = () => {
         setOpenModal(true)
@@ -249,8 +261,13 @@ const SectionAccountDelete = () => {
             <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                 Eliminar cuenta
             </h5>
+            <p className="mt-2 text-base text-gray-800 dark:text-gray-400 ">
+                Se eliminará su cuenta.
+                <br />
+                Asegúrate de haber respaldado toda la información importante antes de continuar.
+            </p>
             <ComponentModalCreate title={"Eliminacion de cuenta"} openModal={openModal} setOpenModal={closeModal} status={false}>
-                <FormDelete setOpenModal={closeModal} />
+                <FormDelete setOpenModal={closeModal} id={Number(data?.id)} />
             </ComponentModalCreate>
             <section className="mt-2 flex">
                 <Button aria-label="Eliminar" onClick={Modal} className="bg-red-600 dark:bg-red-700">Eliminar</Button>

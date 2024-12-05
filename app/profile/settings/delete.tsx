@@ -3,8 +3,8 @@ import { Button } from "flowbite-react";
 import { signOut } from "next-auth/react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { toast } from "sonner";
-interface deleteProps { setOpenModal: (open: boolean) => void }
-export function FormDelete({ setOpenModal }: deleteProps) {
+interface deleteProps { setOpenModal: (open: boolean) => void, id: number }
+export function FormDelete({ setOpenModal, id }: deleteProps) {
     const handleCerrar = () => {
         setOpenModal(false); // Cerrar el modal al cancelar
     };
@@ -15,7 +15,7 @@ export function FormDelete({ setOpenModal }: deleteProps) {
                 ¿Esta seguro de eliminar su cuenta de usuario?
             </h3>
             <div className="flex justify-center gap-4">
-                <Button onClick={DeleteAccount} color="failure" aria-label="Si">
+                <Button onClick={() => DeleteAccount(id)} color="failure" aria-label="Si">
                     {"Sí, estoy seguro"}
                 </Button>
                 <Button color="gray" onClick={handleCerrar} aria-label="No">
@@ -26,23 +26,27 @@ export function FormDelete({ setOpenModal }: deleteProps) {
         </div>
     )
 }
-const DeleteAccount = async () => {
+const DeleteAccount = async (id: number) => {
     try {
-        const url = '/api/users';  // Aquí llamas al API del backend que define el DELETE
-        const res = await fetch(url, {
-            method: "DELETE",
+        const response = await fetch(`/api/users/desactivate/${id}`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-        const data = await res.json();
-        if (!res.ok) {
-            toast.error('No se pudo elimnar la cuenta')
+        const data = await response.json();
+        console.log(data);
+        if (!response.ok) {
+            toast.error('No se pudo eliminar el usuario', {
+                description: data?.message
+            })
             return;
         }
-        toast.success('Cuenta eliminada correctamente')
+        toast.success('Usuario eliminada correctamente', {
+            description: data?.user?.name || ""
+        })
         signOut()
-        return data;
+        return data
     } catch (error) {
         toast.error('Error al elimnar la cuenta')
     }

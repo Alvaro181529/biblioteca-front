@@ -92,10 +92,14 @@ const CardBook = ({ data, page, size, refresh }: { data: Orders[], page: number,
     const handleCancelar = async (id: number) => {
         const result: Respuest = await orderBorrowed(id, "CANCELADO")
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         refresh()
     }
 
