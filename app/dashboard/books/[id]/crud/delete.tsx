@@ -1,4 +1,5 @@
 "use client"
+import { Content } from "@/interface/Interface";
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { toast } from "sonner";
@@ -36,11 +37,16 @@ const fetchData = async (id: number) => {
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
+    const data: { message: string, content: Content } = await response.json();
+    console.log(data);
     if (!response.ok) {
-        toast.error('No se pudo eliminar el contenido')
+        toast.error('No se pudo eliminar el contenido', {
+            description: data.message
+        })
         return;
     }
-    toast.success('Contenido eliminado correctamente')
+    toast.success('Contenido eliminado correctamente', {
+        description: data.content.content_sectionTitle
+    })
     return data
 }

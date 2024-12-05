@@ -36,10 +36,15 @@ const fetchData = async (id: number) => {
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
+    const data: { author_name: string, message: string } = await response.json();
     if (!response.ok) {
-        toast.error("Error al eliminar")
+        toast.error("Error al eliminar", {
+            description: data.message
+        })
+        return;
     }
-    toast.success("Eliminado correctamente")
+    toast.success("Eliminado correctamente", {
+        description: data.author_name
+    })
     return data;
 }

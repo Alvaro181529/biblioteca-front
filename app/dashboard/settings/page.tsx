@@ -14,7 +14,7 @@ export default function SettingPage() {
         <section>
             <SectionSession data={data} />
             <SectionPass />
-            <SectionAccountDelete />
+            <SectionAccountDelete data={data || null} />
         </section>
     )
 }
@@ -37,10 +37,14 @@ const SectionSession = ({ data }: { data?: User | null }) => {
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await updateSession(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
     }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
@@ -78,10 +82,14 @@ const SectionPass = () => {
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await updatePass(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
     }
     return (
         <Card className="mb-2 grid w-full grid-cols-2  max-sm:grid-cols-1">
@@ -127,7 +135,7 @@ const SectionPass = () => {
     )
 }
 
-const SectionAccountDelete = () => {
+const SectionAccountDelete = ({ data }: { data: User | null }) => {
     const [openModal, setOpenModal] = useState(false);
     const Modal = () => {
         setOpenModal(true)
@@ -146,7 +154,7 @@ const SectionAccountDelete = () => {
                 Asegúrate de haber respaldado toda la información importante antes de continuar.
             </p>
             <ComponentModalCreate title={"Eliminacion de cuenta"} openModal={openModal} setOpenModal={closeModal} status={false}>
-                <FormDelete setOpenModal={closeModal} />
+                <FormDelete setOpenModal={closeModal} id={Number(data?.id)} />
             </ComponentModalCreate>
             <section className="mt-2 flex">
                 <Button aria-label="Eliminar" onSubmit={Modal} className="bg-red-600 dark:bg-red-700">Eliminar</Button>

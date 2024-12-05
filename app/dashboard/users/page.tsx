@@ -7,7 +7,7 @@ import { User } from '@/interface/Interface';
 import { ComponentModalCreate } from '@/components/Modal';
 import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delate';
-import { Button, Tooltip } from 'flowbite-react';
+import { Button, Select, Tooltip } from 'flowbite-react';
 import { FiRefreshCcw } from "react-icons/fi"
 interface SerchParams {
     searchParams: {
@@ -23,14 +23,13 @@ export default function Users({ searchParams }: SerchParams) {
     const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'view'>('create');
     const [currentPage, setCurrentPage] = useState(1);
     const [title, setTitle] = useState("Crear Usuario");
-    const [actual, setActual] = useState("");
+    const [type, setType] = useState("true");
     const [actualData, setActualData] = useState(0);
     const [size, setSize] = useState(10);
     const [openModal, setOpenModal] = useState(false);
     const [refresh, setRefresh] = useState(false);
     const [view, setView] = useState(false)
-    const { data, columns, pages, infoData } = usePublicationsData(size, currentPage, searchQuery, openModal, refresh);
-
+    const { data, columns, pages, infoData } = usePublicationsData(size, currentPage, searchQuery, openModal, type, refresh);
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -61,7 +60,6 @@ export default function Users({ searchParams }: SerchParams) {
     const handleDelate = (rowIndex: number) => {
         const actualTitle = String(data[rowIndex][1])
         const actualNumber = Number(infoData[rowIndex])
-        setActual(actualTitle)
         setModalState(false)
         setActualData(actualNumber)
         setTitle("Eliminar Usuario")
@@ -72,6 +70,11 @@ export default function Users({ searchParams }: SerchParams) {
         setOpenModal(false);
         setTitle("Crear Usuario")
         setModalType('create');
+        setModalState(true)
+    };
+    const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setType(event.target.value);
+        setCurrentPage(1);
     };
     const reportUsers = async () => {
         const api = `/api/reports?page=users`;
@@ -93,14 +96,20 @@ export default function Users({ searchParams }: SerchParams) {
     }
     return (
         <div>
-            <div className='grid grid-cols-7 gap-2'>
-                <div className="col-span-6">
+            <div className="col-span-3 grid gap-x-2 md:grid-cols-11 md:gap-2">
+                <div className="col-span-3 md:col-span-8">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
-                <div className='w-full py-2'>
+                <Select onChange={handleTypeChange} className="col-span-2 py-2">
+                    <option value="true">Usuarios activos</option>
+                    <option value="false">Usuarios no activos</option>
+                    <option value="">Todo</option>
+                </Select>
+                <div className='col-span-1 w-full py-2'>
                     <Button className='w-full bg-red-600' onClick={reportUsers}>Reporte</Button>
                 </div>
             </div>
+
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
             <div className="flex w-full items-center justify-between">
                 <Tooltip className="z-50" content="Refrescar">
@@ -122,13 +131,13 @@ export default function Users({ searchParams }: SerchParams) {
                 {modalType === 'create' && <FormCreate setOpenModal={closeModal} />}
                 {modalType === 'edit' && <FormCreate setOpenModal={closeModal} id={Number(actualData)} data={dataUpdate} />}
                 {modalType === 'view' && <FormCreate setOpenModal={closeModal} id={Number(actualData)} data={dataUpdate} view={view} />}
-                {modalType === 'delete' && < FormDelete user={actual} data={actualData} setOpenModal={closeModal} />}
+                {modalType === 'delete' && < FormDelete data={actualData} setOpenModal={closeModal} />}
             </ComponentModalCreate>
         </div>
     )
 }
 
-const usePublicationsData = (size: number, currentPage: number, query: string, openModal: boolean, refresh: boolean) => {
+const usePublicationsData = (size: number, currentPage: number, query: string, openModal: boolean, type: string, refresh: boolean) => {
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
@@ -142,6 +151,7 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
         return user.map((users) => [
             users.email,
             users.name,
+            users.active ? "ACTIVO" : "INACTIVO",
             users.rols,
         ]);
     };
@@ -149,6 +159,7 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
         setColumns([
             "EMAIL",
             "NOMBRE",
+            "ESTADO",
             "ROL"
         ]);
     };
@@ -157,7 +168,7 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
         if (!openModal || refresh) {
             const fetchData = async () => {
                 try {
-                    const url = `/api/users?page=${currentPage}&size=${size}&query=${query}`;
+                    const url = `/api/users?page=${currentPage}&size=${size}&query=${query}&type=${type}`;
                     const res = await fetch(url);
                     const result = await res.json();
                     configureColumns();
@@ -170,6 +181,6 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
             };
             fetchData();
         }
-    }, [currentPage, size, query, openModal, refresh]);
+    }, [currentPage, size, query, openModal, refresh, type]);
     return { data, columns, pages, infoData };
 };

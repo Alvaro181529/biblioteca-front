@@ -28,10 +28,14 @@ export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await createContent(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         setOpenModal(false);
     }
 
@@ -43,6 +47,7 @@ export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data
                         <div className="col-span-3 mb-4">
                             <Label htmlFor={`content_sectionTitle_${index}`} value="Seccion" />
                             <TextInput
+                                required
                                 name={`content_sectionTitle_${index}`}
                                 id={`content_sectionTitle_${index}`}
                                 placeholder="Contenido"

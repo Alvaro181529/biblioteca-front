@@ -38,12 +38,12 @@ const fetchData = async (id: number) => {
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
+    const data: { book_title_original: string, message: string } = await response.json();
     if (!response.ok) {
         toast.error('No se pudo elimnar el articulo del inventario')
         return;
     }
-    toast.success('Articulo del inventario eliminada correctamente')
+    toast.success('Articulo del inventario eliminada correctamente', { description: data.book_title_original })
 
     return data;
 }

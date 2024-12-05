@@ -22,10 +22,14 @@ export function FormBorrowed({ id, setOpenModal }: { id?: number, setOpenModal: 
         const formData = new FormData(e.target as HTMLFormElement);
         const result = await createOrder(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         setOpenModal(false);
     }
 

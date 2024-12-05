@@ -13,11 +13,25 @@ import { notFound, useRouter } from "next/navigation";
 import { languages } from "@/types/types";
 import { FormBorrowed } from "./crud/borrowed";
 import { isValidUrl } from "@/lib/validateURL";
+import { AiOutlineLoading } from "react-icons/ai";
 
 export default function BooksId({ params }: { params: { id: number } }) {
     const [openModal, setOpenModal] = useState(false);
+    const [pdf, setPdf] = useState(true);
+    const [spin, setSpin] = useState(true);
     const { data } = useBooksData(params.id, openModal)
     const router = useRouter()
+
+    useEffect(() => {
+        if (!data?.book_document) {
+            setPdf(true)
+            setSpin(false)
+        } else {
+            setSpin(false)
+            setPdf(false)
+        }
+    }, [data?.book_document]);
+
     if (data?.statusCode == 404) return notFound()
     const imageUrl = String(data?.book_imagen);
     const imageSrc = isValidUrl(imageUrl)
@@ -57,7 +71,7 @@ export default function BooksId({ params }: { params: { id: number } }) {
                         alt={String(data?.book_title_original)}
                         src={imageSrc}
                     />
-                    <Button aria-label="Prestar" className="mt-0  bg-red-700 font-semibold" onClick={documentUrl} >Ver pdf</Button>
+                    <Button aria-label="Prestar" className="mt-0 bg-red-700 font-semibold" processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />} isProcessing={spin} disabled={pdf} onClick={documentUrl} >Ver pdf</Button>
                 </div>
                 <CardContent id={params.id} data={data || null} setOpenModal={setOpenModal} openModal={openModal} />
             </div>

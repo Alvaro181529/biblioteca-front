@@ -1,4 +1,5 @@
 "use client"
+import { Publication } from "@/interface/Interface";
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { toast } from "sonner";
@@ -37,11 +38,16 @@ const fetchData = async (id: number) => {
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
+    const data: { message: string, publication: Publication } = await response.json();
+    console.log(data);
     if (!response.ok) {
-        toast.error('No se pudo elimnar la publicacion')
+        toast.error('No se pudo elimnar la publicacion', {
+            description: data.message
+        })
         return;
     }
-    toast.success('Publicacion eliminada correctamente')
+    toast.success('Publicacion eliminada correctamente', {
+        description: data.publication.publication_title
+    })
     return data;
 }

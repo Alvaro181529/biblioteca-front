@@ -12,10 +12,14 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await createCategory(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         setOpenModal(false);
     }
     return (

@@ -56,11 +56,11 @@ export default function OrderPage({ searchParams }: SerchParams) {
     }
     return (
         <div>
-            <div className="grid grid-cols-7 gap-2">
-                <div className="col-span-5">
+            <div className="col-span-3 grid gap-x-2 md:grid-cols-11 md:gap-2">
+                <div className="col-span-3 md:col-span-8">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
-                <Select onChange={handleTypeChange} className=" py-2">
+                <Select onChange={handleTypeChange} className="col-span-2  py-2">
                     <option value="PRESTADO">Prestado</option>
                     <option value="DEVUELTO">Devuelto</option>
                     <option value="CANCELADO">Cancelado</option>
@@ -125,28 +125,40 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
     const handleDevolver = async (id: number) => {
         const result: Respuest = await orderBorrowed(id, "DEVUELTO")
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         fetchData();
     }
     const handlePrestar = async (id: number) => {
         const result: Respuest = await orderBorrowed(id, "PRESTADO")
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         fetchData();
     }
     const handleCancelar = async (id: number) => {
         const result: Respuest = await orderBorrowed(id, "CANCELADO")
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         fetchData();
     }
     return (

@@ -41,10 +41,14 @@ const fetchData = async (id: number) => {
         });
         const data = await response.json();
         if (!response.ok) {
-            toast.error('No se pudo elimnar la categoria')
+            toast.error('No se pudo elimnar la categoria', {
+                description: data.message
+            })
             return;
         }
-        toast.success('Categoria eliminada correctamente')
+        toast.success('Categoria eliminada correctamente', {
+            description: `${data.category.category_name} ${data.message}`
+        })
         return data;
     } catch (error) {
         toast.error('No se pudo elimnar la categoria')

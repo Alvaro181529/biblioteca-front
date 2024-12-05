@@ -1,5 +1,5 @@
 "use client"
-import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, ListGroup, Spinner } from "flowbite-react";
+import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, Spinner } from "flowbite-react";
 import { bookTypes, currencies, languages } from "@/types/types";
 import { createBook } from "@/lib/createBook";
 import { BookFormData, Respuest } from "@/interface/Interface";
@@ -42,10 +42,12 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
 
         const result: Respuest = await createBook(formData);
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, { description: result.description });
         setOpenModal(false);
     }
 

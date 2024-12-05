@@ -1,4 +1,5 @@
 "use client"
+import { Instrument } from "@/interface/Interface";
 import { Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { toast } from "sonner";
@@ -37,11 +38,16 @@ const fetchData = async (id: number) => {
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
+    const data: { message: string, instrument: Instrument } = await response.json();
+    console.log(data);
     if (!response.ok) {
-        toast.error('No se pudo eliminar el instrumento')
+        toast.error('No se pudo eliminar el instrumento', {
+            description: data.message
+        })
         return;
     }
-    toast.success('Publicacion eliminada correctamente')
+    toast.success('Instrumento eliminado correctamente', {
+        description: data.instrument.instrument_name
+    })
     return data
 }

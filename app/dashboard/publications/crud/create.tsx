@@ -26,10 +26,14 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
         if (imageFile) formData.append("file", imageFile);
         const result: Respuest = await createPublication(formData)
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
         setOpenModal(false);
     }
     useEffect(() => {

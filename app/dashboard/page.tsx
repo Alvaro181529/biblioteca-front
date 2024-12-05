@@ -74,20 +74,28 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
         setUpdate(true)
         const result: Respuest = await orderBorrowed(id, "PRESTADO")
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
     }
 
     const cancelar = async (id: number) => {
         setUpdate(true)
         const result: Respuest = await orderBorrowed(id, "CANCELADO")
         if (!result.success) {
-            toast.error(result.message);
+            toast.error(result.message, {
+                description: result.description
+            });
             return
         }
-        toast.success(result.message);
+        toast.success(result.message, {
+            description: result.description
+        });
     }
     useEffect(() => {
         if (update) {
