@@ -1,4 +1,5 @@
 "use server"
+import { Respuest } from "@/interface/Interface"
 import { z } from "zod"
 const rolesPermitidos = ['USUARIO EXTERNO', 'ADMIN', 'COLEGIAL', 'ESTUDIANTIL', 'ESTUDIANTE', 'DOCENTE', 'ROOT'] as const
 const IntrumentSchema = z.object({
@@ -9,7 +10,7 @@ const IntrumentSchema = z.object({
     rols: z.optional(z.enum(rolesPermitidos)),
 })
 
-export async function signup(formData: FormData) {
+export async function signup(formData: FormData): Promise<Respuest> {
     const data = {
         id: String(formData.get("id")) || "null",
         name: String(formData.get("name")) || null,
@@ -28,7 +29,7 @@ export async function signup(formData: FormData) {
         return { success: false, message: 'Error al crear el usuario' };
     }
 }
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users/signup`, {
             method: 'POST',
@@ -39,9 +40,9 @@ const create = async (validatedData: any) => {
         });
         const result = await res.json()
         if (!res.ok) {
-            return { success: false, message: 'No se pudo registrar el usuario' };
+            return { success: false, message: 'No se pudo registrar el usuario', description: result.message };
         }
-        return { success: true, message: 'Usuario registrado correctamente' };
+        return { success: true, message: 'Usuario registrado correctamente', description: result.message };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al registrar el usuario' };

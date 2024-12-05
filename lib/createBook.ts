@@ -1,7 +1,7 @@
 "use server"
 
 import { getTokenFromSession } from "@/app/api/utils/auth";
-import { Respuest } from "@/interface/Interface";
+import { BookFormData, Respuest } from "@/interface/Interface";
 import { z } from "zod";
 
 const bookSchema = z.object({
@@ -70,7 +70,7 @@ export async function createBook(formData: FormData): Promise<Respuest> {
         return { success: false, message: 'Error al con el inventario' };
     }
 }
-const create = async (validatedData: any) => {
+const create = async (validatedData: any): Promise<Respuest> => {
 
     const token = await getTokenFromSession()
     try {
@@ -86,11 +86,11 @@ const create = async (validatedData: any) => {
             throw new Error('Error al crear el libro: ' + res.statusText);
         }
 
-        const result = await res.json()
+        const result: BookFormData = await res.json()
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir el articulo del inventario' };
         }
-        return { success: true, message: 'Articulo del inventario añadido correctamente' };
+        return { success: true, message: 'Articulo del inventario añadido correctamente', description: result.book_title_original };
     } catch (error) {
         return { success: false, message: 'Error al añadir el articulo del inventario' };
     }
@@ -110,7 +110,7 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir la articulo del inventario' };
         }
-        return { success: true, message: 'articulo del inventario actualizada correctamente' };
+        return { success: true, message: 'articulo del inventario actualizada correctamente', description: result.book_title_original };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al actualizar la articulo del inventario' };

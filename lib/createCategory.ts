@@ -1,6 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth";
-import { Respuest } from "@/interface/Interface";
+import { Category, Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
     category_name: z.optional(z.string()),
@@ -34,12 +34,12 @@ const create = async (validatedData: any): Promise<Respuest> => {
             },
             body: JSON.stringify(validatedData),
         });
-        const result = await res.json()
+        const result: Category = await res.json()
 
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir la categoria' };
         }
-        return { success: true, message: 'Categoria añadida exitosamente' };
+        return { success: true, message: 'Categoria añadida exitosamente', description: result.category_name };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al añadir la categoria' };
@@ -57,11 +57,11 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
             },
             body: JSON.stringify(validatedData),
         });
-        const result = await res.json();
+        const result: Category = await res.json();
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir la categoria' };
         }
-        return { success: true, message: 'Categoria actualizada correctamente' };
+        return { success: true, message: 'Categoria actualizada correctamente', description: result.category_name };
 
     } catch (error) {
         console.error(error);

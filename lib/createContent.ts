@@ -1,11 +1,11 @@
 "use server";
 import { getTokenFromSession } from "@/app/api/utils/auth";
-import { Respuest } from "@/interface/Interface";
+import { Content, Respuest } from "@/interface/Interface";
 import { z } from "zod";
 
 const contentSchema = z.object({
     content_sectionTitle: z.optional(z.string()),
-    content_sectionTitleParallel: z.optional(z.string()),
+    content_sectionTitleParallel: z.optional(z.string()).nullable(),
     content_pageNumber: z.optional(z.number()),
     book: z.optional(z.number()),
     id: z.optional(z.string())
@@ -49,7 +49,8 @@ const create = async (validatedData: any): Promise<Respuest> => {
             body: JSON.stringify(validatedData),
         });
 
-        const result = await res.json()
+        const result: Content = await res.json()
+        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir el contenido' };
         }
@@ -72,10 +73,11 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
             body: JSON.stringify(validatedData),
         });
         const result = await res.json()
+        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo actualizar el contenido' };
         }
-        return { success: true, message: 'Contenido actualizado correctamente' };
+        return { success: true, message: 'Contenido actualizado correctamente', description: result.content_sectionTitle };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al actualizar el contenido' };

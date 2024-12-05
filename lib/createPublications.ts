@@ -1,6 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth";
-import { Respuest } from "@/interface/Interface";
+import { Publication, Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
     file: z.instanceof(File).nullable(),
@@ -42,11 +42,11 @@ const create = async (validatedData: any): Promise<Respuest> => {
             body: validatedData
         });
 
-        const result = await res.json()
+        const result: Publication = await res.json()
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir la publicacion' };
         }
-        return { success: true, message: 'Publicacion añadida correctamente' };
+        return { success: true, message: 'Publicacion añadida correctamente', description: result.publication_title };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al añadir la publicacion' };
@@ -67,7 +67,7 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir la publicacion' };
         }
-        return { success: true, message: 'Publicacion actualizada correctamente' };
+        return { success: true, message: 'Publicacion actualizada correctamente', description: result.publication_title };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al actualizar la publicacion' };

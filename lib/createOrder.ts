@@ -1,6 +1,6 @@
 "use server";
 import { getTokenFromSession } from "@/app/api/utils/auth";
-import { Respuest } from "@/interface/Interface";
+import { Orders, Respuest } from "@/interface/Interface";
 import { z } from "zod";
 
 const orderSchema = z.object({
@@ -38,13 +38,14 @@ const create = async (validatedData: any): Promise<Respuest> => {
             },
             body: JSON.stringify(validatedData),
         });
-        const result = await res.json()
+        const result: Orders = await res.json()
+        console.log(result);
         if (!res.ok) {
-            return { success: false, message: 'No se pudo realizar la solicitud del prestamo' };
+            return { success: false, message: 'No se pudo realizar el prestamo' };
         }
-        return { success: true, message: 'Solicitud de prestamo realizada ' };
+        return { success: true, message: 'Prestamo realizado a:', description: result.user.name };
     } catch (error) {
         console.error(error);
-        return { success: false, message: 'Error en la solicitud de prestamo' };
+        return { success: false, message: 'Error en el prestamo' };
     }
 };

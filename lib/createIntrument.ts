@@ -1,6 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth";
-import { Respuest } from "@/interface/Interface";
+import { Instrument, Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
     instrument_name: z.optional(z.string()),
@@ -36,11 +36,10 @@ const create = async (validatedData: any): Promise<Respuest> => {
         });
 
         const result = await res.json()
-
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir el instrumento' };
         }
-        return { success: true, message: 'Instrumento añadida exitosamente' };
+        return { success: true, message: 'Instrumento añadido exitosamente', description: result.instrument_name };
 
     } catch (error) {
         console.error(error);
@@ -59,11 +58,11 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
             },
             body: JSON.stringify(validatedData),
         });
-        const result = await res.json()
+        const result: Instrument = await res.json()
         if (!res.ok) {
             return { success: false, message: 'No se pudo actualizar el instrumento' };
         }
-        return { success: true, message: 'Instrumento actualizado exitosamente' };
+        return { success: true, message: 'Instrumento actualizado exitosamente', description: result.instrument_name };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al actualizar el instrumento' };

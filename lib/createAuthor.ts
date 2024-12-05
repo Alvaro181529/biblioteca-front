@@ -1,6 +1,6 @@
 "use server"
 import { getTokenFromSession } from "@/app/api/utils/auth"
-import { Respuest } from "@/interface/Interface"
+import { Author, Respuest } from "@/interface/Interface"
 import { z } from "zod"
 const IntrumentSchema = z.object({
     author_name: z.optional(z.string()),
@@ -34,11 +34,12 @@ const create = async (validatedData: any): Promise<Respuest> => {
             },
             body: JSON.stringify(validatedData),
         });
-        const result = await res.json();
+        const result: Author = await res.json();
+        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo crear el autor' };
         }
-        return { success: true, message: 'Autor creado exitosamente' };
+        return { success: true, message: 'Autor creado exitosamente', description: result.author_name };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al crear el autor' };
@@ -56,11 +57,11 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
             },
             body: JSON.stringify(validatedData),
         });
-        const result = await res.json()
+        const result: Author = await res.json()
         if (!res.ok) {
             return { success: false, message: 'No se pudo crear el autor' };
         }
-        return { success: true, message: 'Autor actualizado correctamente' };
+        return { success: true, message: 'Autor actualizado correctamente', description: result.author_name };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al actualizar el autor' };
