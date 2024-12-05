@@ -157,27 +157,29 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
                 </div>
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor="register_professor" value="Docente" />
-                    </div>
-                    <TextInput id="register_professor" name="register_professor" type="text" placeholder="Juan Perez" defaultValue={data?.register?.register_professor || ""} />
-                </div>
-                <div>
-                    <div className="mb-2 block">
                         <Label htmlFor="register_ubication" value="Direccion" />
                     </div>
                     <TextInput id="register_ubication" name="register_ubication" type="text" placeholder="Z/ buenos aires N/ 1223" defaultValue={data?.register?.register_ubication || ""} />
                 </div>
-                <div>
-                    <div className="mb-2 block">
-                        <Label htmlFor="register_intrument" value="Instrumento de especialidad" />
+                <div className="hidden">
+                    <div>
+                        <div className="mb-2 block">
+                            <Label htmlFor="register_professor" value="Docente" />
+                        </div>
+                        <TextInput id="register_professor" name="register_professor" type="text" placeholder="Juan Perez" defaultValue={data?.register?.register_professor || ""} />
                     </div>
-                    <TextInput id="register_intrument" name="register_intrument" type="text" placeholder="Guitarra" defaultValue={data?.register?.register_intrument || ""} />
-                </div>
-                <div>
-                    <div className="mb-2 block">
-                        <Label htmlFor="register_category" value="Categorias" />
+                    <div>
+                        <div className="mb-2 block">
+                            <Label htmlFor="register_intrument" value="Instrumento de especialidad" />
+                        </div>
+                        <TextInput id="register_intrument" name="register_intrument" type="text" placeholder="Guitarra" defaultValue={data?.register?.register_intrument || ""} />
                     </div>
-                    <TextInput id="register_category" name="register_category" type="text" placeholder="Coro" defaultValue={data?.register?.register_category || ""} />
+                    <div>
+                        <div className="mb-2 block">
+                            <Label htmlFor="register_category" value="Categorias" />
+                        </div>
+                        <TextInput id="register_category" name="register_category" type="text" placeholder="Coro" defaultValue={data?.register?.register_category || ""} />
+                    </div>
                 </div>
                 <section className="mt-2 flex">
                     <Button aria-label="Guardar" type="submit" className="bg-verde-600 ">Guardar</Button>
@@ -214,7 +216,7 @@ const SectionMe = () => {
                 <div className="relative">
                     <Button
                         onClick={togglePasswordVisibility}
-                        className="absolute right-4 -translate-y-8 text-gray-600  dark:text-gray-300"
+                        className="absolute right-4 -translate-y-4 text-gray-600  dark:text-gray-300"
                         aria-label="Mostrar/Ocultar Contraseña"
                         type="button"
                     >

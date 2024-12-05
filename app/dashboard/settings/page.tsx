@@ -100,7 +100,7 @@ const SectionPass = () => {
                 <div className="relative">
                     <Button
                         onSubmit={togglePasswordVisibility}
-                        className="absolute right-4 -translate-y-8 text-gray-600 dark:text-gray-300"
+                        className="absolute right-4 -translate-y-4 text-gray-600 dark:text-gray-300"
                         aria-label="Mostrar/Ocultar Contraseña"
                         type="button"
                     >
