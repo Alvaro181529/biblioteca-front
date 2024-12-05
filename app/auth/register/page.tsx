@@ -6,6 +6,8 @@ import { AiOutlineLoading } from "react-icons/ai";
 import AuthComponent from "@/components/Auth";
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 import { signup } from "@/lib/signup";
+import { Respuest } from "@/interface/Interface";
+import { toast } from "sonner";
 
 interface Signin {
     name: string;
@@ -50,19 +52,32 @@ export default function Login() {
     const togglePasswordConfirmedVisibility = () => {
         setPasswordConfirmedVisible((prevState) => !prevState);
     };
-    const onSubmit = async (e: FormEvent) => {
-        if (!validate()) return;
+    const onSubmit = async (e: React.FormEvent) => {
         setSignin(true)
-        setTimeout(() => {
-            router.push("/auth/login");
-        }, 500);
+        e.preventDefault()
+        const formData = new FormData(e.target as HTMLFormElement)
+        const result: Respuest = await signup(formData)
+        if (!result.success) {
+            toast.error(result.message, {
+                description: result.description || errors.confirmPass
+            });
+            setSignin(false)
+            if (!validate()) return;
+            return
+        }
+        toast.success(result.message, {
+            description: result.description
+        });
+
+        setSignin(true)
+        router.push("/auth/login");
     };
 
     return (
         <AuthComponent href="/auth/login">
             <h1 className="text-center text-4xl font-extralight dark:text-white">Registro</h1>
             <div className="mt-4 w-full">
-                <form onSubmit={onSubmit} action={signup} className="mx-auto w-3/4">
+                <form onSubmit={onSubmit} className="mx-auto w-3/4">
                     <div className="mt-4 flex">
                         <input
                             type="text"
@@ -73,9 +88,6 @@ export default function Login() {
                             onChange={handleChange}
                             required
                         />
-                        {errors.name && (
-                            <span className="text-red-500">{errors.name}</span>
-                        )}
                     </div>
                     <div className="mt-4 flex">
                         <input
@@ -88,17 +100,6 @@ export default function Login() {
                             onChange={handleChange}
                             required
                         />
-                        <button
-                            aria-label="login"
-                            type="button"
-                            onClick={togglePasswordVisibility}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
-                        >
-                            {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
-                        </button>
-                        {errors.email && (
-                            <span className="text-red-500">{errors.email}</span>
-                        )}
                     </div>
                     <div className="relative mt-4 flex w-full">
                         <input
@@ -119,9 +120,6 @@ export default function Login() {
                         >
                             {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
                         </button>
-                        {errors.password && (
-                            <span className="text-red-500">{errors.password}</span>
-                        )}
                     </div>
                     <div className="relative mt-4 flex w-full">
                         <input
@@ -142,9 +140,6 @@ export default function Login() {
                         >
                             {passwordConfirmedVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
                         </button>
-                        {errors.confirmPass && (
-                            <span className="text-red-500">{errors.confirmPass}</span>
-                        )}
                     </div>
                     <div className="mt-8 flex flex-col">
                         <Button

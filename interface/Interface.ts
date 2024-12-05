@@ -33,12 +33,14 @@ export interface Category {
 
 export interface Content {
     id: number;
+    content_sectionTitleParallel: string;
     content_sectionTitle: string;
     content_pageNumber: number;
 }
 export interface Respuest {
     success: boolean
     message: string
+    description?: string
 }
 export interface BookFormData {
     id: number;
@@ -83,6 +85,7 @@ export interface User {
     name: string,
     email: string,
     password: string,
+    active: boolean,
     rols: string,
     created_At: string,
     update_At: string,

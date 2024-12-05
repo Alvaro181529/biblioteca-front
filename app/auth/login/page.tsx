@@ -84,6 +84,7 @@ export default function Home() {
                         <input
                             id="email"
                             type="email"
+                            autoFocus
                             className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
                             name="email"
                             required
@@ -91,9 +92,6 @@ export default function Home() {
                             value={formData.email}
                             onChange={handleChange}
                         />
-                        {errors.email && (
-                            <span>{errors.email}</span>
-                        )}
                     </div>
                     <div className="relative mt-4 flex w-full">
                         <input
@@ -114,9 +112,6 @@ export default function Home() {
                         >
                             {passwordVisible ? <PiEyeClosed className="size-5 dark:text-gray-400" /> : <PiEye className="size-5 dark:text-gray-400" />}
                         </button>
-                        {errors.password && (
-                            <span>{errors.password}</span>
-                        )}
                     </div>
                     <div className="mt-4 flex items-center">
                         <input type="checkbox" name="remember" id="remember" className="mr-2" />
