@@ -6,22 +6,20 @@ interface interfaceParams {
     id: number
 }
 export async function GET(request: any, { params }: { params: interfaceParams }) {
-    const token = await getTokenFromSession()
-    const res = await fetch(`${env.NEXT_PUBLIC_URL_API}publications/${params.id}`,
-        {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
+    const token = await getTokenFromSession();
+    const res = await fetch(`${env.NEXT_PUBLIC_URL_API}authors/${params.id}`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         }
-    );
+    });
     const book = await res.json()
     return NextResponse.json(book)
 }
 export async function DELETE(request: any, { params }: { params: interfaceParams }) {
-    const token = await getTokenFromSession()
-    const response = await fetch(`${env.NEXT_PUBLIC_URL_API}publications/${params.id}`, {
+    const token = await getTokenFromSession();
+    const response = await fetch(`${env.NEXT_PUBLIC_URL_API}authors/${params.id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -29,5 +27,8 @@ export async function DELETE(request: any, { params }: { params: interfaceParams
         },
     });
     const deleted = await response.json();
+    if (!deleted.ok) {
+        return NextResponse.json(deleted, { status: deleted.statusCode });
+    }
     return NextResponse.json(deleted);
 }

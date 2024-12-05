@@ -29,8 +29,8 @@ export async function DELETE(request: any, { params }: { params: interfaceParams
         },
     });
     const deleted = await response.json();
+    if (!response.ok) {
+        return NextResponse.json(deleted, { status: 400 });
+    };
     return NextResponse.json(deleted);
-}
-export async function PUT(request: any, { params }: { params: interfaceParams }) {
-
 }

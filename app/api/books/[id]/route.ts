@@ -7,7 +7,7 @@ interface interfaceParams {
 }
 export async function GET(request: any, { params }: { params: interfaceParams }) {
     const token = await getTokenFromSession()
-    const res = await fetch(`${env.NEXT_PUBLIC_URL_API}instruments/${params.id}`, {
+    const res = await fetch(`${env.NEXT_PUBLIC_URL_API}books/${params.id}`, {
         method: "GET",
         headers: {
             'Content-Type': 'application/json',
@@ -17,18 +17,19 @@ export async function GET(request: any, { params }: { params: interfaceParams })
     const book = await res.json()
     return NextResponse.json(book)
 }
+
 export async function DELETE(request: any, { params }: { params: interfaceParams }) {
     const token = await getTokenFromSession()
-    const response = await fetch(`${env.NEXT_PUBLIC_URL_API}instruments/${params.id}`, {
+    const response = await fetch(`${env.NEXT_PUBLIC_URL_API}books/${params.id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
     });
-    const deleted = await response.json();
-    return NextResponse.json(deleted);
-}
-export async function PUT(request: any, { params }: { params: interfaceParams }) {
-
+    const deletedBook = await response.json();
+    if (!response.ok) {
+        return NextResponse.json(deletedBook);
+    }
+    return NextResponse.json(deletedBook);
 }

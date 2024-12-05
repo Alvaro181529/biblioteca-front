@@ -7,12 +7,14 @@ export async function GET(request: any) {
     let page = searchParams.get("page")
     let query = searchParams.get("query")
     let size = searchParams.get("size")
+    let type = searchParams.get("type")
     page = (!page || Number(page) < 1) ? "1" : page;
     size = (!size || Number(size) < 1) ? "10" : size;
     query = (!query || Number(query) < 1) ? "" : query;
+    type = (!type || Number(type) < 1) ? "" : type;
 
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users?page=${page}&pageSize=${size}&query=${query}`,
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}users?page=${page}&pageSize=${size}&query=${query}&type=${type}`,
             {
                 method: "GET",
                 headers: {

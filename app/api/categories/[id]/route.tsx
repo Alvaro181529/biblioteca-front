@@ -27,5 +27,8 @@ export async function DELETE(request: any, { params }: { params: interfaceParams
         },
     });
     const deleted = await response.json();
+    if (!response.ok) {
+        return NextResponse.json(deleted, { status: deleted.statusCode });
+    }
     return NextResponse.json(deleted);
 }

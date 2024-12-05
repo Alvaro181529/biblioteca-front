@@ -138,6 +138,7 @@ export const authOptions: NextAuthOptions = {
     pages: {
         signIn: "/auth/login",
         signOut: "/",
+        error: "/auth/error"
     },
 };
 function isTokenExpired(token: string): boolean {
