@@ -3,7 +3,7 @@ import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, Spinne
 import { bookTypes, currencies, languages } from "@/types/types";
 import { createBook } from "@/lib/createBook";
 import { BookFormData, Respuest } from "@/interface/Interface";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Author } from "@/interface/Interface";
 import { Instrument } from "@/interface/Interface";
 import { Categories } from "@/interface/Interface";
@@ -291,7 +291,6 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     accept="pdf"
                                     id="book_document"
                                     onChange={onDocumentChange}
-                                // defaultValue={fetch?.book_imagen}
                                 />
                             </Tabs.Item>
                         </Tabs>
@@ -338,12 +337,20 @@ function AutocompleteSuggestion({ id, name, placeholder, type, initialSelectedIt
     const [value, setValue] = useState('')
     const [selectedItems, setSelectedItems] = useState<Suggestion[]>(initialSelectedItems)
     const [search, setSearch] = useState('')
-    const suggestions = useFetchSuggestions(type, search)
+    const [view, setView] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const suggestions = useFetchSuggestions(type, search, view)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     useEffect(() => {
-        if (selectedItems.length > 0) {
-            setValue(selectedItems.map(item => item.name).join(', ') + ', ');
+        if (selectedItems.length >= 0) {
+            setValue(selectedItems.map(item => item.name).join(', ') + '');
         }
     }, [selectedItems]); // Dependencia en selectedItems
+    useEffect(() => {
+        if (suggestions.length > 0) {
+            setIsLoading(false)
+        }
+    }, [suggestions]); // Dependencia en selectedItems
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const inputValue = e.target.value
@@ -356,8 +363,25 @@ function AutocompleteSuggestion({ id, name, placeholder, type, initialSelectedIt
         const newSelectedItems = [...selectedItems, suggestion]
         setSelectedItems(newSelectedItems)
         setValue(newSelectedItems.map(item => item.name).join(', ') + ', ')
-        setSearch('') // Resetear búsqueda después de seleccionar
+        setSearch('')
+        setView(false)
     }
+    const resetTimeout = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        timeoutRef.current = setTimeout(() => {
+            setView(false);
+            setIsLoading(false)
+        }, 500)
+    };
+    const handleRemoveItem = (itemToRemove: Suggestion) => {
+        const newSelectedItems = selectedItems.filter(item => item.id !== itemToRemove.id);
+        setSelectedItems(newSelectedItems);
+    };
+
+
     return (
         <div className="relative mb-4">
             <Label htmlFor={id} className="block text-sm font-medium text-gray-700">
@@ -368,30 +392,61 @@ function AutocompleteSuggestion({ id, name, placeholder, type, initialSelectedIt
                 name={id}
                 placeholder={placeholder}
                 value={value}
+                onBlur={resetTimeout}
+                onFocus={() => setView(true)}
+                onClick={() => { setView(true); setIsLoading(true) }}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
             />
+            <div className="mt-2">
+                {selectedItems.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {selectedItems.map(item => (
+                            <span
+                                key={item.id}
+                                className="inline-block rounded-full bg-amarillo-200 px-3 py-1 text-sm text-black"
+                            >
+                                {item.name}
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveItem(item)}
+                                    className="ml-2 text-red-500"
+                                >
+                                    &times;
+                                </button>
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </div>
 
-            {suggestions.length > 0 && (
-                <ul className="absolute z-10 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
-                    {suggestions.map((suggestion) => (
-                        <li
-                            key={suggestion.id}
-                            onClick={() => handleSuggestionClick(suggestion)}
-                            className="cursor-pointer px-4 py-2 hover:bg-gray-100"
-                            value={suggestion.id}
-                        >
-                            {suggestion.name}
-                        </li>
-                    ))}
-                </ul>
+            {isLoading ? (
+                <div className="absolute z-10 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white p-2 text-center shadow-lg">
+                    <Spinner color="success" size="md" />
+                </div>
+            ) : (
+                suggestions.length > 0 && (
+                    <ul className="absolute z-10 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                        {suggestions.map((suggestion) => (
+                            <li
+                                key={suggestion.id}
+                                onClick={() => handleSuggestionClick(suggestion)}
+                                className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                value={suggestion.id}
+                            >
+                                {suggestion.name}
+                            </li>
+                        ))}
+                    </ul>
+                )
             )}
+
             <input
                 type="hidden"
                 name={`${id}_ids`}
                 defaultValue={selectedItems.map(item => item.id).join(',')}
             />
-        </div>
+        </div >
     )
 }
 
@@ -403,12 +458,12 @@ const fetchDataBook = async (id: number) => {
     }
     return await res.json()
 }
-const useFetchSuggestions = (type: 'categories' | 'authors' | 'instruments', search: string) => {
+const useFetchSuggestions = (type: 'categories' | 'authors' | 'instruments', search: string, view: boolean) => {
     const [data, setData] = useState<Suggestion[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            if (search) {
+            if (search || view) {
                 const url = `/api/${type}?query=${search}`;
                 const res = await fetch(url);
                 const result = await res.json();
@@ -428,7 +483,7 @@ const useFetchSuggestions = (type: 'categories' | 'authors' | 'instruments', sea
             }
         };
         fetchData();
-    }, [type, search]);
+    }, [type, search, view]);
 
     return data;
 };
