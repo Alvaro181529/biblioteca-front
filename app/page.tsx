@@ -14,6 +14,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { InvoicesCardPageSkeleton, InvoicesCardSkeleton } from "@/components/skeletons";
 import { ComponentNavbar } from "@/components/Home/Navbar";
 import { isValidUrl } from "@/lib/validateURL";
+import Head from "next/head";
 
 interface propsSelect {
   size: number;
@@ -31,14 +32,42 @@ export default function Home({ searchParams }: {
   }
 }) {
   return (
-    <main className="dark:bg-gray-700">
-      <ComponentNavbar />
-      <ComponentHeader />
-      <ComponentContent />
-      <ComponentPublications />
-      <ComponentTabs searchQuery={searchParams.query} />
-      <ComponentFooter />
-    </main>
+    <div>
+      <Head>
+        <title>BIBLIOTECA - COPLUMU</title>
+        <meta name="description" content="Accede a la biblioteca digital del Conservatorio Plurinacional de Música de Bolivia" />
+        <meta name="keywords" content="biblioteca, música, Bolivia, cultura, conservatorio" />
+        <meta name="author" content="Coplumu Team" />
+        <meta name="robots" content="index, follow" />
+
+        {/* Open Graph (para redes sociales) */}
+        <meta property="og:title" content="BIBLIOTECA - COPLUMU" />
+        <meta property="og:description" content="Accede a la biblioteca digital del Conservatorio Plurinacional de Música de Bolivia." />
+        <meta property="og:image" content="https://www.coplumu.edu.bo/imagenes/logo_cpm.png" />
+        <meta property="og:url" content="https://www.coplumu.edu.bo" />
+        <meta property="og:site_name" content="Biblioteca Coplumu" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@coplumu" />
+        <meta name="twitter:title" content="BIBLIOTECA - COPLUMU" />
+        <meta name="twitter:description" content="Accede a la biblioteca digital del Conservatorio Plurinacional de Música de Bolivia." />
+        <meta name="twitter:image" content="https://www.coplumu.edu.bo/imagenes/logo_cpm.png" />
+
+        {/* Iconos de la aplicación */}
+        <link rel="icon" href="/imagenes/logo_cpm.png" />
+        <link rel="apple-touch-icon" href="/imagenes/logo_cpm.png" />
+        <link rel="shortcut icon" href="/imagenes/logo_cpm.png" />
+      </Head>
+      <main className="dark:bg-gray-700">
+        <ComponentNavbar />
+        <ComponentHeader />
+        <ComponentContent />
+        <ComponentPublications />
+        <ComponentTabs searchQuery={searchParams.query} />
+        <ComponentFooter />
+      </main>
+    </div>
   );
 }
 
@@ -362,14 +391,11 @@ function ComponentFooter() {
         </div>
         <div className="grid gap-1">
           <h3 className="font-semibold">Navigation</h3>
-          <Link href="#" prefetch={false}>
-            Home
+          <Link href="/" prefetch={false}>
+            Inicio
           </Link>
           <Link href="#" prefetch={false}>
-            About
-          </Link>
-          <Link href="#" prefetch={false}>
-            Contact
+            Contenenido
           </Link>
         </div>
         <div className="grid gap-1">

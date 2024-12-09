@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "BIBLIOTECA - COPLUMU",
-  description: "Conservatorio Plurinacional de música - Bolivia",
+  description: "Conservatorio Plurinacional de música - Biblioteca de Musica ",
   icons: {
     icon: "/imagenes/logo_cpm.png",
     apple: "/imagenes/logo_cpm.png",
@@ -25,7 +25,7 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions)
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <ThemeModeScript />
       </head>
