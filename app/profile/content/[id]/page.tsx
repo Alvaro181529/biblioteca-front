@@ -6,19 +6,44 @@ import { useEffect, useState } from "react";
 import { BookFormData } from "@/interface/Interface";
 import { Button, Card } from "flowbite-react";
 import { ComponentModalCreate } from "@/components/Modal";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { FormBorrowed } from "./crud/borrowed";
 import { languages } from "@/types/types";
 import { User } from "next-auth";
 import { isValidUrl } from "@/lib/validateURL";
 import { AiOutlineLoading } from "react-icons/ai";
+import { useSession } from "next-auth/react";
 
 export default function ContentId({ params }: { params: { id: number } }) {
     const [openModal, setOpenModal] = useState(false);
-    const { data } = useBooksData(params.id)
-    if (data?.statusCode == 404) return notFound()
+    const { data: session, status } = useSession()
+    const [pdf, setPdf] = useState(true);
+    const [spin, setSpin] = useState(true);
+    const { data } = useBooksData(params.id);
     const imageUrl = String(data?.book_imagen);
+    const router = useRouter()
 
+    useEffect(() => {
+        if (!data?.book_document) {
+            setPdf(true)
+            setSpin(false)
+        } else {
+            setSpin(false)
+            setPdf(false)
+        }
+    }, [data?.book_document]);
+    if (data?.statusCode == 404) { return notFound() }
+
+    const documentUrl = () => {
+        const documentUrl = String(data?.book_document);
+
+        if (isValidUrl(documentUrl)) {
+            router.push(documentUrl);
+        } else {
+            const pdfUrl = `/api/books/document/${documentUrl}`;
+            router.push(pdfUrl);
+        }
+    }
     const imageSrc = isValidUrl(imageUrl)
         ? imageUrl // Si es una URL válida, usamos la URL
         : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
@@ -36,6 +61,19 @@ export default function ContentId({ params }: { params: { id: number } }) {
                         alt={String(data?.book_title_original)}
                         src={imageSrc}
                     />
+                    {(session?.user.rols == "ESTUDIANTE" || session?.user.rols == "DOCENTE") && (
+                        <Button
+                            aria-label="Pdf"
+                            className="mt-0 bg-red-700 font-semibold"
+                            processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
+                            isProcessing={spin}
+                            disabled={pdf}
+                            onClick={documentUrl}
+                        >
+                            Ver pdf
+                        </Button>
+                    )}
+
                     <section className="mb-2 flex w-full items-center justify-between">
                         <div>
                             <h1 className="mb-2 text-2xl font-bold dark:text-white">{data?.book_title_original || "Título no disponible"}</h1>

@@ -9,16 +9,16 @@ import { toast } from "sonner";
 export function FormBorrowed({ user, id, setOpenModal }: { user: User | any, id?: number, setOpenModal: (open: boolean) => void }) {
     const router = useRouter()
     const handleClick = async () => {
-        if (!user?.register.register_ci && !user?.register.register_contact) {
-            toast('¡Faltan campos por completar!', {
-                description: 'Para poder continuar, necesitamos que completes tu informacion',
-                action: {
-                    label: 'Completar perfil',
-                    onClick: () => router.push("/profile/settings"),
-                },
-                duration: 5000,
-            });
-        }
+        // if (!user?.register.register_ci && !user?.register.register_contact) {
+        //     toast('¡Faltan campos por completar!', {
+        //         description: 'Para poder continuar, necesitamos que completes tu informacion',
+        //         action: {
+        //             label: 'Completar perfil',
+        //             onClick: () => router.push("/profile/settings"),
+        //         },
+        //         duration: 5000,
+        //     });
+        // }
     }
     const handleCerrar = async () => {
         setOpenModal(false);
@@ -28,9 +28,20 @@ export function FormBorrowed({ user, id, setOpenModal }: { user: User | any, id?
         const formData = new FormData(e.target as HTMLFormElement);
         const result: Respuest = await createOrder(formData)
         if (!result.success) {
-            toast.error(result.message, {
-                description: result.description
-            });
+            if (!user?.register.register_ci && !user?.register.register_contact) {
+                toast('¡Faltan campos por completar!', {
+                    description: 'Para poder continuar, necesitamos que completes tu informacion',
+                    action: {
+                        label: 'Completar perfil',
+                        onClick: () => router.push("/profile/settings"),
+                    },
+                    duration: 5000,
+                });
+            } else {
+                toast.error(result.message, {
+                    description: result.description
+                });
+            }
             return
         }
         toast.success(result.message, {

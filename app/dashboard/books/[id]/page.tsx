@@ -71,7 +71,7 @@ export default function BooksId({ params }: { params: { id: number } }) {
                         alt={String(data?.book_title_original)}
                         src={imageSrc}
                     />
-                    <Button aria-label="Prestar" className="mt-0 bg-red-700 font-semibold" processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />} isProcessing={spin} disabled={pdf} onClick={documentUrl} >Ver pdf</Button>
+                    <Button aria-label="Pdf" className="mt-0 bg-red-700 font-semibold" processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />} isProcessing={spin} disabled={pdf} onClick={documentUrl} >Ver pdf</Button>
                 </div>
                 <CardContent id={params.id} data={data || null} setOpenModal={setOpenModal} openModal={openModal} />
             </div>
