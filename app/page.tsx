@@ -40,21 +40,6 @@ export default function Home({ searchParams }: {
         <meta name="author" content="Coplumu Team" />
         <meta name="robots" content="index, follow" />
 
-        {/* Open Graph (para redes sociales) */}
-        <meta property="og:title" content="BIBLIOTECA - COPLUMU" />
-        <meta property="og:description" content="Accede a la biblioteca digital del Conservatorio Plurinacional de Música de Bolivia." />
-        <meta property="og:image" content="https://www.coplumu.edu.bo/imagenes/logo_cpm.png" />
-        <meta property="og:url" content="https://www.coplumu.edu.bo" />
-        <meta property="og:site_name" content="Biblioteca Coplumu" />
-
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@coplumu" />
-        <meta name="twitter:title" content="BIBLIOTECA - COPLUMU" />
-        <meta name="twitter:description" content="Accede a la biblioteca digital del Conservatorio Plurinacional de Música de Bolivia." />
-        <meta name="twitter:image" content="https://www.coplumu.edu.bo/imagenes/logo_cpm.png" />
-
-        {/* Iconos de la aplicación */}
         <link rel="icon" href="/imagenes/logo_cpm.png" />
         <link rel="apple-touch-icon" href="/imagenes/logo_cpm.png" />
         <link rel="shortcut icon" href="/imagenes/logo_cpm.png" />
