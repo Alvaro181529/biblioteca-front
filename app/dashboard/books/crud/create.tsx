@@ -279,7 +279,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
 
                                 <TextInput
                                     name="book_document"
-                                    defaultValue={fetch?.book_imagen}
+                                    defaultValue={fetch?.book_document}
                                     placeholder="URL del documento"
 
                                 />
@@ -288,7 +288,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 <Label htmlFor="book_document" value="Documento " />
                                 <span className="text-xs text-gray-700">(opcional)</span>
                                 <FileInput
-                                    accept="pdf"
+                                    accept=".pdf"
                                     id="book_document"
                                     onChange={onDocumentChange}
                                 />
