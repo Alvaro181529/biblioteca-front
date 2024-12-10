@@ -103,7 +103,7 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
           <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">
-                Explora Nuestros Libros
+                Explora Nuestro Contenido
               </h2>
               <div className="mx-auto text-gray-500  dark:text-gray-400 max-sm:max-w-[calc(100%-1rem)] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 <div className="grid grid-cols-7 gap-2">
