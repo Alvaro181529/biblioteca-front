@@ -44,7 +44,7 @@ export default function Users({ searchParams }: SerchParams) {
         setView(true)
         setDataUpdate(data[rowIndex]);
         setActualData(actualNumber)
-        setTitle("Ver Categoria ")
+        setTitle("Ver Usuario ")
         setModalType('view');
         setOpenModal(true);
     };
@@ -53,7 +53,7 @@ export default function Users({ searchParams }: SerchParams) {
         setModalState(true)
         setDataUpdate(data[rowIndex]);
         setActualData(actualNumber)
-        setTitle("Editar Instrumento ")
+        setTitle("Editar Usuario ")
         setModalType('edit');
         setOpenModal(true);
     };
