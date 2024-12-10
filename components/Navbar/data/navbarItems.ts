@@ -9,7 +9,7 @@ export const adminItems: NavbarItem[] = [
     { href: "/dashboard/publications", label: "Publicaciones" },
     { href: "/dashboard/authors", label: "Autores" },
     { href: "/dashboard/users", label: "Usuarios" },
-    { href: "/dashboard/analytics", label: "Analiticas" },
+    // { href: "/dashboard/analytics", label: "Analiticas" },
     { href: "/dashboard/contents", label: "Contenido" },
     { href: "/dashboard/orders", label: "Prestamos" },
 ];

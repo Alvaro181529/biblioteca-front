@@ -40,7 +40,7 @@ export default function Home({ searchParams }: {
         <meta name="author" content="Coplumu Team" />
         <meta name="robots" content="index, follow" />
 
-        <link rel="icon" href="/imagenes/logo_cpm.png" />
+        x        <link rel="icon" href="/imagenes/logo_cpm.png" />
         <link rel="apple-touch-icon" href="/imagenes/logo_cpm.png" />
         <link rel="shortcut icon" href="/imagenes/logo_cpm.png" />
       </Head>
@@ -218,7 +218,7 @@ const ComponentSearch = ({ onChange, size }: propsSelect) => {
     <div className="flex flex-row items-center gap-2 py-2">
       <TextInput
         className="w-full flex-1 rounded-lg border focus:border-verde-500 focus:outline-none focus:ring-2"
-        type="text"
+        type="search"
         defaultValue={searchParams.get('query')?.toString()}
         onChange={(event) => handleSerch(event.target.value)}
         placeholder="Buscar..."

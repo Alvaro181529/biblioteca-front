@@ -117,7 +117,7 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
     if (hasNoResults) {
         return (
             <Card className="col-span-full">
-                <p className="text-gray-600">No hay prestamos o pedidos disponibles.</p>
+                <p className="text-gray-400">No hay prestamos o pedidos disponibles.</p>
             </Card>
         );
     }

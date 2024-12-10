@@ -38,7 +38,7 @@ export function ComponentTable({ columns, data, onEdit, onDelete, onView, setOpe
     if (hasNoResults) {
         return (
             <Card className="col-span-full">
-                <p className="text-gray-600">No hay resultados disponibles.</p>
+                <p className="text-gray-600 dark:text-gray-400">No hay resultados disponibles.</p>
                 <span className="[&_p]:inline">
                     <a
                         onClick={() => setOpenModal(true)}

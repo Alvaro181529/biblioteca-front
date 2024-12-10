@@ -28,7 +28,7 @@ export function ComponentNavbar() {
     return (
         <Navbar className={`fixed top-0 z-50 m-1 w-[calc(100%-.5rem)] rounded-xl bg-verde-700 text-white transition-transform duration-300 ease-in-out sm:w-[calc(100%-.3rem)] ${isNavbarVisible ? 'translate-y-0' : '-translate-y-20'}`} rounded >
             <Navbar.Brand >
-                <Navbar.Toggle className="text-white hover:bg-verde-600" />
+                <Navbar.Toggle className="mr-3 text-white hover:bg-verde-600" />
                 <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
                 <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white md:text-xl">Biblioteca</span>
             </Navbar.Brand>
@@ -36,10 +36,10 @@ export function ComponentNavbar() {
                 <NavbarDropdown />
             </div>
             <Navbar.Collapse>
-                <Navbar.Link href="/" as={Link} className={`text-amarillo-50 hover:text-amarillo-200 ${pathname == "/" ? "text-amarillo-300  dark:text-white" : ""}`} >
+                <Navbar.Link href="/" as={Link} className={`border-none text-amarillo-50 hover:text-amarillo-200 ${pathname == "/" ? "text-amarillo-300  dark:text-white" : ""}`} >
                     Inicio
                 </Navbar.Link>
-                <Navbar.Link href="/content" as={Link} className={`text-amarillo-50 hover:text-amarillo-200 ${pathname == "/content" ? "text-amarillo-300 dark:text-white" : ""}`} >Contentido</Navbar.Link>
+                <Navbar.Link href="/content" as={Link} className={`border-none text-amarillo-50 hover:text-amarillo-200 ${pathname == "/content" ? "text-amarillo-300 dark:text-white" : ""}`} >Contentido</Navbar.Link>
             </Navbar.Collapse>
         </Navbar>
     )
