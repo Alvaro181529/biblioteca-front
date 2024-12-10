@@ -36,10 +36,10 @@ export function ComponentNavbar() {
                 <NavbarDropdown />
             </div>
             <Navbar.Collapse>
-                <Navbar.Link href="/" as={Link} className={`border-none text-amarillo-50 hover:text-amarillo-200 ${pathname == "/" ? "text-amarillo-300  dark:text-white" : ""}`} >
+                <Navbar.Link href="/" as={Link} className={`border-none text-amarillo-50  hover:text-amarillo-200 max-md:hover:bg-verde-600 ${pathname == "/" ? "text-amarillo-300  dark:text-white" : ""}`} >
                     Inicio
                 </Navbar.Link>
-                <Navbar.Link href="/content" as={Link} className={`border-none text-amarillo-50 hover:text-amarillo-200 ${pathname == "/content" ? "text-amarillo-300 dark:text-white" : ""}`} >Contentido</Navbar.Link>
+                <Navbar.Link href="/content" as={Link} className={`border-none text-amarillo-50  hover:text-amarillo-200 max-md:hover:bg-verde-600 ${pathname == "/content" ? "text-amarillo-300 dark:text-white" : ""}`} >Contentido</Navbar.Link>
             </Navbar.Collapse>
         </Navbar>
     )
