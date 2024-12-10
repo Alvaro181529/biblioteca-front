@@ -45,7 +45,7 @@ export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data
                 {contents.map((content, index) => (
                     <div key={index} className="grid grid-cols-1 gap-4 md:grid-cols-4">
                         <div className="col-span-3 mb-4">
-                            <Label htmlFor={`content_sectionTitle_${index}`} value="Seccion" />
+                            <Label htmlFor={`content_sectionTitle_${index}`} value="Índice Original" />
                             <TextInput
                                 required
                                 name={`content_sectionTitle_${index}`}
@@ -54,7 +54,7 @@ export function FormCreate({ id, data, setOpenModal, view }: { id?: number, data
                                 defaultValue={title}
                                 onChange={(e) => handleChange(index, 'sectionTitle', e.target.value)}
                             />
-                            <Label htmlFor={`content_sectionTitleParallel_${index}`} value="Seccion" />
+                            <Label htmlFor={`content_sectionTitleParallel_${index}`} value="Índice Alterno" />
                             <TextInput
                                 name={`content_sectionTitleParallel_${index}`}
                                 id={`content_sectionTitleParallel_${index}`}
