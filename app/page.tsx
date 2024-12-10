@@ -50,6 +50,7 @@ export default function Home({ searchParams }: {
         <ComponentContent />
         <ComponentPublications />
         <ComponentTabs searchQuery={searchParams.query} />
+        <ComponentUbication />
         <ComponentFooter />
       </main>
     </div>
@@ -96,7 +97,7 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
     setCurrentPage(page);
   };
   return (
-    <section className="w-full py-12 dark:bg-gray-800 md:py-9 lg:py-16" id="libros">
+    <section className="w-full bg-gray-100  py-12 dark:bg-gray-800 md:py-9 lg:py-16" id="libros">
       <Tabs className=" mx-auto max-w-7xl select-none items-center justify-center " aria-label="Default tabs" style="underline"  >
         <Tabs.Item active title="Libros" icon={HiBookOpen} className="dark:text-white">
           <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
@@ -293,7 +294,7 @@ function ComponentPublications() {
             <Card key={index} className="dark:text-white" imgSrc={imageSrc} imgAlt={publication?.publication_title}>
               <h2 className="mb-2 text-xl font-bold">{publication?.publication_title}</h2>
               <div className="prose max-w-none">
-                <p>{displayContent}</p>
+                <p className="text-sm">{displayContent}</p>
                 {publication.publication_content.length > maxLength && (
                   <a
                     onClick={() => toggleExpand(index)}  // Pasamos el índice de la publicación a la función
@@ -308,6 +309,28 @@ function ComponentPublications() {
         })}
       </section>
     </div>
+  );
+}
+function ComponentUbication() {
+  return (
+    <section className="mx-auto max-w-7xl p-6 py-12  text-center md:py-9 lg:py-16">
+      <h2 className="text-center text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">
+        Ubicación del Conservatorio Plurinacional de Música
+      </h2>
+      <div className="relative mt-7 grid h-96 overflow-hidden md:h-80 md:grid-cols-5">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.4703408802134!2d-68.13374582493717!3d-16.502335984241743!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x915f206554c4763d%3A0xbd6e3dcf4801f7c7!2sConservatorio%20Plurinacional%20de%20M%C3%BAsica!5e0!3m2!1ses-419!2sbo!4v1685099090420!5m2!1ses-419!2sbo"
+          allowFullScreen
+          loading="lazy"
+          className="size-full rounded-t-lg border-none md:col-span-2 md:rounded-l-lg"
+          referrerPolicy="no-referrer-when-downgrade"
+        ></iframe>
+        <div className="flex flex-col items-center justify-center text-balance rounded-b bg-gray-100 p-4 text-xl text-gray-600 dark:bg-gray-800 md:col-span-3 md:rounded-r-lg">
+          <p className="mb-2 dark:text-gray-400">Nuestra biblioteca se encuentra en el Conservatorio Plurinacional de Música, Sede Central</p>
+          <p className="text-2xl text-gray-800 dark:text-gray-200">Reyes Ortiz 56, La Paz</p>
+        </div>
+      </div>
+    </section>
   );
 }
 
