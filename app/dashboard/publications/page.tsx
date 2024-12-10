@@ -117,6 +117,9 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
         ]);
     };
     const truncateContent = (content: string, wordLimit: number) => {
+        if (!content) {
+            return "No hay Contenido";
+        }
         const words = content.split(" ");
         return words.length > wordLimit
             ? `${words.slice(0, wordLimit).join(" ")} ...`

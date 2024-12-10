@@ -152,17 +152,17 @@ const useBooksData = (size: number, currentPage: number, query: string, type: st
             book.id
         ]);
     };
-    const transformData = (books: BookFormData[]) => {
-        return books.map((book) => [
-            book.book_inventory,
-            book.book_condition,
-            book.book_location,
-            book.book_title_original,
-            book.book_language,
-            book.book_quantity,
-            book.book_observation,
-        ]);
+
+    const truncateContent = (content: string, wordLimit: number): string => {
+        if (!content) {
+            return "No hay observación";
+        }
+        const words = content.split(" ");
+        return words.length > wordLimit
+            ? `${words.slice(0, wordLimit).join(" ")}...`
+            : content;
     };
+
     const configureColumns = () => {
         setColumns([
             "INVENTARIO",
@@ -182,7 +182,17 @@ const useBooksData = (size: number, currentPage: number, query: string, type: st
                     const url = `/api/books?type=${type}&page=${currentPage}&size=${size}&query=${query}`;
                     const res = await fetch(url);
                     const result = await res.json();
-
+                    const transformData = (books: BookFormData[]) => {
+                        return books.map((book) => [
+                            book.book_inventory,
+                            book.book_condition,
+                            book.book_location,
+                            book.book_title_original,
+                            book.book_language,
+                            book.book_quantity,
+                            truncateContent(book.book_observation, 8),
+                        ]);
+                    };
                     configureColumns();
                     setInfoData(info(result.data))
                     setData(transformData(result.data));
