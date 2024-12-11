@@ -206,7 +206,7 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
                             <Table.Cell>{order.order_status}</Table.Cell>
                             <Table.Cell className="flex flex-col space-y-2">
                                 {order.order_status === "PRESTADO" ? (
-                                    <Button color="gray" size="sm" onClick={() => { handleDevolver(order.id) }}>
+                                    <Button color="gray" className="md:ml-4 " size="sm" onClick={() => { handleDevolver(order.id) }}>
                                         <IoReloadSharp className="my-auto mr-2" />
                                         Devolver
                                     </Button>
