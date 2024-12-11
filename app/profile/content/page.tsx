@@ -150,14 +150,18 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
         </div>
     );
 }
-const FetchBooks = (size: number, currentPage: number, query: string, type: string) => {
+const FetchBooks = (size: number, currentPage: number, search: string, type: string) => {
+    const parts = search.split(',');
     const [data, setData] = useState<BookFormData[]>([])
     const [pages, setPages] = useState(0)
-
+    const query = parts[0] || "";       
+    const author = parts[1] || "";      
+    const instrument = parts[2] || "";  
+    const category = parts[3] || "";    
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const url = `/api/books?type=${type}&page=${currentPage}&size=${size}&query=${query}`;
+                const url = `/api/books?type=${type}&page=${currentPage}&size=${size}&query=${query}&author=${author}&instrument=${instrument}&category=${category}`;
                 const res = await fetch(url);
                 const result = await res.json();
 
@@ -169,6 +173,6 @@ const FetchBooks = (size: number, currentPage: number, query: string, type: stri
         };
 
         fetchData();
-    }, [type, currentPage, size, query])
+    }, [type, currentPage, size, query, author, category,instrument])
     return { data, pages }
 }

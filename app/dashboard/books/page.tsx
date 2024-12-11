@@ -142,11 +142,18 @@ export default function Books({ searchParams }: SerchParams) {
     )
 }
 
-const useBooksData = (size: number, currentPage: number, query: string, type: string, openModal: boolean, refresh: boolean) => {
+const useBooksData = (size: number, currentPage: number, search: string, type: string, openModal: boolean, refresh: boolean) => {
+    const parts = search.split(',');
+
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
     const [pages, setPages] = useState<number>(0);
+    const query = parts[0] || "";       // El primer valor (query)
+    const author = parts[1] || "";      // El segundo valor (author)
+    const instrument = parts[2] || "";  // El tercer valor (instrument)
+    const category = parts[3] || "";    // El cuarto valor (category)
+    console.log({ query, author, instrument, category });
     const info = (books: BookFormData[]) => {
         return books.map((book) => [
             book.id
@@ -179,7 +186,7 @@ const useBooksData = (size: number, currentPage: number, query: string, type: st
         if (!openModal || refresh) {
             const fetchData = async () => {
                 try {
-                    const url = `/api/books?type=${type}&page=${currentPage}&size=${size}&query=${query}`;
+                    const url = `/api/books?type=${type}&page=${currentPage}&size=${size}&query=${query}&author=${author}&instrument=${instrument}&category=${category}`;
                     const res = await fetch(url);
                     const result = await res.json();
                     const transformData = (books: BookFormData[]) => {
@@ -204,7 +211,7 @@ const useBooksData = (size: number, currentPage: number, query: string, type: st
 
             fetchData();
         }
-    }, [currentPage, size, query, openModal, type, refresh]);
+    }, [currentPage, size, query, openModal, type, refresh, author, category,instrument]);
 
     return { data, columns, pages, infoData };
 };

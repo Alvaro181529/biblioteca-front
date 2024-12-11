@@ -4,7 +4,7 @@ import { Category, Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
     category_name: z.optional(z.string()),
-    category_description: z.optional(z.string()),
+    category_description: z.optional(z.string()).nullable(),
     id: z.optional(z.string())
 })
 
@@ -12,7 +12,7 @@ export async function createCategory(formData: FormData): Promise<Respuest> {
     const data = {
         id: formData.get("id") || "null",
         category_name: String(formData.get("category_name")) || null,
-        category_description: String(formData.get("category_description")) || null,
+        category_description: String(formData.get("category_description")) || "SIN DESCRIPCION",
     }
     const validatedData = IntrumentSchema.parse(data);
     try {

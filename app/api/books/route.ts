@@ -8,12 +8,15 @@ export async function GET(request: any) {
     let size = searchParams.get("size")
     let query = searchParams.get("query")
     let type = searchParams.get("type")
+    let author = searchParams.get("author")|| ""
+    let instrument = searchParams.get("instrument")|| ""
+    let category = searchParams.get("category")|| ""
     page = (!page || Number(page) < 1) ? "1" : page;
     size = (!size || Number(size) < 1) ? "10" : size;
     query = (!query || Number(query) < 1) ? "" : query;
     type = (!type || Number(type) < 1) ? "" : type;
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books?page=${page}&pageSize=${size}&query=${query}&type=${type}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books?page=${page}&pageSize=${size}&query=${query}&type=${type}&searchAuthors=${author}&searchCategories=${category}&searchInstruments${instrument}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
