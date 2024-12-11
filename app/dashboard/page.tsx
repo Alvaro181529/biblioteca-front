@@ -2,11 +2,11 @@
 import { ComponentCard } from "@/components/Card";
 import { ComponentPagination } from "@/components/Pagination";
 import { ComponentSearch } from "@/components/Search";
-import { Accordion, Button, Badge, List } from "flowbite-react";
+import { Accordion, Button, Badge, List, Tooltip } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { orderBorrowed } from "../../lib/updateOrder";
 import { Orders, Respuest } from "@/interface/Interface";
-import { ToastSuccess } from "@/components/Toast";
+import { FiRefreshCcw } from "react-icons/fi"
 import { toast } from "sonner";
 interface SerchParams {
     searchParams: {
@@ -55,7 +55,8 @@ const DashBoard = ({ update }: { update?: boolean }) => {
 const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: boolean; setUpdate: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [size, setSize] = useState(5);
-    const { data, pages, count: countData } = useOrdersData(size, currentPage, searchParams.query, update);
+    const [refresh, setRefresh] = useState(false);
+    const { data, pages, count: countData } = useOrdersData(size, currentPage, searchParams.query, update, refresh);
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -70,6 +71,12 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
         setSize(selectedSize);
         setCurrentPage(1);
     };
+    const Refresh = () => {
+        setRefresh(true)
+        setTimeout(() => {
+            setRefresh(false);
+        }, 2800);
+    }
     const prestar = async (id: number) => {
         setUpdate(true)
         const result: Respuest = await orderBorrowed(id, "PRESTADO")
@@ -184,12 +191,23 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                 })}
             </Accordion>
             <div className="m-auto flex justify-between">
-                <p className="my-auto text-center text-gray-600 dark:text-gray-400">
+                <div className="my-auto flex justify-between text-center text-gray-600 dark:text-gray-400">
                     <span className="ml-3 font-bold">
                         En espera:
                     </span>  {countData}
-                </p>
-                <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+                </div>
+                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+                    <Tooltip className="z-50" content="Refrescar">
+                        <Button
+                            className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                            aria-label="Mostrar/Ocultar Contraseña"
+                            type="button"
+                            onClick={Refresh}
+                            size="sm"
+                        >
+                            {<FiRefreshCcw className="size-5" />}
+                        </Button>
+                    </Tooltip>
             </div>
         </div >
     );
@@ -197,7 +215,7 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
 
 
 
-const useOrdersData = (size?: number, setCurrentPage?: number, query?: any, update?: boolean) => {
+const useOrdersData = (size?: number, setCurrentPage?: number, query?: any, update?: boolean, refresh?: boolean) => {
     const [data, setData] = useState<Orders[]>([]);
     const [count, setCount] = useState(0);
     const [pages, setPages] = useState<number>(0);
@@ -217,7 +235,7 @@ const useOrdersData = (size?: number, setCurrentPage?: number, query?: any, upda
         };
 
         fetchData();
-    }, [size, setCurrentPage, query, update]); // Ejecuta el fetch cada vez que update cambia
+    }, [size, setCurrentPage, query, update, refresh]); // Ejecuta el fetch cada vez que update cambia
 
     return { data, pages, count };
 }
