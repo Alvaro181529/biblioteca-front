@@ -117,7 +117,7 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
     if (hasNoResults) {
         return (
             <Card className="col-span-full">
-                <p className="text-gray-400">No hay prestamos o pedidos disponibles.</p>
+                <p className="text-gray-600 dark:text-gray-400">No hay prestamos o pedidos disponibles.</p>
             </Card>
         );
     }
@@ -212,11 +212,11 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
                                     </Button>
                                 ) : order.order_status === "ESPERA" ? (
                                     <div className="flex flex-col space-y-2">
-                                        <Button color="gray" size="sm" onClick={() => { handlePrestar(order.id) }}>
+                                        <Button className=" bg-verde-700 hover:bg-verde-600 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-700 md:ml-4 md:mt-0" size="sm" onClick={() => { handlePrestar(order.id) }}>
                                             <HiArrowSmRight className="my-auto mr-2 size-5 font-light" />
                                             Prestar
                                         </Button>
-                                        <Button color="warning" size="sm" onClick={() => { handleCancelar(order.id) }}>
+                                        <Button className="mt-4 bg-red-600 hover:bg-red-500 dark:text-white dark:hover:bg-red-500 md:ml-4 md:mt-0" size="sm" onClick={() => { handleCancelar(order.id) }}>
                                             <HiArrowSmRight className="my-auto mr-2 size-5 font-light" />
                                             Cancelar
                                         </Button>
