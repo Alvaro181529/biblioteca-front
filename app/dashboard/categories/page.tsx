@@ -110,6 +110,17 @@ export default function Category({ searchParams }: SerchParams) {
     )
 }
 
+const truncateContent = (content: string, wordLimit: number): string => {
+    if (!content) {
+        return "No hay observación";
+    }
+    const words = content.split(" ");
+    return words.length > wordLimit
+        ? `${words.slice(0, wordLimit).join(" ")}...`
+        : content;
+};
+
+
 const useCategoryData = (size: number, currentPage: number, query: string, openModal: boolean, refresh: boolean) => {
     const [data, setData] = useState<(string | number)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
@@ -120,12 +131,7 @@ const useCategoryData = (size: number, currentPage: number, query: string, openM
             categories.id,
         ]);
     };
-    const transformData = (category: Categories[]) => {
-        return category.map((categories) => [
-            categories.category_name,
-            categories.category_description
-        ]);
-    };
+ 
     const configureColumns = () => {
         setColumns([
             "NOMBRE",
@@ -139,7 +145,18 @@ const useCategoryData = (size: number, currentPage: number, query: string, openM
                 try {
                     const url = `/api/categories?page=${currentPage}&size=${size}&query=${query}`;
                     const res = await fetch(url);
-                    const result = await res.json();
+                    const result = await res.json();   const transformData = (category: Categories[]) => {
+                        return category.map((categories) => [
+                            categories.category_name,
+                            categories.category_description
+                        ]);
+                    };
+                    const transformData = (category: Categories[]) => {
+                        return category.map((categories) => [
+                            categories.category_name,
+                            truncateContent(categories.category_description,8)
+                        ]);
+                    };
                     configureColumns();
                     setInfoData(info(result.data || []))
                     setData(transformData(result.data || []));
