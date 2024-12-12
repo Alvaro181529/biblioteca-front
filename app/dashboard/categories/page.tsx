@@ -131,7 +131,7 @@ const useCategoryData = (size: number, currentPage: number, query: string, openM
             categories.id,
         ]);
     };
- 
+
     const configureColumns = () => {
         setColumns([
             "NOMBRE",
@@ -145,16 +145,11 @@ const useCategoryData = (size: number, currentPage: number, query: string, openM
                 try {
                     const url = `/api/categories?page=${currentPage}&size=${size}&query=${query}`;
                     const res = await fetch(url);
-                    const result = await res.json();   const transformData = (category: Categories[]) => {
-                        return category.map((categories) => [
-                            categories.category_name,
-                            categories.category_description
-                        ]);
-                    };
+                    const result = await res.json();
                     const transformData = (category: Categories[]) => {
                         return category.map((categories) => [
                             categories.category_name,
-                            truncateContent(categories.category_description,8)
+                            truncateContent(categories.category_description, 8)
                         ]);
                     };
                     configureColumns();
