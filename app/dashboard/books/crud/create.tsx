@@ -135,6 +135,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             <option>BUENO</option>
                             <option>REGULAR</option>
                             <option>MALO</option>
+                            <option>PÉSIMO</option>
                         </Select>
                     </div>
                     <div className="mb-4 max-sm:col-span-2">
