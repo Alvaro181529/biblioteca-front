@@ -163,7 +163,6 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                     <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
                         <Datepicker
-                            minDate={new Date(2023, 0, 1)} maxDate={new Date(2023, 3, 30)}
                             name="book_acquisition_date"
                             id="book_acquisition_date"
                         />
