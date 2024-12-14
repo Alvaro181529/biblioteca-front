@@ -27,7 +27,7 @@ interface SeriesData {
 export default function Analytics() {
     const [options, setOptions] = useState<ChartOptions | null>(null);
     const [series, setSeries] = useState<SeriesData[] | null>(null);
-
+    const { data } = FetchData();
     useEffect(() => {
         setOptions({
             chart: {
@@ -63,4 +63,19 @@ export default function Analytics() {
             </div>
         </div>
     );
+}
+
+const FetchData = () => {
+    const [data, setData] = useState()
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const url = `/api/books`
+                const res = await fetch(url).then(response => response.json())
+                setData(res);
+            } catch (error) {
+            }
+        }
+    }, [])
+    return { data }
 }
