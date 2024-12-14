@@ -164,16 +164,7 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
                     </div>
                 </dl>
             </Card>
-            <div className="mt-0 grid gap-2 pt-0">
-                <Card>
-                    <h1 className=" mb-auto text-xl font-bold dark:text-white">Obeservacion</h1>
-                    <p className="text-gray-700 dark:text-gray-400">{data?.book_observation || "No hay observaciones."}</p>
-                </Card>
-                <Card className="">
-                    <h1 className=" mb-auto  text-xl font-bold dark:text-white">Descripción</h1>
-                    <p className="text-gray-700 dark:text-gray-400">{data?.book_description || "No hay descripción disponible."}</p>
-                </Card>
-            </div>
+
         </div>
 
     )
