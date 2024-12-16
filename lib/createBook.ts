@@ -5,7 +5,12 @@ import { BookFormData, Respuest } from "@/interface/Interface";
 import { z } from "zod";
 
 const bookSchema = z.object({
-    files: z.array(z.instanceof(File)).optional().nullable(),
+    files: z.array(z.instanceof(File)).optional().nullable().refine((val) => {
+        if (typeof window !== 'undefined') {
+            return val instanceof File;
+        }
+        return true; // En el servidor, no hace nada con `File`
+    }),
     id: z.optional(z.string()),
     book_imagen: z.optional(z.string()),
     book_document: z.optional(z.string()),
