@@ -153,7 +153,6 @@ const useBooksData = (size: number, currentPage: number, search: string, type: s
     const author = parts[1] || "";      // El segundo valor (author)
     const instrument = parts[2] || "";  // El tercer valor (instrument)
     const category = parts[3] || "";    // El cuarto valor (category)
-    console.log({ query, author, instrument, category });
     const info = (books: BookFormData[]) => {
         return books.map((book) => [
             book.id
@@ -211,7 +210,7 @@ const useBooksData = (size: number, currentPage: number, search: string, type: s
 
             fetchData();
         }
-    }, [currentPage, size, query, openModal, type, refresh, author, category,instrument]);
+    }, [currentPage, size, query, openModal, type, refresh, author, category, instrument]);
 
     return { data, columns, pages, infoData };
 };

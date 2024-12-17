@@ -1,9 +1,6 @@
-"use server"
-
-import { getTokenFromSession } from "@/app/api/utils/auth";
+"use client";
 import { BookFormData, Respuest } from "@/interface/Interface";
 import { z } from "zod";
-
 const bookSchema = z.object({
     files: z.array(z.instanceof(File)).optional().nullable(),
     id: z.optional(z.string()),
@@ -29,8 +26,12 @@ const bookSchema = z.object({
     book_authors: z.optional(z.array(z.string())),
     book_instruments: z.optional(z.array(z.string())),
     book_editorial: z.optional(z.string()),
-})
-export async function createBook(formData: FormData): Promise<Respuest> {
+});
+
+let token
+
+// Function for creating or updating a book
+export async function createBook(formData: FormData, token?: string): Promise<Respuest> {
     const bookHeaders = String(formData.get('book_headers'));
     const bookIncludes = String(formData.get('book_includes'));
     const bookCategory = String(formData.get('book_category_ids'));
@@ -63,61 +64,21 @@ export async function createBook(formData: FormData): Promise<Respuest> {
         book_authors: bookAuthors ? bookAuthors.split(',').map(item => item.trim()) : [],
         book_instruments: bookInstruments ? bookInstruments.split(',').map(item => item.trim()) : [],
     };
+
     const validatedData = bookSchema.parse(data);
+
     try {
-        return await save(String(data.id), validatedData);
+        return await save(String(data.id), validatedData, token || "");
     } catch (error) {
-        return { success: false, message: 'Error al con el inventario' };
+        console.log(error);
+        return { success: false, message: 'Error al procesar el inventario' };
     }
 }
-const create = async (validatedData: any): Promise<Respuest> => {
 
-    const token = await getTokenFromSession()
-    try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: validatedData,
-        });
+// Function for creating a new book
+const create = async (validatedData: any, token?: string): Promise<Respuest> => {
+    const formData = new FormData();
 
-        if (!res.ok) {
-            throw new Error('Error al crear el libro: ' + res.statusText);
-        }
-
-        const result: BookFormData = await res.json()
-        if (!res.ok) {
-            return { success: false, message: 'No se pudo añadir el articulo del inventario' };
-        }
-        return { success: true, message: 'Articulo del inventario añadido correctamente', description: result.book_title_original };
-    } catch (error) {
-        return { success: false, message: 'Error al añadir el articulo del inventario' };
-    }
-};
-
-const update = async (id: string, validatedData: any): Promise<Respuest> => {
-    const token = await getTokenFromSession()
-    try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: validatedData
-        });
-        const result = await res.json();
-        if (!res.ok) {
-            return { success: false, message: 'No se pudo añadir la articulo del inventario' };
-        }
-        return { success: true, message: 'articulo del inventario actualizada correctamente', description: result.book_title_original };
-    } catch (error) {
-        console.error(error);
-        return { success: false, message: 'Error al actualizar la articulo del inventario' };
-    }
-};
-const save = async (id: string, validatedData: any): Promise<Respuest> => {
-    const formData = new FormData()
     if (Array.isArray(validatedData.files)) {
         validatedData.files.forEach((file: any) => {
             formData.append('files', file);
@@ -137,9 +98,71 @@ const save = async (id: string, validatedData: any): Promise<Respuest> => {
             }
         }
     }
-    if (id == "null") {
-        return await create(formData);
+
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData,
+        });
+
+        if (!res.ok) {
+            throw new Error('Error al crear el libro: ' + res.statusText);
+        }
+
+        const result: BookFormData = await res.json();
+        return { success: true, message: 'Articulo del inventario añadido correctamente', description: result.book_title_original };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: 'Error al añadir el articulo del inventario' };
+    }
+};
+
+// Function for updating an existing book
+const update = async (id: string, validatedData: any, token?: string): Promise<Respuest> => {
+    const formData = new FormData();
+    for (const key in validatedData) {
+        if (key !== 'files' && validatedData[key] !== undefined && validatedData[key] !== null) {
+            if (Array.isArray(validatedData[key])) {
+                validatedData[key].forEach((item: any) => {
+                    formData.append(`${key}[]`, item);
+                });
+            } else if (key === 'book_acquisition_date' && validatedData[key] instanceof Date) {
+                formData.append(key, validatedData[key].toISOString());
+            } else {
+                formData.append(key, validatedData[key]);
+            }
+        }
+    }
+
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}books/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData,
+        });
+
+        if (!res.ok) {
+            throw new Error('Error al actualizar el libro: ' + res.statusText);
+        }
+
+        const result = await res.json();
+        return { success: true, message: 'Articulo del inventario actualizado correctamente', description: result.book_title_original };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: 'Error al actualizar el articulo del inventario' };
+    }
+};
+
+// Main function for saving the book (either create or update)
+const save = async (id: string, validatedData: any, token: string): Promise<Respuest> => {
+    if (id === "null") {
+        return await create(validatedData, token);
     } else {
-        return await update(id, formData);
+        return await update(id, validatedData, token);
     }
 };

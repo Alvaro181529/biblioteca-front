@@ -4,10 +4,14 @@ import { createPublication } from "@/lib/createPublications";
 import { useEffect, useState } from "react";
 import { Publication, Respuest } from "@/interface/Interface";
 import { toast } from "sonner";
+import { console } from "inspector/promises";
+import { useSession } from "next-auth/react";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<Publication | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const { data: session } = useSession()
+    const token = session?.user?.accessToken || ""
     let defaultActive
     if (data) {
         defaultActive = data[3]
@@ -24,7 +28,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
         if (imageFile) formData.append("file", imageFile);
-        const result: Respuest = await createPublication(formData)
+        const result: Respuest = await createPublication(formData, token)
         if (!result.success) {
             toast.error(result.message, {
                 description: result.description

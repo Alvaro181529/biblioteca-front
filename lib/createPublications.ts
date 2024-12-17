@@ -1,5 +1,4 @@
-"use server"
-import { getTokenFromSession } from "@/app/api/utils/auth";
+"use client"
 import { Publication, Respuest } from "@/interface/Interface";
 import { z } from "zod"
 const IntrumentSchema = z.object({
@@ -12,7 +11,7 @@ const IntrumentSchema = z.object({
     id: z.optional(z.string())
 })
 
-export async function createPublication(formData: FormData): Promise<Respuest> {
+export async function createPublication(formData: FormData, token?: string): Promise<Respuest> {
     const data = {
         id: formData.get("id") || "null",
         file: formData.get("file") || null,
@@ -24,15 +23,14 @@ export async function createPublication(formData: FormData): Promise<Respuest> {
     }
     const validatedData = IntrumentSchema.parse(data);
     try {
-        return await save(String(data.id), validatedData);
+        return await save(String(data.id), validatedData, token || "");
     } catch (error) {
         return { success: false, message: 'Error al crear la publicacion' };
     }
 }
 
-const create = async (validatedData: any): Promise<Respuest> => {
+const create = async (validatedData: any, token: string): Promise<Respuest> => {
 
-    const token = await getTokenFromSession()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}publications`, {
             method: 'POST',
@@ -53,8 +51,7 @@ const create = async (validatedData: any): Promise<Respuest> => {
     }
 };
 
-const update = async (id: string, validatedData: any): Promise<Respuest> => {
-    const token = await getTokenFromSession()
+const update = async (id: string, validatedData: any, token: string): Promise<Respuest> => {
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}publications/${id}`, {
             method: 'PATCH',
@@ -73,7 +70,7 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
         return { success: false, message: 'Error al actualizar la publicacion' };
     }
 };
-const save = async (id: string, validatedData: any): Promise<Respuest> => {
+const save = async (id: string, validatedData: any, token: string): Promise<Respuest> => {
     const formData = new FormData();
     for (const key in validatedData) {
         if (validatedData[key] !== null && validatedData[key] !== undefined) {
@@ -81,8 +78,8 @@ const save = async (id: string, validatedData: any): Promise<Respuest> => {
         }
     }
     if (id == "null") {
-        return await create(formData);
+        return await create(formData, token);
     } else {
-        return await update(id, formData);
+        return await update(id, formData, token);
     }
 };

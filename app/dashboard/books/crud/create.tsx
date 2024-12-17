@@ -8,11 +8,13 @@ import { Author } from "@/interface/Interface";
 import { Instrument } from "@/interface/Interface";
 import { Categories } from "@/interface/Interface";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<BookFormData | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null); // Estado para imagen
     const [documentFile, setDocumentFile] = useState<File | null>(null); // Estado para documento
-
+    const { data: session } = useSession();
+    const token = session?.user?.accessToken || ""
     const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setImageFile(e.target.files[0]);
@@ -40,7 +42,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         if (imageFile) formData.append("files", imageFile); // Agregar la imagen
         if (documentFile) formData.append("files", documentFile); // Agregar el documento
 
-        const result: Respuest = await createBook(formData);
+        const result: Respuest = await createBook(formData, token);
         if (!result.success) {
             toast.error(result.message, {
                 description: result.description
