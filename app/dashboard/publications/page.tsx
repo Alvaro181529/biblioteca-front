@@ -107,7 +107,7 @@ export default function Publications({ searchParams }: SerchParams) {
 }
 
 const usePublicationsData = (size: number, currentPage: number, query: string, openModal: boolean, refresh: boolean) => {
-    const [data, setData] = useState<(string | number)[][]>([]);
+    const [data, setData] = useState<(string | number | any)[][]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
     const [pages, setPages] = useState<number>(0);
@@ -120,10 +120,12 @@ const usePublicationsData = (size: number, currentPage: number, query: string, o
         if (!content) {
             return "No hay Contenido";
         }
+
         const words = content.split(" ");
-        return words.length > wordLimit
+        const contentWord = words.length > wordLimit
             ? `${words.slice(0, wordLimit).join(" ")} ...`
             : content;
+        return <div dangerouslySetInnerHTML={{ __html: contentWord }} />;
     };
 
     const configureColumns = () => {

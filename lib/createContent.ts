@@ -50,7 +50,6 @@ const create = async (validatedData: any): Promise<Respuest> => {
         });
 
         const result: Content = await res.json()
-        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir el contenido' };
         }
@@ -73,7 +72,6 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
             body: JSON.stringify(validatedData),
         });
         const result = await res.json()
-        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo actualizar el contenido' };
         }

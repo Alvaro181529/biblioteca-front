@@ -39,7 +39,6 @@ const fetchData = async (id: number) => {
         },
     });
     const data: { message: string, instrument: Instrument } = await response.json();
-    console.log(data);
     if (!response.ok) {
         toast.error('No se pudo eliminar el instrumento', {
             description: data.message

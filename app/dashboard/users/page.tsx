@@ -9,6 +9,7 @@ import { FormCreate } from './crud/create';
 import { FormDelete } from './crud/delate';
 import { Button, Select, Tooltip } from 'flowbite-react';
 import { FiRefreshCcw } from "react-icons/fi"
+import { ReportComponent } from '@/components/Report/Report';
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -27,6 +28,7 @@ export default function Users({ searchParams }: SerchParams) {
     const [actualData, setActualData] = useState(0);
     const [size, setSize] = useState(10);
     const [openModal, setOpenModal] = useState(false);
+    const [openModalReport, setOpenModalReport] = useState(false);
     const [refresh, setRefresh] = useState(false);
     const [view, setView] = useState(false)
     const { data, columns, pages, infoData } = usePublicationsData(size, currentPage, searchQuery, openModal, type, refresh);
@@ -72,6 +74,10 @@ export default function Users({ searchParams }: SerchParams) {
         setModalType('create');
         setModalState(true)
     };
+    const closeModalReport = () => {
+        setOpenModalReport(false);
+        //  setModalType('create');
+    };
     const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setType(event.target.value);
         setCurrentPage(1);
@@ -106,7 +112,10 @@ export default function Users({ searchParams }: SerchParams) {
                     <option value="">Todo</option>
                 </Select>
                 <div className='col-span-1 w-full py-2'>
-                    <Button className='w-full bg-red-600' onClick={reportUsers}>Reporte</Button>
+                    <ComponentModalCreate title="Reporte de Usuarios" openModal={openModalReport} setOpenModal={closeModalReport} status={false}>
+                        <ReportComponent report='users'></ReportComponent>
+                    </ComponentModalCreate>
+                    <Button className='w-full bg-red-600' onClick={() => { setOpenModalReport(true) }}>Reporte</Button>
                 </div>
             </div>
 

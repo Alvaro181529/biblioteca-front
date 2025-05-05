@@ -102,3 +102,24 @@ interface Register {
     register_intrument: [],
     register_liked: [],
 }
+
+export interface Analytics {
+    book_loan: number;
+    book_title_original: string;
+    book_type: string;
+}
+export interface Monthly {
+    month: Date;
+    count: number;
+}
+export interface BookTypeValue {
+    [key: string]: number;
+}
+export interface BookConditionData {
+    [bookType: string]: BookCondition[];
+}
+
+export interface BookCondition {
+    book_condition: "BUENO" | "REGULAR" | "MALO" | "PÉSIMO";
+    count: number;
+}

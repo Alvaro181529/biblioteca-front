@@ -74,7 +74,6 @@ const fetchDataDesactivate = async (id: number) => {
         },
     });
     const data = await response.json();
-    console.log(data);
     if (!response.ok) {
         toast.error('No se pudo eliminar el usuario', {
             description: data?.message

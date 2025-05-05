@@ -11,11 +11,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@google/genai": "^0.7.0",
     "apexcharts": "^4.1.0",
     "flowbite-react": "^0.8.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^14.2.15",
     "next-auth": "^4.24.10",
+    "quill": "^2.0.3",
     "react": "^18",
     "react-apexcharts": "^1.7.0",
     "react-dom": "^18",
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
+    "@types/quill": "^2.0.14",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.18",

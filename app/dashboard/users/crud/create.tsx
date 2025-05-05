@@ -56,7 +56,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                     <div className="mb-4">
                         <Label htmlFor="password" value="Contraseña" />
                         <TextInput
-                            disabled={view}
+                            disabled={view || email}
                             type="password"
                             name="password"
                             id="password"
@@ -75,7 +75,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                         >
                             <option value={"ESTUDIANTE"}>Estudiante</option>
                             <option value={"DOCENTE"}>Docente</option>
-                            <option value={"ADMINISTRADOR"}>Administrador</option>
+                            <option value={"ADMIN"}>Administrador</option>
                             <option value={"ESTUDIANTIL"}>Estudiantil</option>
                             <option value={"USUARIO EXTERNO"}>Usuario Externo</option>
                             <option value={"COLEGIAL"}>Colegial</option>

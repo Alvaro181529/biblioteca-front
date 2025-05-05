@@ -10,6 +10,8 @@ import { InvoicesTableSkeleton } from "@/components/skeletons";
 import { HiArrowSmRight } from "react-icons/hi";
 import { FiRefreshCcw } from "react-icons/fi"
 import { toast } from "sonner";
+import { ReportComponent } from '@/components/Report/Report';
+import { ComponentModalCreate } from "@/components/Modal";
 
 interface SerchParams {
     searchParams: {
@@ -24,11 +26,14 @@ export default function OrderPage({ searchParams }: SerchParams) {
     const [currentPage, setCurrentPage] = useState(1);
     const [refresh, setRefresh] = useState(false);
     const { data, total, fetchData } = FetchData(type, size, currentPage, searchQuery, refresh)
+    const [openModalReport, setOpenModalReport] = useState(false);
+
     const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSize = Number(event.target.value)
         setSize(selectedSize);
         setCurrentPage(1);
     };
+
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
@@ -36,17 +41,9 @@ export default function OrderPage({ searchParams }: SerchParams) {
         setType(event.target.value);
         setCurrentPage(1);
     };
-    const reportOrders = async () => {
-        const api = `/api/reports?page=orders`;
-        const res = await fetch(api);
-        if (!res.ok) {
-            console.error('Error al descargar el reporte');
-            return;
-        }
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        window.URL.revokeObjectURL(url);
+    const closeModalReport = () => {
+        setOpenModalReport(false);
+        //  setModalType('create');
     };
     const Refresh = () => {
         setRefresh(true)
@@ -68,7 +65,10 @@ export default function OrderPage({ searchParams }: SerchParams) {
                     <option value="">Todo</option>
                 </Select>
                 <div className='w-full py-2'>
-                    <Button className='w-full bg-red-600' onClick={reportOrders}>Reporte</Button>
+                    <ComponentModalCreate title="Reporte de Prestamos" openModal={openModalReport} setOpenModal={closeModalReport} status={false}>
+                        <ReportComponent report='orders'></ReportComponent>
+                    </ComponentModalCreate>
+                    <Button className='w-full bg-red-600' onClick={() => { setOpenModalReport(true) }} >Reporte</Button>
                 </div>
             </div>
             <TableOrders data={data} page={currentPage} size={size} fetchData={fetchData} />
@@ -93,7 +93,7 @@ export default function OrderPage({ searchParams }: SerchParams) {
 }
 
 const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: number, size: number, fetchData: () => void }) => {
-
+    const { data: dat } = FetchData('PRESTADO', 1000, 1)
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
 
@@ -108,7 +108,7 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
             setIsLoading(false);
             setHasNoResults(false);
         }
-    }, [data]);
+    }, [data, dat]);
 
     if (isLoading) {
         return <InvoicesTableSkeleton />;
@@ -168,8 +168,8 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
                     <Table.HeadCell className="bg-verde-700 text-white">N</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">Usuario</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">Libro</Table.HeadCell>
-                    <Table.HeadCell className="bg-verde-700 text-white">Fecha de préstamo</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">Estado</Table.HeadCell>
+                    <Table.HeadCell className="bg-verde-700 text-white">Ultima fecha</Table.HeadCell>
                     <Table.HeadCell className="bg-verde-700 text-white">
                         <span className="sr-only">Acción</span>
                     </Table.HeadCell>
@@ -190,12 +190,13 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
                             <Table.Cell >
                                 <List >
                                     {order.books.map(book => (
-                                        <List.Item key={book.id} className="text-nowrap">
+                                        <List.Item key={book.id} className="text-wrap">
                                             {book.book_title_original}
                                         </List.Item>
                                     ))}
                                 </List>
                             </Table.Cell>
+                            <Table.Cell>{order.order_status}</Table.Cell>
                             <Table.Cell>
                                 {new Date(order.order_at).toLocaleDateString('es-ES', {
                                     year: 'numeric',
@@ -203,7 +204,6 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
                                     day: 'numeric'
                                 })}
                             </Table.Cell>
-                            <Table.Cell>{order.order_status}</Table.Cell>
                             <Table.Cell className="flex flex-col space-y-2">
                                 {order.order_status === "PRESTADO" ? (
                                     <Button color="gray" className="md:ml-4 " size="sm" onClick={() => { handleDevolver(order.id) }}>
@@ -234,7 +234,7 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
 }
 
 
-const FetchData = (type: string, size: number, currentPage: number, query: string, refresh: boolean) => {
+const FetchData = (type: string, size: number, currentPage: number, query?: string, refresh?: boolean) => {
     const [data, setData] = useState<Orders[]>([]);
     const [total, setTotal] = useState(0);
 

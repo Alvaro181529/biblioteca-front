@@ -15,6 +15,7 @@ import { InvoicesCardPageSkeleton, InvoicesCardSkeleton } from "@/components/ske
 import { ComponentNavbar } from "@/components/Home/Navbar";
 import { isValidUrl } from "@/lib/validateURL";
 import Head from "next/head";
+import ChatBot from "@/components/chat/chatbot";
 
 interface propsSelect {
   size: number;
@@ -51,6 +52,7 @@ export default function Home({ searchParams }: {
         <ComponentPublications />
         <ComponentTabs searchQuery={searchParams.query} />
         <ComponentUbication />
+        <ChatBot />
         <ComponentFooter />
       </main>
     </div>
@@ -70,9 +72,9 @@ function ComponentContent() {
       <div className="space-y-4">
         <h2 className="text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">Contenido</h2>
       </div>
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 self-center p-5  max-sm:justify-items-center sm:grid-cols-2 lg:grid-cols-4">
-        <CardDashboard title="Libros" href="" count={Number(contLibro)} />
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 p-5 sm:grid-cols-2  sm:self-center lg:grid-cols-4">
         <CardDashboard title="Revistas" href="" count={Number(contRevista)} />
+        <CardDashboard title="Libros" href="" count={Number(contLibro)} />
         <CardDashboard title="Publicaciones" href="" count={Number(pages)} />
         <CardDashboard title="Multimendia" href="" count={multimediaTotal} />
       </div>
@@ -127,7 +129,7 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-4 text-start sm:grid-cols-2 xl:grid-cols-3 ">
+            <div className="grid grid-cols-2 gap-4 text-start sm:grid-cols-2 xl:grid-cols-3 ">
               <CardInventario data={data} />
             </div>
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={page} />
@@ -187,7 +189,7 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
         return (
           <Card key={index} imgSrc={imageSrc} horizontal>
             <div className="ml-4 pe-3">
-              <h1 className="text-lg font-semibold dark:text-white">{book.book_title_original}</h1>
+              <h1 className="text-lg font-semibold dark:text-white ">{book.book_title_original}</h1>
               <h5 className="text-sm text-gray-600 dark:text-white">{book.book_title_parallel}</h5>
               <div className="mt-2 text-gray-600  dark:text-white">
                 {Array.isArray(book?.book_authors) && book?.book_authors?.map((author, index) => (
@@ -271,36 +273,44 @@ function ComponentPublications() {
     );
   }
 
+  const truncateContent = (content: string, wordLimit: number) => {
+    if (!content) {
+      return "No hay Contenido";
+    }
+
+    const words = content.split(" ");
+    const contentWord = words.length > wordLimit
+      ? `${words.slice(0, wordLimit).join(" ")} ...`
+      : content;
+    return <div dangerouslySetInnerHTML={{ __html: contentWord }} />;
+  };
+
+
   return (
     <div className="mx-auto w-full max-w-7xl py-12 dark:bg-gray-700 md:py-9 lg:py-16" id="publicacion">
       <div className="space-y-4">
         <h2 className="text-center text-3xl font-bold tracking-tighter dark:text-white sm:text-4xl md:text-5xl">Publicaciones</h2>
       </div>
-      <section className="mt-7 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <section className="mx-auto mt-7 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {data.map((publication, index) => {
-          const isCurrentlyExpanded = expandedIndex === index;  // Verificamos si esta publicación está expandida
-          const displayContent = isCurrentlyExpanded
-            ? publication.publication_content
-            : publication.publication_content.slice(0, maxLength) + '...';
 
           const imageUrl = String(publication?.publication_imagen);
           const imageSrc = isValidUrl(imageUrl)
             ? imageUrl
             : imageUrl && imageUrl.toLowerCase() !== "null"
               ? `/api/publications/image/${imageUrl}`
-              : "/svg/placeholder.svg";
+              : "";
 
           return (
             <Card key={index} className="dark:text-white" imgSrc={imageSrc} imgAlt={publication?.publication_title}>
               <h2 className="mb-2 text-xl font-bold">{publication?.publication_title}</h2>
               <div className="prose max-w-none">
-                <p className="text-sm">{displayContent}</p>
                 {publication.publication_content.length > maxLength && (
                   <a
                     onClick={() => toggleExpand(index)}  // Pasamos el índice de la publicación a la función
                     className="inline cursor-pointer font-medium text-verde-600 no-underline decoration-solid underline-offset-2 hover:underline dark:text-verde-500"
                   >
-                    {isCurrentlyExpanded ? 'Ver menos' : 'Ver más'}
+                    {truncateContent(publication.publication_content, 15)}
                   </a>
                 )}
               </div>
@@ -468,10 +478,11 @@ const FetchDataPublications = () => {
         const url = `/api/publications?page=1&size=4`;
         const res = await fetch(url);
         const result = await res.json();
-        setData(result.data);
+        setData(result.data || []);
         setPages(result.totalPages || 0)
 
       } catch (error) {
+        setData([]);
         console.error("Error fetching data:", error);
       }
     };

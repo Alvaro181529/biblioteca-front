@@ -39,7 +39,6 @@ const fetchData = async (id: number) => {
         },
     });
     const data: { message: string, publication: Publication } = await response.json();
-    console.log(data);
     if (!response.ok) {
         toast.error('No se pudo elimnar la publicacion', {
             description: data.message

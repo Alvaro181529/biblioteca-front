@@ -10,19 +10,27 @@ import { FormDelete } from './crud/delete';
 import { useRouter } from 'next/navigation';
 import { Button, Select, Tooltip } from 'flowbite-react';
 import { FiRefreshCcw } from "react-icons/fi"
+import { BusquedaAvanzada } from '@/utils/busquedaAvanzada';
+import { ReportComponent } from '@/components/Report/Report';
 interface SerchParams {
     searchParams: {
         query?: string;
+        author?: string;
+        instrument?: string;
+        category?: string;
         page?: string;
     };
 }
 
 export default function Books({ searchParams }: SerchParams) {
     const searchQuery = searchParams?.query || ""
+    const searchAuthor = searchParams?.author || ""
+    const searchInstrument = searchParams?.instrument || ""
+    const searchCategory = searchParams?.category || ""
     const [dataUpdate, setDataUpdate] = useState<(string | number)[]>([]);
     const [modalState, setModalState] = useState(true)
-    const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'view'>('create');
-    const [title, setTitle] = useState("Crear Libro");
+    const [modalType, setModalType] = useState<'create' | 'edit' | 'delete' | 'view' | 'search'>('create');
+    const [title, setTitle] = useState("Reporte");
     const [actual, setActual] = useState("");
     const [actualData, setActualData] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -30,7 +38,8 @@ export default function Books({ searchParams }: SerchParams) {
     const [size, setSize] = useState(10);
     const [refresh, setRefresh] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-    const { data, columns, pages, infoData } = useBooksData(size, currentPage, searchQuery, type, openModal, refresh);
+    const [openModalReport, setOpenModalReport] = useState(false);
+    const { data, columns, pages, infoData } = useBooksData(size, currentPage, searchQuery, type, openModal, refresh, searchAuthor, searchCategory, searchInstrument);
     const router = useRouter();
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -57,6 +66,12 @@ export default function Books({ searchParams }: SerchParams) {
         setModalType('edit');
         setOpenModal(true);
     };
+    const handleSeach = () => {
+        setModalState(false)
+        setTitle("Busqueda Avanzada")
+        setModalType('search');
+        setOpenModal(true);
+    };
     const handleDelate = (rowIndex: number) => {
         const actualTitle = String(data[rowIndex][3])
         const actualNumber = Number(infoData[rowIndex])
@@ -73,29 +88,27 @@ export default function Books({ searchParams }: SerchParams) {
         setTitle("Crear Libro")
         setModalType('create');
     };
+    const closeModalReport = () => {
+        setModalState(true)
+        setOpenModalReport(false);
+        setTitle("Reporte")
+        //  setModalType('create');
+    };
     const Refresh = () => {
         setRefresh(true)
         setTimeout(() => {
             setRefresh(false);
         }, 2800);
     }
-    const reportBook = async () => {
-        const api = `/api/reports?page=books`;
-        const res = await fetch(api);
-        if (!res.ok) {
-            console.error('Error al descargar el reporte');
-            return;
-        }
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        window.URL.revokeObjectURL(url);
-    };
+
     return (
         <div>
             <div className="grid grid-cols-7 gap-2">
-                <div className="col-span-5">
+                <div className="col-span-4">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
+                </div>
+                <div className='w-full py-2'>
+                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-blue-700 hover:bg-blue-800' onClick={handleSeach}>Avanzado</Button>
                 </div>
                 <Select onChange={handleTypeChange} className=" py-2">
                     <option value="">Todo</option>
@@ -103,6 +116,7 @@ export default function Books({ searchParams }: SerchParams) {
                     <option value="PARTITURA" > PARTITURA</option>
                     <option value="DVD" > DVD</option>
                     <option value="CD" > CD</option>
+                    <option value="VHS" > VHS</option>
                     <option value="CASSETTE" > CASSETTE</option>
                     <option value="TESIS" > TESIS</option>
                     <option value="REVISTA" > REVISTA</option>
@@ -112,7 +126,10 @@ export default function Books({ searchParams }: SerchParams) {
                     <option value="OTRO" > OTRO</option>
                 </Select>
                 <div className='w-full py-2'>
-                    <Button aria-label='Reporte' className='w-full bg-red-600' onClick={reportBook}>Reporte</Button>
+                    <ComponentModalCreate title={'Reporte de Libros'} openModal={openModalReport} setOpenModal={closeModalReport} status={false}>
+                        <ReportComponent report='books'></ReportComponent>
+                    </ComponentModalCreate>
+                    <Button aria-label='Reporte' className='w-full bg-red-600' onClick={() => { setOpenModalReport(true) }}>Reporte</Button>
                 </div>
             </div>
             <ComponentTable columns={columns} data={data} onView={handleView} onEdit={(handleEdit)} onDelete={(handleDelate)} currentPage={currentPage} itemsPerPage={size} setOpenModal={setOpenModal} />
@@ -136,13 +153,13 @@ export default function Books({ searchParams }: SerchParams) {
                 {modalType === 'create' && <FormCreate setOpenModal={closeModal} />}
                 {modalType === 'edit' && <FormCreate setOpenModal={closeModal} id={actualData} />}
                 {modalType === 'delete' && <FormDelete libro={actual} data={actualData} setOpenModal={closeModal} />}
+                {modalType === 'search' && <BusquedaAvanzada></BusquedaAvanzada>}
             </ComponentModalCreate>
-
         </div>
     )
 }
 
-const useBooksData = (size: number, currentPage: number, search: string, type: string, openModal: boolean, refresh: boolean) => {
+const useBooksData = (size: number, currentPage: number, search: string, type: string, openModal: boolean, refresh: boolean, author?: string, category?: string, instrument?: string) => {
     const parts = search.split(',');
 
     const [data, setData] = useState<(string | number)[][]>([]);
@@ -150,9 +167,7 @@ const useBooksData = (size: number, currentPage: number, search: string, type: s
     const [infoData, setInfoData] = useState<(string | number)[][]>([]);
     const [pages, setPages] = useState<number>(0);
     const query = parts[0] || "";       // El primer valor (query)
-    const author = parts[1] || "";      // El segundo valor (author)
-    const instrument = parts[2] || "";  // El tercer valor (instrument)
-    const category = parts[3] || "";    // El cuarto valor (category)
+
     const info = (books: BookFormData[]) => {
         return books.map((book) => [
             book.id

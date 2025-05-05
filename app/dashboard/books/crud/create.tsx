@@ -1,5 +1,5 @@
 "use client"
-import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, Spinner } from "flowbite-react";
+import { TextInput, Label, FileInput, Datepicker, Textarea, Tabs, Select, Spinner, Button } from "flowbite-react";
 import { bookTypes, currencies, languages } from "@/types/types";
 import { createBook } from "@/lib/createBook";
 import { BookFormData, Respuest } from "@/interface/Interface";
@@ -9,11 +9,16 @@ import { Instrument } from "@/interface/Interface";
 import { Categories } from "@/interface/Interface";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { Signatura } from "@/lib/generateIA";
+import { FiRefreshCcw } from "react-icons/fi";
+
 export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<BookFormData | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null); // Estado para imagen
     const [documentFile, setDocumentFile] = useState<File | null>(null); // Estado para documento
+    const [signatura, setSignatura] = useState<string | null>(null);
     const { data: session } = useSession();
+    const [bookTitle, setBookTitle] = useState<string>(fetch?.book_title_original || "");
     const token = session?.user?.accessToken || ""
     const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -26,6 +31,13 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
             setDocumentFile(e.target.files[0]);
         }
     };
+
+    const onClickSignatura = async (titulo: string) => {
+        const signaturaEncontrada = await Signatura(titulo || "");
+        console.log(signaturaEncontrada);
+        setSignatura(String(signaturaEncontrada));
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             if (id) {
@@ -76,6 +88,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             id="book_title_original"
                             placeholder="Título Original"
                             defaultValue={fetch?.book_title_original}
+                            onChange={(e) => setBookTitle(e.target.value)} // Actualizamos el estado al escribir
                             required
                         />
                     </div>
@@ -154,13 +167,20 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                     </div>
 
                     <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_location" value="Signatura tipografica" />
-                        <TextInput
-                            name="book_location"
-                            id="book_location"
-                            placeholder="Ubicación"
-                            defaultValue={fetch?.book_location}
-                        />
+                        <Label htmlFor="book_location" value="Signatura tipográfica" />
+                        <div className="flex gap-2">
+                            <div className="flex-1">
+                                <TextInput
+                                    name="book_location"
+                                    id="book_location"
+                                    placeholder="Ubicación"
+                                    defaultValue={fetch?.book_location || signatura || ''} // Mantén defaultValue como estaba
+                                />
+                            </div>
+                            <div className="flex-none">
+                                <Button onClick={() => onClickSignatura(String(bookTitle))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
+                            </div>
+                        </div>
                     </div>
                     <div className="mb-4 max-sm:col-span-2">
                         <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />

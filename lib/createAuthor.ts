@@ -35,7 +35,6 @@ const create = async (validatedData: any): Promise<Respuest> => {
             body: JSON.stringify(validatedData),
         });
         const result: Author = await res.json();
-        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo crear el autor' };
         }

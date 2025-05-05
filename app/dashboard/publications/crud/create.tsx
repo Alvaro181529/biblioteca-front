@@ -6,10 +6,12 @@ import { Publication, Respuest } from "@/interface/Interface";
 import { toast } from "sonner";
 import { console } from "inspector/promises";
 import { useSession } from "next-auth/react";
+import RichTextEditor from "@/components/RichTextEditor";
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<Publication | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const [content, setContent] = useState<string>(fetch?.publication_content ?? "");
     const { data: session } = useSession()
     const token = session?.user?.accessToken || ""
     let defaultActive
@@ -70,12 +72,9 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                     </div>
                     <div className="col-span-2">
                         <Label htmlFor="publication_content" value="Contenido" />
-                        <Textarea
-                            name="publication_content"
-                            id="publication_content"
-                            placeholder="Contenido"
-                            defaultValue={fetch?.publication_content ?? ""}
-                        />
+                        <input type="hidden" name="publication_content" value={content} />
+                        <RichTextEditor defaultValue={fetch?.publication_content} onChange={setContent} />
+
                     </div>
                     <div className="col-span-2 mb-4">
                         <Tabs aria-label="Tabs with underline" style="underline" >

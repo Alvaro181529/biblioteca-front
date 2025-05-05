@@ -20,6 +20,7 @@ const Contents = () => {
     const { data: contProyectos } = ContentData("PROYECTOS")
     const { data: contPartitura } = ContentData("PARTITURA")
     const { data: contOtro } = ContentData("OTRO")
+    const { data: contVHS } = ContentData("VHS")
     return (
         <div className="mb-4 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
             <ComponentCard count={Number(contLibro)} title="LIBRO" href="" />
@@ -32,6 +33,7 @@ const Contents = () => {
             <ComponentCard count={Number(contTesis)} title="TESIS" href="" />
             <ComponentCard count={Number(contProyectos)} title="PROYECTOS" href="" />
             <ComponentCard count={Number(contPartitura)} title="PARTITURA" href="" />
+            <ComponentCard count={Number(contVHS)} title="VHS" href="" />
             <ComponentCard count={Number(contOtro)} title="OTROS" href="" />
         </div>
     )

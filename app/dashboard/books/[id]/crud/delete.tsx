@@ -38,7 +38,6 @@ const fetchData = async (id: number) => {
         },
     });
     const data: { message: string, content: Content } = await response.json();
-    console.log(data);
     if (!response.ok) {
         toast.error('No se pudo eliminar el contenido', {
             description: data.message

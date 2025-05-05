@@ -9,7 +9,8 @@ import { adminItems, personalItems } from "./data/navbarItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Orders } from "@/interface/Interface";
 interface NavbarLinksProps {
     items: NavbarItem[];
 }
@@ -56,7 +57,21 @@ function NavbarDropdown() {
     const email = session?.user?.email
     const rol = session?.user?.rols as Role | undefined; // Asegúrate de que rol es de tipo Role o undefined
 
+    const [data, setData] = useState<Orders[]>([]);
+    const [notifications, setNotifications] = useState(0); // Número de notificaciones como ejemplo
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const url = `/api/orders/admin?state=ESPERA`;
+            const res = await fetch(url);
+            const result = await res.json();
+            setData(result.data ? result.data : []);
+        }
+        if (data.length === 0) {
+            fetchData();
+        }
+        setNotifications(data.length);
+    }, [data]);
     const ModeToggle = () => {
         toggleMode();
         setTextMode(mode === "dark" ? "Modo Oscuro" : "Modo Claro");
@@ -83,35 +98,56 @@ function NavbarDropdown() {
     const Setting = rol && rol in settingToHref ? settingToHref[rol] : "/";
 
     return (
-        <Dropdown
-            arrowIcon={false}
-            inline
-            label={
-                <Avatar alt="User settings" img="" rounded />
-            }
-        >
-            <Dropdown.Header>
-                <span className="block text-sm">{user}</span>
-                <span className="block truncate text-sm font-medium">{email}</span>
-            </Dropdown.Header>
-            <Dropdown.Item as={Link} href="#" onClick={ModeToggle} className="flex items-center justify-between">
-                {textMode}
-
-                {mode === "dark" ? (
-                    <HiSun className="ml-2" />
-                ) : (
-                    <HiMoon className="ml-2" />
-                )}
-            </Dropdown.Item>
-            <Dropdown.Item
-                as={Link}
-                href={Dashboard}
+        <Notification rol={rol} notifications={notifications}>
+            <Dropdown
+                arrowIcon={false}
+                inline
+                label={
+                    <Avatar alt="User settings" img="" rounded />
+                }
             >
-                Inicio
-            </Dropdown.Item>
-            < Dropdown.Item as={Link} href={Setting}>Ajustes</Dropdown.Item >
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={() => signOut()}>Cerrar sesión</Dropdown.Item>
-        </Dropdown >
+                <Dropdown.Header>
+                    <span className="block text-sm">{user}</span>
+                    <span className="block truncate text-sm font-medium">{email}</span>
+                </Dropdown.Header>
+                <Dropdown.Item as={Link} href="#" onClick={ModeToggle} className="flex items-center justify-between">
+                    {textMode}
+
+                    {mode === "dark" ? (
+                        <HiSun className="ml-2" />
+                    ) : (
+                        <HiMoon className="ml-2" />
+                    )}
+                </Dropdown.Item>
+                <Dropdown.Item
+                    as={Link}
+                    href={Dashboard}
+                >
+                    Inicio
+                </Dropdown.Item>
+                < Dropdown.Item as={Link} href={Setting}>Ajustes</Dropdown.Item >
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={() => signOut()}>Cerrar sesión</Dropdown.Item>
+            </Dropdown >
+        </Notification>
     )
+}
+
+function Notification({ children, rol, notifications }: { children?: React.ReactNode, rol?: string, notifications: number }) {
+
+    return (
+        <div
+            className="relative inline-flex items-center rounded-lg text-sm text-white hover:bg-verde-600 focus:outline-none focus:ring-2 focus:ring-white dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            aria-label="Notificaciones"
+        >
+            {children}
+            {(rol === 'ADMIN' || rol === 'ROOT') && notifications > 0 && (
+                <span
+                    className="absolute right-0 top-0 -mr-2 -mt-2 inline-flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white"
+                >
+                    {notifications}
+                </span>
+            )}
+        </div>
+    );
 }

@@ -12,7 +12,7 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
         ? imageUrl // Si es una URL válida, usamos la URL
         : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
             ? `/api/publications/image/${imageUrl}`
-            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+            : "";  // Si no hay imagen, usamos el placeholder
     const importanceColorMap: { [key: string]: string } = {
         'ALTO': 'failure',
         'MEDIO': 'warning',
@@ -22,9 +22,9 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
     const publicationDate = data?.publication_update_at ? new Date(data.publication_update_at) : null;
 
     return (
-        <article className="mx-5 overflow-hidden rounded-lg shadow-lg dark:text-white">
+        <article className="mx-5 overflow-hidden rounded-lg px-32 shadow-lg dark:text-white">
             {
-                data?.publication_imagen != "null" && (
+                imageSrc != '' && (
                     <Image
                         src={imageSrc}
                         alt={String(data?.publication_title)}
@@ -40,9 +40,11 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
                     <MdCalendarToday className="mr-2 size-4" />
                     <span className="mr-4">{formatDate(publicationDate)}</span>
                 </div>
-                <div className="prose max-w-none">
-                    <p>{data?.publication_content}</p>
-                </div>
+                <div
+                    className="prose mt-6 max-w-none"
+                    dangerouslySetInnerHTML={{ __html: data?.publication_content || '' }}
+                />
+
                 <div className="mt-6 flex items-center justify-between">
                     <Badge color={badgeColor} className="rounded-2xl">
                         {data?.publication_importance}

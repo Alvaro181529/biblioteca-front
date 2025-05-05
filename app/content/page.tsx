@@ -39,12 +39,14 @@ export default function ContentPage({ searchParams }: SerchParams) {
                 <div className="col-span-6">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
+
                 <Select onChange={handleTypeChange} className=" py-2">
                     <option value="">Todo</option>
                     <option value="LIBRO" > LIBRO</option>
                     <option value="PARTITURA" > PARTITURA</option>
                     <option value="DVD" > DVD</option>
                     <option value="CD" > CD</option>
+                    <option value="VHS" > VHS</option>
                     <option value="CASSETTE" > CASSETTE</option>
                     <option value="TESIS" > TESIS</option>
                     <option value="REVISTA" > REVISTA</option>
@@ -91,7 +93,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
     }
 
     return (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
             {data?.map((book, index) => {
                 const imageUrl = String(book?.book_imagen);
                 const imageSrc = isValidUrl(imageUrl)
@@ -108,37 +110,37 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
                         onClick={() => router.push(`content/${book.id} `)}
 
                     >
-                        <div className="flex w-full items-center justify-between">
-                            <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        <div className="flex w-full items-center justify-between ">
+                            <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white max-sm:text-sm">
                                 {book.book_title_original || "Titulo del libro"}
                             </h5>
                             <div>
                                 {book.book_quantity > 0 ? (
                                     <div className="flex items-center">
-                                        <p className="text-green-500">Disponible</p>
+                                        <p className="text-green-500 max-sm:hidden">Disponible</p>
                                         <span className="ml-2 size-3 rounded-full bg-green-500"></span>
                                     </div>
                                 ) : (
                                     <div className="flex items-center">
-                                        <p className="text-red-500">No disponible</p>
+                                        <p className="text-red-500 max-sm:hidden">No disponible</p>
                                         <span className="ml-2 size-3 rounded-full bg-red-500"></span>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
-                            <span className="font-semibold">Tipo: </span> {book.book_type}
+                        <p className="font-normal text-gray-700 dark:text-gray-400  max-sm:text-sm">
+                            <span className="font-semibold  ">Tipo: </span> {book.book_type}
                         </p>
 
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
+                        <p className="font-normal text-gray-700 dark:text-gray-400  max-sm:text-sm">
                             <span className="font-semibold">Autor: </span>
                             {book.book_authors?.map((author, index) => (
                                 <p key={index}>{author.author_name}</p>
                             ))}
                         </p>
 
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
+                        <p className="font-normal text-gray-700 dark:text-gray-400 max-sm:text-sm">
                             <span className="font-semibold">Categoría: </span>
                             {book.book_category?.map((category, index) => (
                                 <p key={index}>{category.category_name}</p>

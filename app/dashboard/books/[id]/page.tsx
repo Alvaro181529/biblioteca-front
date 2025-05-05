@@ -35,10 +35,10 @@ export default function BooksId({ params }: { params: { id: number } }) {
     if (data?.statusCode == 404) return notFound()
     const imageUrl = String(data?.book_imagen);
     const imageSrc = isValidUrl(imageUrl)
-        ? imageUrl // Si es una URL válida, usamos la URL
-        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+        ? imageUrl
+        : imageUrl && imageUrl.toLowerCase() !== "null"
             ? `/api/books/image/${imageUrl}`
-            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+            : "/svg/placeholder.svg";
 
     const documentUrl = () => {
         const documentUrl = String(data?.book_document);

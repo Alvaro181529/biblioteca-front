@@ -14,7 +14,7 @@ export const adminItems: SidebarItemGroup = [
     { href: "/dashboard/publications", icon: MdPublic, label: "Publicaciones" },
     { href: "/dashboard/authors", icon: MdPerson4, label: "Autores" },
     { href: "/dashboard/users", icon: MdPerson, label: "Usuarios" },
-    // { href: "/dashboard/analytics", icon: HiChartPie, label: "Analiticas" },
+    { href: "/dashboard/analytics", icon: HiChartPie, label: "Analiticas" },
     { href: "/dashboard/contents", icon: ImBooks, label: "Contenido" },
     { href: "/dashboard/orders", icon: FaBookOpenReader, label: "Prestamos" },
 ];

@@ -122,6 +122,17 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                         </div>
                     </Accordion.Panel>
                 </Accordion>
+                <Tooltip className="z-50" content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
             </div>
         );
     }
@@ -196,18 +207,22 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                         En espera:
                     </span>  {countData}
                 </div>
-                    <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
-                    <Tooltip className="z-50" content="Refrescar">
-                        <Button
-                            className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
-                            aria-label="Mostrar/Ocultar Contraseña"
-                            type="button"
-                            onClick={Refresh}
-                            size="sm"
-                        >
-                            {<FiRefreshCcw className="size-5" />}
-                        </Button>
-                    </Tooltip>
+                <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+                <Tooltip className="z-50" content="Refrescar">
+                    <Button
+                        className={`${refresh ? "animate-spin" : ""} m-0 border-none p-0 text-gray-600 ring-0 focus:ring-0 dark:text-gray-300`}
+                        aria-label="Mostrar/Ocultar Contraseña"
+                        type="button"
+                        onClick={Refresh}
+                        size="sm"
+                    >
+                        {<FiRefreshCcw className="size-5" />}
+                    </Button>
+                </Tooltip>
+            </div>
+
+            <div>
+
             </div>
         </div >
     );

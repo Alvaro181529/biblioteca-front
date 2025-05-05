@@ -53,7 +53,6 @@ const create = async (validatedData: any): Promise<Respuest> => {
         });
 
         const result: { message: string, user: User } = await res.json()
-        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo añadir el usuario', description: result.message[0] };
         }
@@ -76,11 +75,11 @@ const update = async (id: string, validatedData: any): Promise<Respuest> => {
             body: JSON.stringify(validatedData),
         });
 
-        const result: { message: string, user: User } = await res.json()
+        const result: { message: string, name?: string } = await res.json()
         if (!res.ok) {
             return { success: false, message: 'No se pudo actualizar el usuario', description: result.message };
         }
-        return { success: true, message: 'Usuario actualizado correctamente', description: result.user.name };
+        return { success: true, message: 'Usuario actualizado correctamente', description: result.name };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error al actualizar el usuario' };
