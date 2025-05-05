@@ -307,6 +307,7 @@ function ComponentPublications() {
               <div className="prose max-w-none">
                 {publication.publication_content.length > maxLength && (
                   <a
+                    href={"/blog/" + String(publication?.id)}
                     onClick={() => toggleExpand(index)}  // Pasamos el índice de la publicación a la función
                     className="inline cursor-pointer font-medium text-verde-600 no-underline decoration-solid underline-offset-2 hover:underline dark:text-verde-500"
                   >

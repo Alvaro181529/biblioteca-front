@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { TextInput, Label, Tabs, FileInput, Textarea, Select, Spinner } from "flowbite-react";
 import { createPublication } from "@/lib/createPublications";
 import { useEffect, useState } from "react";
@@ -6,7 +6,10 @@ import { Publication, Respuest } from "@/interface/Interface";
 import { toast } from "sonner";
 import { console } from "inspector/promises";
 import { useSession } from "next-auth/react";
-import RichTextEditor from "@/components/RichTextEditor";
+import dynamic from "next/dynamic";
+
+// Cargar dinámicamente RichTextEditor con ssr: false
+const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), { ssr: false });
 
 export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data?: any, view?: boolean, setOpenModal: (open: boolean) => void }) {
     const [fetch, setFetch] = useState<Publication | null>(null)
@@ -42,6 +45,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
         });
         setOpenModal(false);
     }
+
     useEffect(() => {
         const fetchData = async () => {
             if (id) {
@@ -57,6 +61,7 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
             <Spinner color="success" aria-label="Success spinner" size="xl" />
         </div >
     )
+
     return (
         <form id="submit-form" onSubmit={onSave}>
             <div className="space-y-6" >
@@ -73,8 +78,8 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                     <div className="col-span-2">
                         <Label htmlFor="publication_content" value="Contenido" />
                         <input type="hidden" name="publication_content" value={content} />
+                        {/* Cargar RichTextEditor solo en el cliente */}
                         <RichTextEditor defaultValue={fetch?.publication_content} onChange={setContent} />
-
                     </div>
                     <div className="col-span-2 mb-4">
                         <Tabs aria-label="Tabs with underline" style="underline" >
@@ -126,7 +131,6 @@ export function FormCreate({ view, id, data, setOpenModal }: { id?: number, data
                 </div>
             </div>
         </form>
-
     )
 }
 

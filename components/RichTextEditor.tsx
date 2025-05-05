@@ -14,7 +14,7 @@ export default function RichTextEditor({ defaultValue, onChange }: RichTextEdito
     const quillRef = useRef<Quill>();
 
     useEffect(() => {
-        if (editorRef.current && !quillRef.current) {
+        if (typeof window !== "undefined" && editorRef.current && !quillRef.current) {
             quillRef.current = new Quill(editorRef.current, {
                 theme: "snow",
                 placeholder: "Contenido",
