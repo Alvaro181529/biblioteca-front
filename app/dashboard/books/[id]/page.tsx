@@ -57,21 +57,21 @@ export default function BooksId({ params }: { params: { id: number } }) {
                     <h1 className="mb-2 text-2xl font-bold dark:text-white">{data?.book_title_original || "Título no disponible"}</h1>
                     <p className=" text-gray-500 dark:text-gray-400">{data?.book_title_parallel}</p>
                 </section>
-                <p className="p-2 text-gray-500 dark:text-gray-400">
+                <section className="p-2 text-gray-500 dark:text-gray-400">
                     <span className="font-semibold dark:text-white">Fecha de adquicision: </span>
-                    {data?.book_acquisition_date ? data?.book_acquisition_date.toString() : "S/F"}
-                </p>
+                    <p>{data?.book_acquisition_date ? data?.book_acquisition_date.toString() : "S/F"}</p>
+                </section>
             </div>
-            <div className="grid items-start gap-x-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 items-start gap-x-4 md:grid-cols-2">
                 <div className="m-auto mt-0 grid w-full gap-6">
                     <Image
-                        width={600}
+                        width={560}
                         height={800}
                         className="aspect-[3/4] rounded-lg object-cover"
                         alt={String(data?.book_title_original)}
                         src={imageSrc}
                     />
-                    <Button aria-label="Pdf" className="mt-0 bg-red-700 font-semibold" processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />} isProcessing={spin} disabled={pdf} onClick={documentUrl} >Ver pdf</Button>
+                    <Button aria-label="Pdf" className="mb-2 mt-0 bg-red-700 font-semibold sm:mb-0" processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />} isProcessing={spin} disabled={pdf} onClick={documentUrl} >Ver pdf</Button>
                 </div>
                 <CardContent id={params.id} data={data || null} setOpenModal={setOpenModal} openModal={openModal} />
             </div>
@@ -183,8 +183,8 @@ const CardContent = ({ id, data, setOpenModal, openModal }: {
 
 const CardDetall = ({ data }: { data: BookFormData | null }) => {
     return (
-        <div className="my-4 grid grid-cols-2 gap-4">
-            <Card>
+        <div className="my-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Card className="col-span-2 sm:col-span-1">
                 <h1 className=" mb-auto text-2xl font-bold dark:text-white">Detalles del libro</h1>
                 <dl className="grid grid-cols-2 gap-5">
                     <div>
@@ -230,16 +230,18 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
                     <div className="col-span-2 font-normal ">
                         <span className="font-semibold dark:text-white">Encabezados: </span>
                         <ul className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-400">
-                            {data?.book_includes && data.book_includes.length > 0 ? (data?.book_headers?.map((header, index) => (
-                                <p key={index} className="mt-2 rounded-full bg-amarillo-100 px-3 py-1 text-base ">{header}</p>
-                            ))) : (
+                            {data?.book_includes && data.book_includes.length > 0 ? (
+                                data?.book_headers?.map((header, index) => (
+                                    <p key={index} className="mt-2 rounded-full bg-amarillo-100 px-3 py-1 text-base ">{header}</p>
+                                ))
+                            ) : (
                                 <p className="mt-2 text-base">No hay encabezados disponibles</p>
                             )}
                         </ul>
                     </div>
                 </dl>
             </Card>
-            <div className="mt-0 grid gap-2 pt-0">
+            <div className="col-span-2 mt-0 gap-2 pt-0 sm:col-span-1">
                 <div className="  grid grid-cols-2 gap-3">
                     <Card>
                         <h1 className=" mb-auto text-xl font-bold dark:text-white">Autores</h1>
