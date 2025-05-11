@@ -12,11 +12,14 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "BIBLIOTECA - COPLUMU",
   description: "Conservatorio Plurinacional de música - Biblioteca de Musica ",
+  manifest: "/manifest.json",
   icons: {
-    icon: "/imagenes/logo_cpm.png",
-    apple: "/imagenes/logo_cpm.png",
-    shortcut: "/imagenes/logo_cpm.png",
+    icon: "/icons/icon-32x32.png",
+    apple: "/icons/icon-180x180.png",
+    shortcut: "/icons/icon-32x32.png",
   },
+  themeColor: "#4a642e",
+
 };
 export default async function RootLayout({
   children,
