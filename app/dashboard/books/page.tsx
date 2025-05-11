@@ -103,14 +103,12 @@ export default function Books({ searchParams }: SerchParams) {
 
     return (
         <div>
-            <div className="grid grid-cols-7 gap-2">
-                <div className="col-span-4">
+            <div className="col-span-3 grid gap-x-2 md:grid-cols-11 md:gap-2">
+                <div className="col-span-3 md:col-span-4 xl:col-span-5">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
-                <div className='w-full py-2'>
-                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-blue-700 hover:bg-blue-800' onClick={handleSeach}>Avanzado</Button>
-                </div>
-                <Select onChange={handleTypeChange} className=" py-2">
+
+                <Select onChange={handleTypeChange} className=" py-2 md:col-span-2 xl:col-span-1">
                     <option value="">Todo</option>
                     <option value="LIBRO" > LIBRO</option>
                     <option value="PARTITURA" > PARTITURA</option>
@@ -125,7 +123,10 @@ export default function Books({ searchParams }: SerchParams) {
                     <option value="PROYECTOS" > PROYECTOS</option>
                     <option value="OTRO" > OTRO</option>
                 </Select>
-                <div className='w-full py-2'>
+                <div className='w-full py-2 md:col-span-3'>
+                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-blue-700 hover:bg-blue-800' onClick={handleSeach}>Avanzado</Button>
+                </div>
+                <div className='w-full py-2 md:col-span-2'>
                     <ComponentModalCreate title={'Reporte de Libros'} openModal={openModalReport} setOpenModal={closeModalReport} status={false}>
                         <ReportComponent report='books'></ReportComponent>
                     </ComponentModalCreate>
