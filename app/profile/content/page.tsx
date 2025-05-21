@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { InvoicesCardSkeleton } from "@/components/skeletons";
 import { ComponentPagination } from "@/components/Pagination";
 import { isValidUrl } from "@/lib/validateURL";
+import { LuSettings2 } from "react-icons/lu";
 
 interface SerchParams {
     searchParams: {
@@ -48,16 +49,16 @@ export default function ContentPage({ searchParams }: SerchParams) {
     };
     const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setType(event.target.value);
-        setCurrentPage(1); // Reinicia a la primera página si cambias el tipo
+        setCurrentPage(1);
     };
     return (
         <section>
             <div className="grid grid-cols-9 gap-2 md:grid-cols-7">
-                <div className="col-span-4">
+                <div className="col-span-5 sm:col-span-4">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
                 <div className='w-full py-2'>
-                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-blue-700 hover:bg-blue-800' onClick={handleSeach}>Avanzado</Button>
+                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-300' onClick={handleSeach}><LuSettings2 className='text-xl text-gray-600' /></Button>
                 </div>
                 <Select onChange={handleTypeChange} className="col-span-3 py-2 md:col-span-2">
                     <option value="">Todo</option>
@@ -116,10 +117,10 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
             {data?.map((book, index) => {
                 const imageUrl = String(book?.book_imagen);
                 const imageSrc = isValidUrl(imageUrl)
-                    ? imageUrl // Si es una URL válida, usamos la URL
-                    : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+                    ? imageUrl
+                    : imageUrl && imageUrl.toLowerCase() !== "null"
                         ? `/api/books/image/${imageUrl}`
-                        : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+                        : "/svg/placeholder.svg";
 
                 return (
                     <Card
@@ -127,10 +128,9 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
                         className="w-full cursor-pointer"
                         imgSrc={imageSrc}
                         onClick={() => router.push(`content/${book.id} `)}
-
                     >
                         <div className="flex w-full items-center justify-between">
-                            <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white max-sm:text-sm">
+                            <h5 className="truncate text-lg font-bold tracking-tight text-gray-900 dark:text-white max-sm:text-sm">
                                 {book.book_title_original || "Titulo del libro"}
                             </h5>
                             <div>
@@ -148,7 +148,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
                             </div>
                         </div>
 
-                        <p className="font-normal text-gray-700 dark:text-gray-400 max-sm:text-sm">
+                        <p className="capitalize text-gray-700 dark:text-gray-400 max-sm:text-sm">
                             <span className="font-semibold">Tipo: </span> {book.book_type}
                         </p>
 

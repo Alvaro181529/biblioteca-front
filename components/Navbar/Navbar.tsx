@@ -18,7 +18,7 @@ interface NavbarLinksProps {
 export function ComponentNavbar({ rol }: { rol: boolean }) {
     const isRoot = rol; // Cambia a tu lógica real para determinar el estado
     return (
-        <Navbar fluid className="bg-verde-700 text-white dark:bg-gray-900">
+        <Navbar fluid className="z-50 w-full bg-verde-700 text-white dark:bg-gray-900 max-sm:fixed">
             <Navbar.Toggle className="text-white hover:bg-verde-600" />
             <Navbar.Brand href={"/"}>
                 <Image alt="concer_logo" src="/imagenes/logo_cpm.png" className="mr-1" width={40} height={40} />
@@ -67,11 +67,11 @@ function NavbarDropdown() {
             const result = await res.json();
             setData(result.data ? result.data : []);
         }
-        if (data.length === 0) {
+        if (data.length === 0 && (rol === 'ADMIN' || rol === 'ROOT')) {
             fetchData();
         }
         setNotifications(data.length);
-    }, [data]);
+    }, [data, rol]);
     const ModeToggle = () => {
         toggleMode();
         setTextMode(mode === "dark" ? "Modo Oscuro" : "Modo Claro");
@@ -134,7 +134,6 @@ function NavbarDropdown() {
 }
 
 function Notification({ children, rol, notifications }: { children?: React.ReactNode, rol?: string, notifications: number }) {
-
     return (
         <div
             className="relative inline-flex items-center rounded-lg text-sm text-white hover:bg-verde-600 focus:outline-none focus:ring-2 focus:ring-white dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600"

@@ -14,19 +14,23 @@ export default function PublicacionsPage() {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
-    const toggleExpand = (index: any) => {
-        setExpandedIndex(expandedIndex === index ? null : index);  // Si la publicación está expandida, la colapsamos, si no, la expandimos
-    }
+    const truncateContent = (content: string, wordLimit: number) => {
+        if (!content) {
+            return "No hay Contenido";
+        }
+
+        const words = content.split(" ");
+        const contentWord = words.length > wordLimit
+            ? `${words.slice(0, wordLimit).join(" ")} ...`
+            : content;
+        return <div dangerouslySetInnerHTML={{ __html: contentWord }} />;
+    };
+
 
     return (
         <div>
-            <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {data.map((publication, index) => {
-                    const isCurrentlyExpanded = expandedIndex === index;  // Verificamos si esta publicación está expandida
-                    const displayContent = isCurrentlyExpanded
-                        ? publication.publication_content
-                        : publication.publication_content.slice(0, maxLength) + '...';
-
                     const imageUrl = String(publication?.publication_imagen);
                     const imageSrc = isValidUrl(imageUrl)
                         ? imageUrl // Si es una URL válida, usamos la URL
@@ -38,13 +42,12 @@ export default function PublicacionsPage() {
                         >
                             <h2 className="mb-2 text-xl font-bold">{publication?.publication_title}</h2>
                             <div className="prose max-w-none">
-                                <p className="text-sm">{displayContent}</p>
                                 {publication.publication_content.length > maxLength && (
                                     <a
-                                        onClick={() => toggleExpand(index)}  // Pasamos el índice de la publicación a la función
+                                        href={"/blog/" + String(publication?.id)}
                                         className="inline cursor-pointer font-medium text-verde-600 no-underline decoration-solid underline-offset-2 hover:underline dark:text-verde-500"
                                     >
-                                        {isCurrentlyExpanded ? 'Ver menos' : 'Ver más'}
+                                        {truncateContent(publication.publication_content, 10)}
                                     </a>
                                 )}
                             </div>

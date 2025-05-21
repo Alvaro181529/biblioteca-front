@@ -3,7 +3,7 @@ import { PiEye, PiEyeClosed } from "react-icons/pi";
 import { Button, Card, Label, Select, Spinner, TextInput } from "flowbite-react"
 import { updateRegister } from "@/lib/updateRegister";
 import { useEffect, useState } from "react"
-import { Respuest, User } from "@/interface/Interface";
+import { Instrument, Respuest, User } from "@/interface/Interface";
 import { updatePass, updateSession } from "@/lib/updateSession";
 import { ComponentModalCreate } from "@/components/Modal";
 import { FormDelete } from "./delete";
@@ -24,7 +24,7 @@ export default function SettingPage() {
 const SectionSession = ({ data }: { data?: User | null }) => {
     if (!data) {
         return (
-            <Card >
+            <Card className="mb-2">
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Informacion del Usuario
                 </h5>
@@ -75,8 +75,10 @@ const SectionSession = ({ data }: { data?: User | null }) => {
     )
 }
 const SectionAccount = ({ data }: { data?: User | null }) => {
-    const [expedition, setExpedition] = useState("LP");
+    const [query, setQuery] = useState("");
     const [number, setNumber] = useState("");
+    const [expedition, setExpedition] = useState("LP");
+    const { data: dataInstrument } = FetchInstrument(query || "")
     const registerCi = data?.register?.register_ci || "";
     useEffect(() => {
         const match = registerCi?.match(/^(\d{5,15})\s*-\s*([A-Za-z]{2})$/);
@@ -86,7 +88,7 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
             setNumber(number)
             setExpedition(exp);
         } else {
-            setExpedition("SC");
+            setExpedition("LP");
         }
     }, [registerCi]);
 
@@ -95,7 +97,7 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
     };
     if (!data) {
         return (
-            <Card >
+            <Card className="mb-2">
                 <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
                     Informacion del perfil
                 </h5>
@@ -161,7 +163,7 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
                     </div>
                     <TextInput id="register_ubication" name="register_ubication" type="text" placeholder="Z/ buenos aires N/ 1223" defaultValue={data?.register?.register_ubication || ""} />
                 </div>
-                <div className="hidden">
+                <div className="">
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="register_professor" value="Docente" />
@@ -172,11 +174,25 @@ const SectionAccount = ({ data }: { data?: User | null }) => {
                         <div className="mb-2 block">
                             <Label htmlFor="register_intrument" value="Instrumento de especialidad" />
                         </div>
-                        <TextInput id="register_intrument" name="register_intrument" type="text" placeholder="Guitarra" defaultValue={data?.register?.register_intrument || ""} />
+                        <TextInput
+                            id="register_instrument"
+                            list="instrumentos"
+                            name="register_instrument"
+                            type="text"
+                            placeholder="Coloca tu instrumento"
+                            disabled={data?.register?.register_intrument ? false : true}
+                            defaultValue={data?.register?.register_intrument || ""}
+                        />
+                        <datalist id="instrumentos">
+                            {dataInstrument?.map((instrument) => (
+                                <option key={instrument.id} value={instrument.instrument_name} />
+                            ))}
+                        </datalist>
+
                     </div>
-                    <div>
+                    <div className="hidden">
                         <div className="mb-2 block">
-                            <Label htmlFor="register_category" value="Categorias" />
+                            <Label htmlFor="register_category" value="Categorias (de interes)" />
                         </div>
                         <TextInput id="register_category" name="register_category" type="text" placeholder="Coro" defaultValue={data?.register?.register_category || ""} />
                     </div>
@@ -297,5 +313,23 @@ const FetchUser = () => {
         };
         fetchData();
     }, [])
+    return { data }
+}
+const FetchInstrument = (query: string) => {
+    const [data, setData] = useState<Instrument[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const url = `/api/instruments?query=${query}`;
+                const res = await fetch(url);
+                const result = await res.json();
+                setData(result.data || [])
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, [query])
     return { data }
 }

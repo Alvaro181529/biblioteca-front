@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, act } from 'react';
+import { useState, useEffect } from 'react';
 import { ComponentTable } from "@/components/Table"
 import { ComponentModalCreate } from '@/components/Modal';
 import { ComponentPagination } from '@/components/Pagination';
@@ -12,6 +12,7 @@ import { Button, Select, Tooltip } from 'flowbite-react';
 import { FiRefreshCcw } from "react-icons/fi"
 import { BusquedaAvanzada } from '@/utils/busquedaAvanzada';
 import { ReportComponent } from '@/components/Report/Report';
+import { LuSettings2 } from "react-icons/lu";
 interface SerchParams {
     searchParams: {
         query?: string;
@@ -104,11 +105,11 @@ export default function Books({ searchParams }: SerchParams) {
     return (
         <div>
             <div className="col-span-3 grid gap-x-2 md:grid-cols-11 md:gap-2">
-                <div className="col-span-3 md:col-span-4 xl:col-span-5">
+                <div className="col-span-3 md:col-span-5 xl:col-span-6">
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
 
-                <Select onChange={handleTypeChange} className=" py-2 md:col-span-2 xl:col-span-1">
+                <Select onChange={handleTypeChange} className=" py-2 md:col-span-2 xl:col-span-2">
                     <option value="">Todo</option>
                     <option value="LIBRO" > LIBRO</option>
                     <option value="PARTITURA" > PARTITURA</option>
@@ -123,8 +124,8 @@ export default function Books({ searchParams }: SerchParams) {
                     <option value="PROYECTOS" > PROYECTOS</option>
                     <option value="OTRO" > OTRO</option>
                 </Select>
-                <div className='w-full py-2 md:col-span-3'>
-                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-blue-700 hover:bg-blue-800' onClick={handleSeach}>Avanzado</Button>
+                <div className='w-full py-2 md:col-span-1'>
+                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-400' onClick={handleSeach}><LuSettings2 className='text-xl text-gray-600' /></Button>
                 </div>
                 <div className='w-full py-2 md:col-span-2'>
                     <ComponentModalCreate title={'Reporte de Libros'} openModal={openModalReport} setOpenModal={closeModalReport} status={false}>

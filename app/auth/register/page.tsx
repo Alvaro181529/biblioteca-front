@@ -103,6 +103,8 @@ export default function Login() {
                     </div>
                     <div className="relative mt-4 flex w-full">
                         <input
+                            title="La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial."
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
                             type={passwordVisible ? "text" : "password"}
                             name="password"
                             className="h-8 w-full grow rounded-lg border border-gray-400 p-6 px-2 placeholder:text-gray-500 focus:border-verde-100 focus:outline-none  dark:bg-gray-600 dark:text-white dark:placeholder:text-gray-200"
@@ -123,6 +125,8 @@ export default function Login() {
                     </div>
                     <div className="relative mt-4 flex w-full">
                         <input
+                            title="La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial."
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
                             type={passwordConfirmedVisible ? "text" : "password"}
                             aria-label="ver confirmacion contraseña"
                             name="confirmPass"

@@ -15,10 +15,10 @@ export default function DashboardPage({ searchParams }: SerchParams) {
 
     return (
         <section>
-            <h2 className="mb-4 text-2xl font-semibold dark:text-white">Recomendados para ti</h2>
+            <h2 className="mb-4 text-lg font-semibold dark:text-white md:text-2xl">Recomendados para ti</h2>
             <CardInfo />
 
-            <h2 className="mb-4 text-2xl font-semibold dark:text-white">Nuevas adquisiciones</h2>
+            <h2 className="mb-4 text-lg font-semibold dark:text-white md:text-2xl">Nuevas adquisiciones</h2>
             <CardNew />
         </section>
     )
@@ -62,10 +62,10 @@ const CardNew = () => {
                 {Array.isArray(data) && data?.map((book, index) => {
                     const imageUrl = String(book?.book_imagen);
                     const imageSrc = isValidUrl(imageUrl)
-                        ? imageUrl // Si es una URL válida, usamos la URL
-                        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+                        ? imageUrl
+                        : imageUrl && imageUrl.toLowerCase() !== "null"
                             ? `/api/books/image/${imageUrl}`
-                            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+                            : "/svg/placeholder.svg";
                     return (
                         <Card
                             key={index}
@@ -73,7 +73,7 @@ const CardNew = () => {
                             className="w-[240px] shrink-0 cursor-pointer"
                             onClick={() => router.push(`profile/content/${book.id}`)}>
                             <div className="flex w-full items-center justify-between">
-                                <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                <h5 className="truncate text-sm font-bold tracking-tight text-gray-900 dark:text-white sm:text-xl">
                                     {book.book_title_original || "Titulo del libro"}
                                 </h5>
                                 <div>
@@ -94,14 +94,14 @@ const CardNew = () => {
                             </div>
                             <p className="text-sm text-gray-600">{new Date(book.book_create_at).toLocaleDateString()}</p>
 
-                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                            <p className="text-xs font-normal text-gray-700 dark:text-gray-400 md:text-lg">
                                 <span className="font-semibold">Autor: </span>
                                 {book.book_authors?.map((author, index) => (
                                     <p key={index}>{author.author_name}</p>
                                 ))}
                             </p>
 
-                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                            <p className="text-xs font-normal text-gray-700 dark:text-gray-400 md:text-lg">
                                 <span className="font-semibold">Categoría: </span>
                                 {book.book_category?.map((category, index) => (
                                     <p key={index}>{category.category_name}</p>
@@ -152,10 +152,10 @@ const CardInfo = () => {
                 {Array.isArray(data) && data?.map((book, index) => {
                     const imageUrl = String(book?.book_imagen);
                     const imageSrc = isValidUrl(imageUrl)
-                        ? imageUrl // Si es una URL válida, usamos la URL
-                        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
+                        ? imageUrl
+                        : imageUrl && imageUrl.toLowerCase() !== "null"
                             ? `/api/books/image/${imageUrl}`
-                            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+                            : "/svg/placeholder.svg";
                     return (
                         <Card
                             key={index}

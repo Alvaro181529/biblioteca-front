@@ -12,7 +12,7 @@ export default function DashboardLayout({
                 <ComponentNavbar rol={false} />
             </header>
 
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-hidden max-sm:mt-16">
                 <ComponentSidebar rol={false} />
                 <main className="flex-1 overflow-y-auto p-1">
                     {children}
