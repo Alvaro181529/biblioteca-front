@@ -93,7 +93,7 @@ export default function AnalyticsComponent() {
     useEffect(() => {
         if (data && data.length > 0) {
             const categories = data.map(item => item.book_title_original || "");
-            const values = data.map(item => item.book_loan || '');
+            const values = data.map(item => item.book_loan || 0);
 
             setOptions({
                 chart: {
