@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
@@ -18,8 +18,10 @@ export const metadata: Metadata = {
     apple: "/icons/icon-180x180.png",
     shortcut: "/icons/icon-32x32.png",
   },
-  themeColor: "#4a642e",
 
+};
+export const viewport: Viewport = {
+  themeColor: '#ffffff', // ✅ Correcto
 };
 export default async function RootLayout({
   children,
