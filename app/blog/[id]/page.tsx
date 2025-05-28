@@ -37,7 +37,7 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
             <div className="p-6">
                 <h1 className="mb-4 text-3xl font-bold">{data?.publication_title}</h1>
                 <div className="mb-4 flex items-center text-gray-500 dark:text-gray-400">
-                    <MdCalendarToday className="mr-2 size-4" />wha
+                    <MdCalendarToday className="mr-2 size-4" />
                     <span className="mr-4">{formatDate(publicationDate)}</span>
                 </div>
                 <hr className="my-4 mb-5 border-t border-gray-400" />
