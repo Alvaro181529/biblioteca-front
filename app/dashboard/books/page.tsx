@@ -67,7 +67,7 @@ export default function Books({ searchParams }: SerchParams) {
         setModalType('edit');
         setOpenModal(true);
     };
-    const handleSeach = () => {
+    const handleSearch = () => {
         setModalState(false)
         setTitle("Busqueda Avanzada")
         setModalType('search');
@@ -125,7 +125,7 @@ export default function Books({ searchParams }: SerchParams) {
                     <option value="OTRO" > OTRO</option>
                 </Select>
                 <div className='w-full py-2 md:col-span-1'>
-                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-400' onClick={handleSeach}><LuSettings2 className='text-xl text-gray-600' /></Button>
+                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-400' onClick={handleSearch}><LuSettings2 className='text-xl text-gray-600' /></Button>
                 </div>
                 <div className='w-full py-2 md:col-span-2'>
                     <ComponentModalCreate title={'Reporte de Libros'} openModal={openModalReport} setOpenModal={closeModalReport} status={false}>

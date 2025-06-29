@@ -1,7 +1,6 @@
 "use client"
 import { Card, Select, Tabs, TextInput } from "flowbite-react";
 import { FaWhatsapp, FaYoutube, FaFacebook } from "react-icons/fa";
-
 import Image from "next/image";
 import Link from "next/link";
 import { HiBookOpen } from "react-icons/hi";

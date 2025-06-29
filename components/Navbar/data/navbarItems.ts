@@ -21,3 +21,11 @@ export const personalItems: NavbarItem[] = [
     { href: "/profile/orders", label: "Mis prestamos" },
     { href: "/profile/history", label: "Historial" },
 ];
+export const professorItems: NavbarItem[] = [
+    { href: "/profile", label: "Inicio" },
+    { href: "/profile/content", label: "Contenido" },
+    { href: "/profile/publications", label: "Publicaciones" },
+    { href: "/profile/orders", label: "Mis prestamos" },
+    { href: "/profile/history", label: "Historial" },
+    { href: "/profile/pieces", label: "Subir obra" },
+];

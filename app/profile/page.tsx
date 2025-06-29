@@ -69,7 +69,7 @@ const CardNew = () => {
                     return (
                         <Card
                             key={index}
-                            imgSrc={imageSrc}
+                            imgSrc={String(imageSrc)}
                             className="w-[240px] shrink-0 cursor-pointer"
                             onClick={() => router.push(`profile/content/${book.id}`)}>
                             <div className="flex w-full items-center justify-between">
@@ -159,7 +159,7 @@ const CardInfo = () => {
                     return (
                         <Card
                             key={index}
-                            imgSrc={imageSrc}
+                            imgSrc={String(imageSrc)}
                             className="w-[240px] shrink-0 cursor-pointer"
                             onClick={() => router.push(`profile/content/${book.id}`)}>
                             <div className="flex w-full items-center justify-between">

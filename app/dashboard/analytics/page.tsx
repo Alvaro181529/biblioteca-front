@@ -249,7 +249,7 @@ export default function AnalyticsComponent() {
             <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 {Object.keys(conditionOptions).map((bookType) => (
                     <div key={bookType}>
-                        <Label>{bookType} - Condiciones de los Libros</Label>
+                        <Label>CONDICION - {bookType}</Label>
                         <Chart options={conditionOptions[bookType]} series={conditionSeries[bookType]} type="bar" height={350} />
                     </div>
                 ))}

@@ -101,44 +101,82 @@ export function BusquedaAvanzada() {
     };
 
     return (
-        <section className="grid grid-cols-2">
+        <section className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div className="col-span-2 mb-4 w-full gap-4">
-                <h1 className="mb-2">Busqueda por autor</h1>
+                <h1 className="mb-4 text-lg font-semibold text-gray-800">Busqueda por autor</h1>
                 <AutocompleteSuggestion
                     id="book_authors"
-                    name="Autores"
+                    name=""
                     placeholder="Ingrese autores separados por comas"
                     type="authors"
                     initialSelectedItems={transformToSuggestions([])}
                     onSearch={handleSerchAuthor}
                 />
             </div>
-            <div className="flex max-w-md flex-col gap-4">
-                <h1>Instrumentos</h1>
-                {resultIntrument.map((inst: Instrument, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
-                        <Checkbox
-                            id={inst.instrument_name}
-                            checked={selectedInstruments.has(inst.instrument_name)}
-                            onChange={() => handleCheckboxChange(inst.instrument_name)}
-                        />
-                        <Label className="flex" htmlFor={inst.instrument_name}>{inst.instrument_name}</Label>
-                    </div>
-                ))}
+            <div className="col-span-2 max-w-md  sm:col-span-1">
+                <h2 className="mb-4 text-lg font-semibold text-gray-800">Instrumentos</h2>
+                <div className="flex flex-col gap-2 p-2">
+                    {resultIntrument.map((inst: Instrument, index: number) => (
+                        <div key={index} className="flex items-center gap-3">
+                            <Checkbox
+                                id={inst.instrument_name}
+                                checked={selectedInstruments.has(inst.instrument_name)}
+                                onChange={() => handleCheckboxChange(inst.instrument_name)}
+                            />
+                            <Label htmlFor={inst.instrument_name} className="text-sm text-gray-700">
+                                {inst.instrument_name}
+                            </Label>
+                        </div>
+                    ))}
+                </div>
             </div>
-            <div className="flex max-w-md flex-col gap-4">
-                <h1>Categorias</h1>
-                {resultCategory.map((cat: Category, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
-                        <Checkbox
-                            id={cat.category_name}
-                            checked={selectedCategory.has(cat.category_name)}
-                            onChange={() => handleCheckboxChangeCat(cat.category_name)}
-                        />
-                        <Label className="flex" htmlFor={cat.category_name}>{cat.category_name}</Label>
-                    </div>
-                ))}
+
+            <div className="col-span-2 max-w-md  sm:col-span-1">
+                <h2 className="mb-4 text-lg font-semibold text-gray-800">Categorías</h2>
+                <div className="flex flex-col gap-2 p-2">
+                    {resultCategory.map((cat: Category, index: number) => (
+                        <div key={index} className="flex items-center gap-3">
+                            <Checkbox
+                                id={cat.category_name}
+                                checked={selectedCategory.has(cat.category_name)}
+                                onChange={() => handleCheckboxChangeCat(cat.category_name)}
+                            />
+                            <Label htmlFor={cat.category_name} className="text-sm text-gray-700">
+                                {cat.category_name}
+                            </Label>
+                        </div>
+                    ))}
+                </div>
             </div>
+
+            {/* <div className="flex flex-col">
+                <div className="flex max-w-md gap-4">
+                    <h1>Instrumentos</h1>
+                    {resultIntrument.map((inst: Instrument, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                            <Checkbox
+                                id={inst.instrument_name}
+                                checked={selectedInstruments.has(inst.instrument_name)}
+                                onChange={() => handleCheckboxChange(inst.instrument_name)}
+                            />
+                            <Label className="flex" htmlFor={inst.instrument_name}>{inst.instrument_name}</Label>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex max-w-md gap-4">
+                    <h1>Categorias</h1>
+                    {resultCategory.map((cat: Category, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                            <Checkbox
+                                id={cat.category_name}
+                                checked={selectedCategory.has(cat.category_name)}
+                                onChange={() => handleCheckboxChangeCat(cat.category_name)}
+                            />
+                            <Label className="flex" htmlFor={cat.category_name}>{cat.category_name}</Label>
+                        </div>
+                    ))}
+                </div>
+            </div> */}
         </section>
     );
 }

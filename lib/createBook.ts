@@ -4,8 +4,8 @@ import { z } from "zod";
 const bookSchema = z.object({
     files: z.array(z.instanceof(File)).optional().nullable(),
     id: z.optional(z.string()),
-    book_imagen: z.optional(z.string()),
-    book_document: z.optional(z.string()),
+    book_imagen: z.optional(z.string()).nullable(),
+    book_document: z.optional(z.string()).nullable(),
     book_inventory: z.optional(z.string()),
     book_isbn: z.optional(z.string()),
     book_title_original: z.string(),
@@ -41,8 +41,8 @@ export async function createBook(formData: FormData, token?: string): Promise<Re
     const data = {
         files: formData.getAll('files') || null,
         id: formData.get('id') || "null",
-        book_imagen: String(formData.get('book_imagen')) || "S/I",
-        book_document: String(formData.get('book_document')) || "S/D",
+        book_imagen: String(formData.get('book_imagen')) || "null",
+        book_document: String(formData.get('book_document')) || "null",
         book_inventory: String(formData.get('book_inventory')) || undefined,
         book_editorial: String(formData.get('book_editorial')) || undefined,
         book_isbn: String(formData.get('book_isbn')) || undefined,

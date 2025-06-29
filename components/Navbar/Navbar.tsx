@@ -5,7 +5,7 @@ import { Avatar, Dropdown, Navbar, useThemeMode } from "flowbite-react";
 import Image from "next/image";
 import { NavbarItem } from "./types/navbarItems";
 import { HiSun, HiMoon } from "react-icons/hi";
-import { adminItems, personalItems } from "./data/navbarItems";
+import { adminItems, personalItems, professorItems } from "./data/navbarItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -15,8 +15,17 @@ interface NavbarLinksProps {
     items: NavbarItem[];
 }
 
-export function ComponentNavbar({ rol }: { rol: boolean }) {
-    const isRoot = rol; // Cambia a tu lógica real para determinar el estado
+export function ComponentNavbar({ rol }: { rol: string | boolean }) {
+    const [rols, setRols] = useState<NavbarItem[]>([]);
+    useEffect(() => {
+        if (rol === 'ROOT' || rol === 'ADMIN') {
+            setRols(adminItems);
+        } else if (rol === 'DOCENTE') {
+            setRols(professorItems);
+        } else {
+            setRols(personalItems);
+        }
+    }, [rol]);
     return (
         <Navbar fluid className="z-50 w-full bg-verde-700 text-white dark:bg-gray-900 max-sm:fixed">
             <Navbar.Toggle className="text-white hover:bg-verde-600" />
@@ -27,7 +36,7 @@ export function ComponentNavbar({ rol }: { rol: boolean }) {
             <div className="flex md:order-2">
                 <NavbarDropdown />
             </div>
-            <NavbarLinks items={isRoot ? adminItems : personalItems} />
+            <NavbarLinks items={rols} />
         </Navbar>
     );
 }

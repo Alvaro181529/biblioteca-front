@@ -46,7 +46,7 @@ export function ComponentNavbar() {
 }
 
 function NavbarDropdown() {
-    type Role = 'ADMIN' | 'ROOT' | 'USUARIO' | 'ESTUDIANTE';
+    type Role = 'ADMIN' | 'ROOT' | 'USUARIO' | 'ESTUDIANTE' | 'DOCENTE' | 'USUARIO EXTERNO';
 
     const { data: session, status } = useSession()
     const { mode, toggleMode } = useThemeMode();
@@ -79,12 +79,16 @@ function NavbarDropdown() {
         ROOT: "/dashboard",
         USUARIO: "/profile",
         ESTUDIANTE: "/profile",
+        'USUARIO EXTERNO': "/profile",
+        DOCENTE: "/profile",
     };
     const settingToHref = {
         ADMIN: "/dashboard/settings",
         ROOT: "/dashboard/settings",
         USUARIO: "/profile/settings",
         ESTUDIANTE: "/profile/settings",
+        DOCENTE: "/profile/settings",
+        'USUARIO EXTERNO': "/profile/settings",
     };
     const Dashboard = typeof rol === 'string' && rol in roleToHref ? roleToHref[rol] : "/";
     const Setting = typeof rol === 'string' && rol in settingToHref ? settingToHref[rol] : "/";

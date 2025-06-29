@@ -3,7 +3,6 @@ import { MdCalendarToday } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { Publication } from "@/interface/Interface";
 import Image from "next/image";
-import { Badge } from "flowbite-react";
 import { isValidUrl } from "@/lib/validateURL";
 export default function PublicationPage({ params }: { params: { id: number } }) {
     const { data } = usePublicationData(params.id)
@@ -45,15 +44,6 @@ export default function PublicationPage({ params }: { params: { id: number } }) 
                     className="prose mt-6 max-w-none"
                     dangerouslySetInnerHTML={{ __html: data?.publication_content || '' }}
                 />
-
-                <div className="mt-6 flex items-center justify-between">
-                    <Badge color={badgeColor} className="rounded-2xl">
-                        {data?.publication_importance}
-                    </Badge>
-                    {!data?.publication_active && (
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Inactivo</span>
-                    )}
-                </div>
             </div>
         </article>
     )

@@ -1,20 +1,29 @@
 "use client";
 
 import { Sidebar, Spinner } from "flowbite-react";
-import { SidebarItemGroup } from "./types/sidebarItems";
-import { adminItems, personalItems } from "./data/sidebarItems";
+import { SidebarItem, SidebarItemGroup } from "./types/sidebarItems";
+import { adminItems, personalItems, professorItems } from "./data/sidebarItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SidebarContentProps {
     items: SidebarItemGroup;
 }
-export function ComponentSidebar({ rol }: { rol: boolean }) {
-    const isRoot = rol;
+export function ComponentSidebar({ rol }: { rol: string }) {
+    const [rols, setRols] = useState<SidebarItem[]>([]);
+    useEffect(() => {
+        if (rol === 'ROOT' || rol === 'ADMIN') {
+            setRols(adminItems);
+        } else if (rol === 'DOCENTE') {
+            setRols(professorItems);
+        } else {
+            setRols(personalItems);
+        }
+    }, [rol]);
     return (
         <Sidebar aria-label="Sidebar" className="z-40 h-screen -translate-x-full transition-transform max-md:hidden md:translate-x-0 ">
-            <SidebarContent items={isRoot ? adminItems : personalItems} />
+            <SidebarContent items={rols} />
         </Sidebar>
     )
 }

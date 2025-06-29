@@ -36,7 +36,7 @@ export async function Respuesta(mensaje: string) {
 
     if (isBusqueda) {
         const libros = await searchBooks(mensaje);
-        console.log(libros);
+        // console.log(libros);
         if (libros.length === 0) {
             return "No se encontraron libros relacionados con tu búsqueda.";
         }
@@ -94,8 +94,6 @@ export async function searchBooks(query: string): Promise<BookFormData[]> {
 }
 export async function Signatura(titulo: string) {
     try {
-
-
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
             contents: `hay respuesta
