@@ -46,52 +46,38 @@ export default function AnalyticsComponent() {
     }, [data]);
     // Procesar datos de condición de los libros
     useEffect(() => {
-        if (condition) {
+        if (condition && typeof condition === 'object' && Object.keys(condition).length > 0) {
             const newConditionOptions: any = {};
             const newConditionSeries: any = {};
 
-            // Iterar sobre cada tipo de libro en condition
             Object.keys(condition).forEach((bookType) => {
                 const bookConditions = condition[bookType] || [];
                 const categories = bookConditions.map((item: BookCondition) => item.book_condition);
                 const values = bookConditions.map((item: BookCondition) => item.count);
 
                 newConditionOptions[bookType] = {
-                    chart: {
-                        type: 'bar',
-                        height: 350
-                    },
+                    chart: { type: 'bar', height: 350 },
                     xaxis: {
                         categories,
-                        labels: {
-                            style: {
-                                fontSize: '12px'
-                            }
-                        }
+                        labels: { style: { fontSize: '12px' } }
                     },
-                    tooltip: {
-                        y: {
-                            formatter: (val: number) => `${val} libros`
-                        }
-                    },
+                    tooltip: { y: { formatter: (val: number) => `${val} libros` } },
                     colors: ['#FF5733', '#33FF57', '#3357FF']
                 };
 
-                newConditionSeries[bookType] = [{
-                    name: bookType,
-                    data: values
-                }];
+                newConditionSeries[bookType] = [{ name: bookType, data: values }];
             });
 
-            // Actualizar el estado con los datos procesados
             setConditionOptions(newConditionOptions);
             setConditionSeries(newConditionSeries);
+        } else {
+            console.error('Los datos de condición no son válidos:', condition);
         }
     }, [condition]);
 
-    // Procesar datos de préstamos por mes
+
     useEffect(() => {
-        if (monthly && monthly.length > 0) {
+        if (monthly && Array.isArray(monthly) && monthly.length > 0) {
             const categories = monthly.map(item =>
                 new Date(item.month).toLocaleDateString('es-ES', {
                     year: 'numeric',
@@ -102,13 +88,8 @@ export default function AnalyticsComponent() {
 
             setCount({
                 chart: { type: 'line', height: 350 },
-                xaxis: {
-                    categories,
-                    labels: { style: { fontSize: '12px' } }
-                },
-                tooltip: {
-                    y: { formatter: (val: number) => `${val} préstamos` }
-                },
+                xaxis: { categories, labels: { style: { fontSize: '12px' } } },
+                tooltip: { y: { formatter: (val: number) => `${val} préstamos` } },
                 colors: ['#33FF57']
             });
 
@@ -116,25 +97,19 @@ export default function AnalyticsComponent() {
                 name: 'Préstamos por mes',
                 data: values
             }]);
+        } else {
+            console.error('Los datos mensuales no son válidos:', monthly);
         }
     }, [monthly]);
     useEffect(() => {
-        if (value && Object.keys(value).length > 0) {
+        if (value && typeof value === 'object' && Object.keys(value).length > 0) {
             const categories = Object.keys(value);
             const values = Object.values(value);
 
             setOptionsVal({
-                chart: {
-                    type: 'bar',
-                    height: 350
-                },
-                xaxis: {
-                    categories,
-                    labels: { style: { fontSize: '12px' } }
-                },
-                tooltip: {
-                    y: { formatter: (val: number) => `${val} unidades` }
-                },
+                chart: { type: 'bar', height: 350 },
+                xaxis: { categories, labels: { style: { fontSize: '12px' } } },
+                tooltip: { y: { formatter: (val: number) => `${val} unidades` } },
                 colors: ['#FF5733', '#33FF57', '#3357FF']
             });
 
@@ -142,6 +117,8 @@ export default function AnalyticsComponent() {
                 name: 'Valor por tipo',
                 data: values
             }]);
+        } else {
+            console.error('Los datos de valor no son válidos:', value);
         }
     }, [value]);
 
