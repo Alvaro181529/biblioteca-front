@@ -66,10 +66,12 @@
 // }
 "use client";
 
-import { Label } from 'flowbite-react';
+import { Button, Label } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Analytics, Monthly, BookConditionData, BookCondition, BookTypeValue } from '@/interface/Interface';
+import { AiOutlineLoading } from 'react-icons/ai';
+import { FaFileDownload } from 'react-icons/fa';
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -224,13 +226,14 @@ export default function AnalyticsComponent() {
             }]);
         }
     }, [value]);
+
     if (!options || !series || Object.keys(conditionOptions).length === 0 || Object.keys(conditionSeries).length === 0) {
         return <div>Cargando...</div>;
     }
 
     return (
         <div className='z-50 px-4'>
-            <h1 className='my-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300 sm:text-lg md:text-2xl'>Libros</h1>
+            <DownloadButton />
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                 <div>
                     <Label>Libros más solicitados</Label>
@@ -256,6 +259,39 @@ export default function AnalyticsComponent() {
             </div>
         </div>
     );
+}
+
+const DownloadButton = () => {
+    const [signin, setSignin] = useState(false);
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setSignin(true);
+        try {
+            await FetchReportAnalytics();
+        } catch (error) {
+            console.error("Error al generar el reporte", error);
+        } finally {
+            setSignin(false);
+        }
+    };
+    return (<div className='flex justify-between pt-5 sm:pt-2'>
+        <h1 className='my-3 text-center text-xl font-semibold text-gray-700 dark:text-gray-300 sm:text-lg md:text-2xl'>Analiticas</h1>
+        <form onSubmit={onSubmit} action="">
+            <Button
+                type='submit'
+                className='w-full gap-y-2 rounded bg-verde-600 px-4 text-sm font-semibold text-white ring-1 ring-verde-100 hover:bg-verde-700  focus:border-verde-100 focus:outline-verde-200 dark:bg-gray-700 dark:hover:bg-gray-500'
+                isProcessing={signin}
+                processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
+            >
+                {signin ?
+                    <></>
+                    :
+                    <FaFileDownload className='size-4 mr-4' />
+                }
+                Descargar reporte
+            </Button>
+        </form>
+    </div>)
 }
 
 // Hooks para obtener datos
@@ -337,4 +373,19 @@ const useAnaliticsMonthly = () => {
     }, []);
 
     return { monthly };
+};
+
+const FetchReportAnalytics = async () => {
+    const api = `/api/reports/analytics`;
+    const res = await fetch(api);
+
+    if (!res.ok) {
+        console.error('Error al descargar el reporte');
+        throw new Error('Error al descargar el reporte');
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    window.URL.revokeObjectURL(url);
 };
