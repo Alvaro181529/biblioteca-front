@@ -116,7 +116,7 @@ function SidebarContent({ items, collapsed }: SidebarContentProps) {
             <Sidebar.ItemGroup>
                 {items.map((item, idx) => (
                     collapsed ? (
-                        <Tooltip content={item.label} className="" placement="right">
+                        <Tooltip key={idx} content={item.label} className="" placement="right">
                             <Sidebar.Item
                                 as={Link}
                                 key={idx}
