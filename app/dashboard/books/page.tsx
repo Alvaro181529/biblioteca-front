@@ -213,7 +213,7 @@ const useBooksData = (size: number, currentPage: number, search: string, type: s
                             book.book_title_original,
                             book.book_language,
                             book.book_quantity,
-                            truncateContent(book.book_observation, 8),
+                            truncateContent(book.book_observation, 4),
                         ]);
                     };
                     configureColumns();

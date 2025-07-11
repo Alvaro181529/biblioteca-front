@@ -16,6 +16,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
     const [fetch, setFetch] = useState<BookFormData | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null); // Estado para imagen
     const [documentFile, setDocumentFile] = useState<File | null>(null); // Estado para documento
+    const [bookType, setBookType] = useState<string>(""); // para el book type
     const [signatura, setSignatura] = useState<string | null>(null);
     const { data: session } = useSession();
     const [bookTitle, setBookTitle] = useState<string>(fetch?.book_title_original || "");
@@ -47,7 +48,11 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         }
         fetchData();
     }, [id])
-
+    useEffect(() => {
+        if (fetch?.book_type) {
+            setBookType(fetch.book_type);
+        }
+    }, [fetch]);
     const onSave = async (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
@@ -79,267 +84,301 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
 
     return (
         <form id="submit-form" onSubmit={onSave}>
-            <div className="space-y-6" >
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_title_original" value="Título Original" />
-                        <TextInput
-                            name="book_title_original"
-                            id="book_title_original"
-                            placeholder="Título Original"
-                            defaultValue={fetch?.book_title_original}
-                            onChange={(e) => setBookTitle(e.target.value)} // Actualizamos el estado al escribir
+            {!bookType && (
+                <div className="mb-8 flex flex-col items-center gap-2">
+                    <div className="w-full max-w-md">
+                        <Label
+                            htmlFor="book_type"
+                            className="mb-2 block text-center text-sm font-semibold text-gray-700"
+                            value="Selecciona el tipo de libro"
+                        />
+                        <Select
+                            id="book_type"
+                            name="book_type"
+                            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                            value={bookType}
+                            onChange={(e) => setBookType(e.target.value)}
                             required
-                        />
-                    </div>
-
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_title_parallel" value="Título Paralelo" />
-                        <TextInput
-                            name="book_title_parallel"
-                            id="book_title_parallel"
-                            placeholder="Título Paralelo"
-                            defaultValue={fetch?.book_title_parallel}
-                        />
-                    </div>
-                    <div className="col-span-2 gap-4 md:grid md:grid-cols-4 ">
-                        <div className="col-span-2 mb-4">
-                            <Label htmlFor="book_editorial" value="Editorial" />
-                            <TextInput
-                                name="book_editorial"
-                                id="book_editorial"
-                                placeholder="Editorial"
-                                defaultValue={fetch?.book_editorial}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <Label htmlFor="book_isbn" value="ISBN" />
-                            <TextInput
-                                name="book_isbn"
-                                id="book_isbn"
-                                placeholder="978-3-16-148410-0"
-                                defaultValue={fetch?.book_isbn}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <Label htmlFor="book_quantity" value="Numero de ejemplares" />
-                            <TextInput
-                                name="book_quantity"
-                                id="book_quantity"
-                                type="number"
-                                defaultValue={fetch?.book_quantity}
-                                min={1}
-                            />
-                        </div>
-                    </div>
-                    <div className="col-span-2 mb-4">
-                        <Label htmlFor="book_description" value="Descripción" />
-                        <Textarea
-                            name="book_description"
-                            id="book_description"
-                            placeholder="Descripción"
-                            defaultValue={fetch?.book_description}
-                        />
-                    </div>
-
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_condition" value="Condición" />
-                        <Select id="book_condition" name="book_condition"
-                            defaultValue={String(fetch?.book_condition)}
-                            required>
-                            <option>BUENO</option>
-                            <option>REGULAR</option>
-                            <option>MALO</option>
-                            <option>PÉSIMO</option>
-                        </Select>
-                    </div>
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_language" value="Idioma" />
-                        <Select id="book_language" name="book_language"
-                            defaultValue={String(fetch?.book_language)}
                         >
-                            {languages.map((language, index) => (
-                                <option key={index} value={language.code}>
-                                    {language.name} ({language.code})
+                            <option value="" disabled>-- Selecciona una opción --</option>
+                            {bookTypes.map((books) => (
+                                <option key={books.code} value={books.code}>
+                                    {books.name}
                                 </option>
                             ))}
                         </Select>
                     </div>
-
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_location" value="Signatura tipográfica" />
-                        <div className="flex gap-2">
-                            <div className="flex-1">
+                </div>
+            )}
+            {bookType && (
+                <>
+                    <div className="space-y-6" >
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Label htmlFor="book_title_original" value="Título Original" />
                                 <TextInput
-                                    name="book_location"
-                                    id="book_location"
-                                    placeholder="Ubicación"
-                                    defaultValue={fetch?.book_location || signatura || ''} // Mantén defaultValue como estaba
+                                    name="book_title_original"
+                                    id="book_title_original"
+                                    placeholder="Título Original"
+                                    defaultValue={fetch?.book_title_original}
+                                    onChange={(e) => setBookTitle(e.target.value)} // Actualizamos el estado al escribir
+                                    required
                                 />
                             </div>
-                            <div className="flex-none">
-                                <Button onClick={() => onClickSignatura(String(bookTitle))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
+
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Label htmlFor="book_title_parallel" value="Título Paralelo" />
+                                <TextInput
+                                    name="book_title_parallel"
+                                    id="book_title_parallel"
+                                    placeholder="Título Paralelo"
+                                    defaultValue={fetch?.book_title_parallel}
+                                />
                             </div>
+                            <div className="col-span-2 gap-4 md:grid md:grid-cols-4 ">
+                                <div className="col-span-2 mb-4">
+                                    <Label htmlFor="book_editorial" value={["CD", "DVD", "VHS"].includes(bookType) ? 'Sello Productor' : 'Editorial'} />
+                                    <TextInput
+                                        name="book_editorial"
+                                        id="book_editorial"
+                                        placeholder={["CD", "DVD", "VHS"].includes(bookType) ? 'Sello Productor' : 'Editorial'}
+                                        defaultValue={fetch?.book_editorial}
+                                    />
+                                </div>
+                                {bookType && (
+                                    <div className="mb-4">
+                                        <Label htmlFor="book_isbn" value="ISBN" />
+                                        <TextInput
+                                            name="book_isbn"
+                                            id="book_isbn"
+                                            placeholder="978-3-16-148410-0"
+                                            defaultValue={fetch?.book_isbn}
+                                        />
+                                    </div>
+                                )}
+                                <div className="mb-4">
+                                    <Label htmlFor="book_quantity" value="Numero de ejemplares" />
+                                    <TextInput
+                                        name="book_quantity"
+                                        id="book_quantity"
+                                        type="number"
+                                        defaultValue={fetch?.book_quantity}
+                                        min={1}
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-span-2 mb-4">
+                                <Label htmlFor="book_description" value="Descripción" />
+                                <Textarea
+                                    name="book_description"
+                                    id="book_description"
+                                    placeholder="Descripción"
+                                    defaultValue={fetch?.book_description}
+                                />
+                            </div>
+
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Label htmlFor="book_condition" value="Condición" />
+                                <Select id="book_condition" name="book_condition"
+                                    defaultValue={String(fetch?.book_condition)}
+                                    required>
+                                    <option>BUENO</option>
+                                    <option>REGULAR</option>
+                                    <option>MALO</option>
+                                    <option>PÉSIMO</option>
+                                </Select>
+                            </div>
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Label htmlFor="book_language" value="Idioma" />
+                                <Select id="book_language" name="book_language"
+                                    defaultValue={String(fetch?.book_language)}
+                                >
+                                    {languages.map((language, index) => (
+                                        <option key={index} value={language.code}>
+                                            {language.name} ({language.code})
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+                            {['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) && (
+                                < div className="mb-4 max-sm:col-span-2">
+                                    <Label htmlFor="book_location" value="Signatura tipográfica" />
+                                    <div className="flex gap-2">
+                                        <div className="flex-1">
+                                            <TextInput
+                                                name="book_location"
+                                                id="book_location"
+                                                placeholder="Ubicación"
+                                                defaultValue={fetch?.book_location || signatura || ''} // Mantén defaultValue como estaba
+                                            />
+                                        </div>
+                                        <div className="flex-none">
+                                            <Button onClick={() => onClickSignatura(String(bookTitle))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
+                                <Datepicker
+                                    name="book_acquisition_date"
+                                    id="book_acquisition_date"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <section className="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
+                                    <div className="mb-4">
+                                        <Label htmlFor="book_price_type" value="Tipo de Precio" />
+                                        <Select id="book_price_type" name="book_price_type"
+                                            defaultValue={fetch?.book_price_type}
+                                            required>
+                                            {currencies.map(currency => (
+                                                <option key={currency.code} value={currency.code}>
+                                                    {currency.name} ({currency.code})
+                                                </option>
+                                            ))}
+                                        </Select>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <Label htmlFor="book_original_price" value="Precio Original" />
+                                        <TextInput
+                                            name="book_original_price"
+                                            id="book_original_price"
+                                            placeholder="3"
+                                            type="number"
+                                            step="0.01"
+                                            defaultValue={fetch?.book_original_price}
+                                            min="0"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <Label htmlFor="book_type" value="Tipo de Libro" />
+                                        <Select id="book_type" name="book_type"
+                                            defaultValue={String(fetch?.book_type)}
+                                            required>
+                                            {bookTypes.map(books => (
+                                                <option key={books.code} value={books.code}>
+                                                    {books.name}
+                                                </option>
+                                            ))}
+                                        </Select>
+                                    </div>
+                                </section>
+                            </div>
+
+                            <div className="mb-4 max-sm:col-span-2">
+                                <AutocompleteSuggestion
+                                    id="book_category"
+                                    name="Categorías"
+                                    placeholder="Ingrese categorías separadas por comas"
+                                    type="categories"
+                                    initialSelectedItems={transformToSuggestions(fetch?.book_category) ?? []}
+                                />
+
+                            </div>
+                            <div className="mb-4 max-sm:col-span-2">
+                                <AutocompleteSuggestion
+                                    id="book_authors"
+                                    name="Autores"
+                                    placeholder="Ingrese autores separados por comas"
+                                    type="authors"
+                                    initialSelectedItems={transformToSuggestions(fetch?.book_authors) ?? []}
+                                />
+
+                            </div>
+                            <div className="mb-4 max-sm:col-span-2">
+                                <AutocompleteSuggestion
+                                    id="book_instruments"
+                                    name="Instrumentos"
+                                    placeholder="Ingrese instrumentos separados por comas"
+                                    type="instruments"
+                                    initialSelectedItems={transformToSuggestions(fetch?.book_instruments) ?? []}
+                                />
+                            </div>
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Label htmlFor="book_includes" value="Incluye" />
+                                <Textarea
+                                    name="book_includes"
+                                    id="book_includes"
+                                    defaultValue={fetch?.book_includes}
+                                />
+                            </div>
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Tabs aria-label="Tabs with underline" style="underline" >
+                                    <Tabs.Item active title="URL">
+                                        <Label htmlFor="book_imagen" value="Imagen " />
+                                        <span className="text-xs text-gray-700">(opcional)</span>
+                                        <TextInput
+                                            name="book_imagen"
+                                            placeholder="URL de la imagen"
+                                            defaultValue={fetch?.book_imagen}
+                                        />
+                                    </Tabs.Item>
+                                    <Tabs.Item title="Archivo">
+                                        <Label htmlFor="book_imagen" value="Imagen " />
+                                        <span className="text-xs text-gray-700">(opcional)</span>
+                                        <FileInput
+                                            accept="image/*"
+                                            // defaultValue={fetch?.book_imagen}
+                                            id="book_imagen"
+                                            onChange={onImageChange}
+                                        />
+                                    </Tabs.Item>
+                                </Tabs>
+                            </div>
+
+                            <div className="mb-4 max-sm:col-span-2">
+                                <Tabs aria-label="Tabs with underline" style="underline">
+                                    <Tabs.Item active title="URL">
+                                        <Label htmlFor="book_document" value="Documento " />
+                                        <span className="text-xs text-gray-700">(opcional)</span>
+
+                                        <TextInput
+                                            name="book_document"
+                                            defaultValue={fetch?.book_document}
+                                            placeholder="URL del documento"
+
+                                        />
+                                    </Tabs.Item>
+                                    <Tabs.Item title="Archivo">
+                                        <Label htmlFor="book_document" value="Documento " />
+                                        <span className="text-xs text-gray-700">(opcional)</span>
+                                        <FileInput
+                                            accept=".pdf"
+                                            id="book_document"
+                                            onChange={onDocumentChange}
+                                        />
+                                    </Tabs.Item>
+                                </Tabs>
+                            </div>
+                            {['CD', 'VHS', 'DVD'].includes(bookType) && (
+                                <div className="col-span-2">
+                                    <Label htmlFor="book_headers" value="Encabezados" />
+                                    <Textarea
+                                        name="book_headers"
+                                        id="book_headers"
+                                        defaultValue={fetch?.book_headers}
+                                    />
+                                </div>
+                            )}
+                            <div className="col-span-2">
+                                <Label htmlFor="book_observation" value="Observaciones" />
+                                <Textarea
+                                    name="book_observation"
+                                    id="book_observation"
+                                    placeholder="Observaciones"
+                                    defaultValue={fetch?.book_observation}
+
+                                />
+                            </div>
+                            <input type="text" id="id" name="id" hidden defaultValue={fetch?.id} />
                         </div>
                     </div>
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
-                        <Datepicker
-                            name="book_acquisition_date"
-                            id="book_acquisition_date"
-                        />
-                    </div>
-                    <div className="col-span-2">
-                        <section className="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
-                            <div className="mb-4">
-                                <Label htmlFor="book_price_type" value="Tipo de Precio" />
-                                <Select id="book_price_type" name="book_price_type"
-                                    defaultValue={fetch?.book_price_type}
-                                    required>
-                                    {currencies.map(currency => (
-                                        <option key={currency.code} value={currency.code}>
-                                            {currency.name} ({currency.code})
-                                        </option>
-                                    ))}
-                                </Select>
-                            </div>
-
-                            <div className="mb-4">
-                                <Label htmlFor="book_original_price" value="Precio Original" />
-                                <TextInput
-                                    name="book_original_price"
-                                    id="book_original_price"
-                                    placeholder="3"
-                                    type="number"
-                                    step="0.01"
-                                    defaultValue={fetch?.book_original_price}
-                                    min="0"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <Label htmlFor="book_type" value="Tipo de Libro" />
-                                <Select id="book_type" name="book_type"
-                                    defaultValue={String(fetch?.book_type)}
-                                    required>
-                                    {bookTypes.map(books => (
-                                        <option key={books.code} value={books.code}>
-                                            {books.name}
-                                        </option>
-                                    ))}
-                                </Select>
-                            </div>
-
-                        </section>
-                    </div>
-
-                    <div className="mb-4 max-sm:col-span-2">
-                        <AutocompleteSuggestion
-                            id="book_category"
-                            name="Categorías"
-                            placeholder="Ingrese categorías separadas por comas"
-                            type="categories"
-                            initialSelectedItems={transformToSuggestions(fetch?.book_category) ?? []}
-                        />
-
-                    </div>
-                    <div className="mb-4 max-sm:col-span-2">
-                        <AutocompleteSuggestion
-                            id="book_authors"
-                            name="Autores"
-                            placeholder="Ingrese autores separados por comas"
-                            type="authors"
-                            initialSelectedItems={transformToSuggestions(fetch?.book_authors) ?? []}
-                        />
-
-                    </div>
-                    <div className="mb-4 max-sm:col-span-2">
-                        <AutocompleteSuggestion
-                            id="book_instruments"
-                            name="Instrumentos"
-                            placeholder="Ingrese instrumentos separados por comas"
-                            type="instruments"
-                            initialSelectedItems={transformToSuggestions(fetch?.book_instruments) ?? []}
-                        />
-                    </div>
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Label htmlFor="book_includes" value="Incluye" />
-                        <Textarea
-                            name="book_includes"
-                            id="book_includes"
-                            defaultValue={fetch?.book_includes}
-                        />
-                    </div>
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Tabs aria-label="Tabs with underline" style="underline" >
-                            <Tabs.Item active title="URL">
-                                <Label htmlFor="book_imagen" value="Imagen " />
-                                <span className="text-xs text-gray-700">(opcional)</span>
-                                <TextInput
-                                    name="book_imagen"
-                                    placeholder="URL de la imagen"
-                                    defaultValue={fetch?.book_imagen}
-                                />
-                            </Tabs.Item>
-                            <Tabs.Item title="Archivo">
-                                <Label htmlFor="book_imagen" value="Imagen " />
-                                <span className="text-xs text-gray-700">(opcional)</span>
-                                <FileInput
-                                    accept="image/*"
-                                    // defaultValue={fetch?.book_imagen}
-                                    id="book_imagen"
-                                    onChange={onImageChange}
-                                />
-                            </Tabs.Item>
-                        </Tabs>
-                    </div>
-
-                    <div className="mb-4 max-sm:col-span-2">
-                        <Tabs aria-label="Tabs with underline" style="underline">
-                            <Tabs.Item active title="URL">
-                                <Label htmlFor="book_document" value="Documento " />
-                                <span className="text-xs text-gray-700">(opcional)</span>
-
-                                <TextInput
-                                    name="book_document"
-                                    defaultValue={fetch?.book_document}
-                                    placeholder="URL del documento"
-
-                                />
-                            </Tabs.Item>
-                            <Tabs.Item title="Archivo">
-                                <Label htmlFor="book_document" value="Documento " />
-                                <span className="text-xs text-gray-700">(opcional)</span>
-                                <FileInput
-                                    accept=".pdf"
-                                    id="book_document"
-                                    onChange={onDocumentChange}
-                                />
-                            </Tabs.Item>
-                        </Tabs>
-                    </div>
-                    <div className="col-span-2">
-                        <Label htmlFor="book_headers" value="Encabezados" />
-                        <Textarea
-                            name="book_headers"
-                            id="book_headers"
-                            defaultValue={fetch?.book_headers}
-                        />
-                    </div>
-                    <div className="col-span-2">
-                        <Label htmlFor="book_observation" value="Observaciones" />
-                        <Textarea
-                            name="book_observation"
-                            id="book_observation"
-                            placeholder="Observaciones"
-                            defaultValue={fetch?.book_observation}
-
-                        />
-                    </div>
-                    <input type="text" id="id" name="id" hidden defaultValue={fetch?.id} />
-                </div>
-            </div>
-
-        </form>
+                </>
+            )
+            }
+        </form >
 
     )
 }
