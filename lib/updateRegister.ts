@@ -23,11 +23,12 @@ export async function updateRegister(formData: FormData) {
         register_ci: `${ci} - ${exp}` || "null",
         register_contact: Number(formData.get('register_contact')) || 0,
         register_ubication: formData.get('register_ubication') || "null",
-        register_category: registerCategory.length > 0 ? registerCategory : [],  // Asegurarse de que siempre sea un array
+        // register_category: registerCategory.length > 0 ? registerCategory : [],  // Asegurarse de que siempre sea un array
+        register_category: [],  // Asegurarse de que siempre sea un array
         register_intrument: registerInstrument.length > 0 ? registerInstrument : [],  // Asegurarse de que siempre sea un array
         register_professor: formData.get('register_professor') || "null",
     };
-
+    console.log(data);
     const validatedData = bookSchema.parse(data);
 
     try {

@@ -3,25 +3,59 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookFormData } from "@/interface/Interface";
+import { BookFormData, BooksFiles } from "@/interface/Interface";
 import { Button, Card, Tooltip } from "flowbite-react";
 import { ComponentModalCreate } from "@/components/Modal";
 import { FormCreate } from "./crud/create";
-import { MdModeEditOutline, MdDelete } from "react-icons/md";
+import { MdModeEditOutline, MdDelete, MdOutlinePictureAsPdf } from "react-icons/md";
 import { FormDelete } from "./crud/delete";
 import { notFound, useRouter } from "next/navigation";
 import { languages } from "@/types/types";
 import { FormBorrowed } from "./crud/borrowed";
 import { isValidUrl } from "@/lib/validateURL";
 import { AiOutlineLoading } from "react-icons/ai";
+import { IoPlayCircleOutline } from "react-icons/io5";
+import Vizualizer from "./component/Vizualizer";
+
+const loadMidiPlayerScript = () => {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = "https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/html-midi-player@1.5.0";
+        script.defer = true;
+        script.onload = () => resolve(true);
+        script.onerror = (e) => reject(new Error("Failed to load MIDI player scripts"));
+        document.body.appendChild(script);
+    });
+};
+
 
 export default function BooksId({ params }: { params: { id: number } }) {
     const [openModal, setOpenModal] = useState(false);
+    const [openModalMidi, setOpenModalMidi] = useState(false);
     const [pdf, setPdf] = useState(true);
     const [spin, setSpin] = useState(true);
+    const [files, setFiles] = useState(false);
     const { data } = useBooksData(params.id, openModal)
-    const router = useRouter()
+    const { data: filesData } = useBooksDataFiles(params.id);
 
+    useEffect(() => {
+        if (data?.book_type === 'PARTITURA') {
+            setFiles(true);
+        }
+    }, [data]);
+    useEffect(() => {
+        if (openModalMidi) {
+            loadMidiPlayerScript()
+                .then(() => {
+                    console.log("MIDI player script loaded successfully!");
+                })
+                .catch((error) => {
+                    console.error("Error loading MIDI player script:", error);
+                });
+        }
+    }, [openModalMidi]);
+
+    const router = useRouter()
     useEffect(() => {
         if (!data?.book_document) {
             setPdf(true)
@@ -31,7 +65,24 @@ export default function BooksId({ params }: { params: { id: number } }) {
             setPdf(false)
         }
     }, [data?.book_document]);
-
+    const DownloadMXL = () => {
+        const mxlUrl = String(filesData?.mxl_url);
+        if (isValidUrl(mxlUrl)) {
+            router.push(mxlUrl);
+        } else {
+            const mxlDownloadUrl = `/api/books/mxl/${mxlUrl}`;
+            router.push(mxlDownloadUrl);
+        }
+    }
+    const DownloadMIDI = () => {
+        const midiUrl = String(filesData?.midi_url);
+        if (isValidUrl(midiUrl)) {
+            router.push(midiUrl);
+        } else {
+            const mxlDownloadUrl = `/api/books/midi/${midiUrl}`;
+            router.push(mxlDownloadUrl);
+        }
+    }
     if (data?.statusCode == 404) return notFound()
     const imageUrl = String(data?.book_imagen);
     const imageSrc = isValidUrl(imageUrl)
@@ -63,15 +114,39 @@ export default function BooksId({ params }: { params: { id: number } }) {
                 </section>
             </div>
             <div className="grid grid-cols-1 items-start gap-x-4 md:grid-cols-2">
-                <div className="m-auto mt-0 grid w-full gap-6">
-                    <Image
-                        width={560}
-                        height={800}
-                        className="aspect-[3/4] rounded-lg object-cover"
-                        alt={String(data?.book_title_original)}
-                        src={imageSrc}
-                    />
-                    <Button aria-label="Pdf" className="mb-2 mt-0 bg-red-700 font-semibold sm:mb-0" processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />} isProcessing={spin} disabled={pdf} onClick={documentUrl} >Ver pdf</Button>
+                <div className="m-auto mt-0 grid aspect-[3/4] w-full gap-6">
+                    <ComponentModalCreate title="Visualizador" openModal={openModalMidi} setOpenModal={setOpenModalMidi} status={false}>
+                        <Vizualizer DownloadMIDI={DownloadMIDI} DownloadMXL={DownloadMXL} filesData={filesData || { midi_url: null, mxl_url: null }} />
+                    </ComponentModalCreate>
+                    <div className="relative w-full">
+                        {/* Imagen con Tailwind */}
+                        <Image
+                            width={560}
+                            height={800}
+                            className="aspect-[3/4] rounded-lg object-cover"
+                            alt={String(data?.book_title_original)}
+                            src={imageSrc}
+                        />
+                        {data?.book_type == 'PARTITURA' && (
+                            <Tooltip className="z-50" content="Obtener archivos midi y mxl">
+                                <button onClick={() => setOpenModalMidi(true)} className="absolute left-4 top-4 rounded-full bg-white p-2 shadow-lg hover:bg-gray-100 focus:outline-none">
+                                    <IoPlayCircleOutline className="size-10 text-green-900" />
+                                </button>
+                            </Tooltip>
+                        )}
+                        <Tooltip className="z-50" content="Ver Pef del libro">
+                            <button
+                                aria-label="Pdf"
+                                className={`absolute left-4 ${data?.book_type === 'PARTITURA' ? 'top-20' : 'top-4'} ${data?.book_document === 'null' ? 'hidden' : ''} rounded-full bg-white p-2 shadow-lg hover:bg-gray-100 focus:outline-none ${['DVD', 'CD', 'VHS', 'CASSETTE', 'AUDIO LIBRO'].includes(String(data?.book_type)) ? 'hidden' : ''}`}
+                                // processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
+                                // isProcessing={spin}
+                                disabled={pdf}
+                                onClick={documentUrl}
+                            >
+                                <MdOutlinePictureAsPdf className="size-10 text-red-700" />
+                            </button>
+                        </Tooltip>
+                    </div>
                 </div>
                 <CardContent id={params.id} data={data || null} setOpenModal={setOpenModal} openModal={openModal} />
             </div>
@@ -185,7 +260,7 @@ const CardDetall = ({ data }: { data: BookFormData | null }) => {
     return (
         <div className="my-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Card className="col-span-2 sm:col-span-1">
-                <h1 className=" mb-auto text-2xl font-bold dark:text-white">Detalles del libro</h1>
+                <h1 className=" mb-auto text-2xl font-bold dark:text-white">Detalles: </h1>
                 <dl className="grid grid-cols-2 gap-5">
                     <div>
                         <dt className="font-semibold dark:text-white">ISBN:</dt>
@@ -334,5 +409,24 @@ const useBooksData = (id: number, openModal: boolean) => {
             fetchData();
         }
     }, [id, openModal])
+    return { data }
+}
+const useBooksDataFiles = (id: number) => {
+    const [data, setData] = useState<BooksFiles | null>(null);
+    useEffect(() => {
+        if (id) {
+            const fetchData = async () => {
+                try {
+                    const url = `/api/books/files/${id}`;
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    setData(result)
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            fetchData();
+        }
+    }, [id])
     return { data }
 }

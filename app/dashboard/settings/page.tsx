@@ -14,6 +14,7 @@ export default function SettingPage() {
         <section>
             <SectionSession data={data} />
             <SectionPass />
+            <SectionBackups />
             <SectionAccountDelete data={data || null} />
         </section>
     )
@@ -163,6 +164,33 @@ const SectionAccountDelete = ({ data }: { data: User | null }) => {
         </Card>
     )
 }
+
+const SectionBackups = () => {
+
+    return (
+        <Card className="mb-2 w-full max-sm:grid-cols-1">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
+                Copia de seguridad
+            </h2>
+
+            <p className="mt-2 text-base text-gray-800 dark:text-gray-400">
+                Puedes generar una copia de seguridad de tus datos para mantenerlos protegidos.
+                <br />
+                Te recomendamos hacerlo regularmente para evitar pérdidas de información.
+            </p>
+
+            <section className="mt-4 flex">
+                <Button
+                    aria-label="Generar copia de seguridad"
+                    className="bg-verde-600 "
+                >
+                    Generar copia de seguridad
+                </Button>
+            </section>
+        </Card>
+    );
+};
+
 
 
 

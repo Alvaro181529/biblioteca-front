@@ -64,7 +64,6 @@ export async function createBook(formData: FormData, token?: string): Promise<Re
         book_authors: bookAuthors ? bookAuthors.split(',').map(item => item.trim()) : [],
         book_instruments: bookInstruments ? bookInstruments.split(',').map(item => item.trim()) : [],
     };
-
     const validatedData = bookSchema.parse(data);
 
     try {
@@ -122,6 +121,8 @@ const create = async (validatedData: any, token?: string): Promise<Respuest> => 
 
 // Function for updating an existing book
 const update = async (id: string, validatedData: any, token?: string): Promise<Respuest> => {
+    console.log(validatedData);
+
     const formData = new FormData();
     for (const key in validatedData) {
         if (key !== 'files' && validatedData[key] !== undefined && validatedData[key] !== null) {
@@ -135,6 +136,11 @@ const update = async (id: string, validatedData: any, token?: string): Promise<R
                 formData.append(key, validatedData[key]);
             }
         }
+    }
+    if (Array.isArray(validatedData.files)) {
+        validatedData.files.forEach((file: any) => {
+            formData.append('files', file);
+        });
     }
 
     try {

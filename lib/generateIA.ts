@@ -96,14 +96,18 @@ export async function Signatura(titulo: string) {
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
-            contents: `hay respuesta
-        Eres un asistente muy preciso y respetuoso. 
-        Por favor, responde de forma clara y concisa.  
-        Tu tarea ahora es responder a la siguiente pregunta es cual es la signatura Dewey del libro, revista de ${titulo} solo dame el número de la signatura Dewey sin repetir el titulo ni nada solo el numero:
+            contents: `Eres un asistente preciso y respetuoso.
+                    Responde de forma clara y concisa.
 
-        Si no entiendes algo, devuelve no encontrado.
-        Si no puedes ayudarle, dile que lo sienta y que no puede ayudarle en ese momento. 
-    `,
+                    Tu tarea es la siguiente:
+                    Dado el título ${titulo}, proporciona únicamente el número de la signatura Dewey correspondiente, seguido del número Cutter.
+                    No repitas el título ni añadas información adicional; solo devuelve los dos datos separados por "/".
+
+                    Si no entiendes el título o no puedes encontrar la información, responde con:
+
+                    "No encontrado" si no entiendes.
+
+                    "Lo siento, no puedo ayudarte en este momento" si no puedes ayudar.`,
         });
         return response.text
     } catch (error) {

@@ -12,6 +12,7 @@ export const adminItems: NavbarItem[] = [
     { href: "/dashboard/contents", label: "Contenido" },
     { href: "/dashboard/orders", label: "Prestamos" },
     { href: "/dashboard/analytics", label: "Analiticas" },
+    { href: "/dashboard/logs", label: "Registro del sistema" },
 ];
 
 export const personalItems: NavbarItem[] = [

@@ -164,7 +164,7 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                                             <span className="font-semibold">Correo:</span> {orde.user.email}
                                         </div>
                                         <div>
-                                            <span className="font-semibold">Libros:</span>
+                                            <span className="font-semibold">Prestamos:</span>
                                             <List className="ml-4">
                                                 {orde.books.map((book, index) => (
                                                     <List.Item key={index}>{book.book_title_original}</List.Item>

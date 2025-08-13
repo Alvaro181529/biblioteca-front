@@ -191,8 +191,7 @@ const useBooksData = (size: number, currentPage: number, search: string, type: s
             "INVENTARIO",
             "CONDICION",
             "SIGNATURA TOPOGRAFICA",
-            "TITULO ORIGINAL",
-            "LENGUAJE",
+            "TITULO",
             "CANTIDAD",
             "OBSERVACION"
         ]);
@@ -210,8 +209,7 @@ const useBooksData = (size: number, currentPage: number, search: string, type: s
                             book.book_inventory,
                             book.book_condition,
                             book.book_location,
-                            book.book_title_original,
-                            book.book_language,
+                            book.book_title_parallel ? book.book_title_parallel : book.book_title_original,
                             book.book_quantity,
                             truncateContent(book.book_observation, 4),
                         ]);

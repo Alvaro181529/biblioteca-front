@@ -123,3 +123,7 @@ export interface BookCondition {
     book_condition: "BUENO" | "REGULAR" | "MALO" | "PÉSIMO";
     count: number;
 }
+export interface BooksFiles {
+    mxl_url: string;
+    midi_url: string;
+}
