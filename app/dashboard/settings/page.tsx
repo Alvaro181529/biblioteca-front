@@ -166,7 +166,12 @@ const SectionAccountDelete = ({ data }: { data: User | null }) => {
 }
 
 const SectionBackups = () => {
-
+    const generarBackup = async () => {
+        const data = await fetchBackup();
+        toast.success(data?.message, {
+            description: `Backup listo: ${data?.path}`,
+        })
+    }
     return (
         <Card className="mb-2 w-full max-sm:grid-cols-1">
             <h2 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
@@ -183,6 +188,7 @@ const SectionBackups = () => {
                 <Button
                     aria-label="Generar copia de seguridad"
                     className="bg-verde-600 "
+                    onClick={generarBackup}
                 >
                     Generar copia de seguridad
                 </Button>
@@ -192,8 +198,21 @@ const SectionBackups = () => {
 };
 
 
-
-
+interface Backup {
+    message: string;
+    path: string;
+}
+const fetchBackup = async (): Promise<Backup | null> => {
+    try {
+        const url = `/api/backups`;
+        const res = await fetch(url);
+        const result = await res.json();
+        return result;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return null;
+    }
+}
 
 const FetchUser = () => {
     const [data, setData] = useState<User | null>(null);

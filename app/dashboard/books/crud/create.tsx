@@ -33,8 +33,8 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
         }
     };
 
-    const onClickSignatura = async (titulo: string) => {
-        const signaturaEncontrada = await Signatura(titulo || "");
+    const onClickSignatura = async (titulo: string, author: string) => {
+        const signaturaEncontrada = await Signatura(titulo || "", author || "");
         console.log(signaturaEncontrada);
         setSignatura(String(signaturaEncontrada));
     }
@@ -213,7 +213,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                             />
                                         </div>
                                         <div className="flex-none">
-                                            <Button onClick={() => onClickSignatura(String(bookTitle))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
+                                            <Button onClick={() => onClickSignatura(String(bookTitle), String(fetch?.book_authors))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
                                         </div>
                                     </div>
                                 </div>

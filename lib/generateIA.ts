@@ -92,7 +92,7 @@ export async function searchBooks(query: string): Promise<BookFormData[]> {
         return [];
     }
 }
-export async function Signatura(titulo: string) {
+export async function Signatura(titulo: string, autor: string) {
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
@@ -100,7 +100,7 @@ export async function Signatura(titulo: string) {
                     Responde de forma clara y concisa.
 
                     Tu tarea es la siguiente:
-                    Dado el título ${titulo}, proporciona únicamente el número de la signatura Dewey correspondiente, seguido del número Cutter.
+                    Dado el título ${titulo}, proporciona únicamente el número de la signatura Dewey correspondiente, seguido del número Cutter del autor ${autor}.
                     No repitas el título ni añadas información adicional; solo devuelve los dos datos separados por "/".
 
                     Si no entiendes el título o no puedes encontrar la información, responde con:

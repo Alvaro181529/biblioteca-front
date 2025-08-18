@@ -16,7 +16,7 @@ export const rootItems: SidebarItemGroup = [
     { href: "/dashboard/publications", icon: MdPublic, label: "Publicaciones" },
     { href: "/dashboard/authors", icon: MdPerson4, label: "Autores" },
     { href: "/dashboard/users", icon: MdPerson, label: "Usuarios" },
-    { href: "/dashboard/analytics", icon: HiChartPie, label: "Analiticas" },
+    { href: "/dashboard/analytics", icon: HiChartPie, label: "Datos y Tendencias" },
     { href: "/dashboard/contents", icon: FaThLarge, label: "Contenido" },
     { href: "/dashboard/orders", icon: FaBookOpenReader, label: "Prestamos" },
     { href: "/dashboard/logs", icon: MdAccountBalanceWallet, label: "Registro del sistema" },
@@ -30,7 +30,7 @@ export const adminItems: SidebarItemGroup = [
     { href: "/dashboard/publications", icon: MdPublic, label: "Publicaciones" },
     { href: "/dashboard/authors", icon: MdPerson4, label: "Autores" },
     { href: "/dashboard/users", icon: MdPerson, label: "Usuarios" },
-    { href: "/dashboard/analytics", icon: HiChartPie, label: "Analiticas" },
+    { href: "/dashboard/analytics", icon: HiChartPie, label: "Datos y Tendencias" },
     { href: "/dashboard/contents", icon: FaThLarge, label: "Contenido" },
     { href: "/dashboard/orders", icon: FaBookOpenReader, label: "Prestamos" },
 ];

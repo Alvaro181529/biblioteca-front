@@ -124,7 +124,7 @@ export default function AnalyticsComponent() {
 
     if (!data || !monthly || !condition || !value || !options || !series || !conditionOptions || !conditionSeries || !optionsVal || !seriesVal) {
         return (
-            <div className="flex items-center justify-center min-h-screen text-center">
+            <div className="flex min-h-screen items-center justify-center text-center">
                 <Button
                     className="text-verde-700"
                     isProcessing
@@ -140,23 +140,24 @@ export default function AnalyticsComponent() {
             <DownloadButton />
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                 <div>
-                    <Label>Libros más solicitados</Label>
+                    <Label>Libros más prestados por los usuarios</Label>
                     <Chart options={options} series={series} type="bar" height={350} />
                 </div>
                 <div>
-                    <Label>Prestamos por mes</Label>
+                    <Label>Evolución de préstamos mes a mes</Label>
                     <Chart options={count} series={date} type="bar" height={350} />
                 </div>
                 <div>
-                    <Label>Precio por tipo</Label>
+                    <Label>Promedio de precios según tipo del contenido bibliografico</Label>
                     <Chart options={optionsVal} series={seriesVal} type="bar" height={350} />
                 </div>
             </div>
-            <h1 className='my-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300 sm:text-lg md:text-2xl'>Codiciones</h1>
+
+            <h1 className='my-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300 sm:text-lg md:text-2xl'>Codiciones del contenido bibliografico</h1>
             <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 {Object.keys(conditionOptions).map((bookType) => (
                     <div key={bookType}>
-                        <Label>CONDICION - {bookType}</Label>
+                        <Label>CONDICION DEL {bookType}</Label>
                         <Chart options={conditionOptions[bookType]} series={conditionSeries[bookType]} type="bar" height={350} />
                     </div>
                 ))}
@@ -179,7 +180,7 @@ const DownloadButton = () => {
         }
     };
     return (<div className='flex justify-between pt-5 sm:pt-2'>
-        <h1 className='my-3 text-center text-xl font-semibold text-gray-700 dark:text-gray-300 sm:text-lg md:text-2xl'>Analiticas</h1>
+        <h1 className='my-3 text-center text-xl font-semibold text-gray-700 dark:text-gray-300 sm:text-lg md:text-2xl'>Analíticas de uso de la biblioteca</h1>
         <form onSubmit={onSubmit} action="">
             <Button
                 type='submit'
@@ -190,7 +191,7 @@ const DownloadButton = () => {
                 {signin ?
                     <></>
                     :
-                    <FaFileDownload className='size-4 mr-4' />
+                    <FaFileDownload className='mr-4 size-4' />
                 }
                 Descargar reporte
             </Button>
