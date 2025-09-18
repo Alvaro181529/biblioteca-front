@@ -1,0 +1,23 @@
+import { getTokenFromSession } from '@/app/api/utils/auth';
+import { NextResponse } from "next/server";
+
+export async function GET() {
+    const token = await getTokenFromSession()
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL_API}backup/create`,
+            {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        const book = await res.json();
+        return NextResponse.json(book);
+    } catch (error) {
+        console.error("Error in GET request:", error);
+        return NextResponse.json({ message: "Error en la conexión" }, { status: 500 });
+    }
+}
+
