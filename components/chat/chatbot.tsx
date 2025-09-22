@@ -19,7 +19,16 @@ const Chatbot: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const toggleChat = () => {
+        const wasClosed = !isOpen;
         setIsOpen(!isOpen);
+        if (wasClosed && messages.length === 0) {
+            setMessages([
+                {
+                    from: 'bot',
+                    content: "¡Hola! Soy Aria 😊 Estoy aquí para ayudarte con información sobre libros, música o cualquier búsqueda relacionada. ¿En qué puedo ayudarte hoy?"
+                },
+            ]);
+        }
     };
 
     const scrollToBottom = () => {
