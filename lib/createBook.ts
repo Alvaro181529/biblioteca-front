@@ -121,7 +121,6 @@ const create = async (validatedData: any, token?: string): Promise<Respuest> => 
 
 // Function for updating an existing book
 const update = async (id: string, validatedData: any, token?: string): Promise<Respuest> => {
-    console.log(validatedData);
 
     const formData = new FormData();
     for (const key in validatedData) {

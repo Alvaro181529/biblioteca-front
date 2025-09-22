@@ -141,6 +141,7 @@ function ComponentTabs({ searchQuery }: { searchQuery: any }) {
 const CardInventario = ({ data }: { data: BookFormData[] }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasNoResults, setHasNoResults] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const isValidUrl = (url: string) => {
     try {
       new URL(url);
@@ -149,6 +150,17 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
       return false;
     }
   };
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 640); // Ajusta el 640 al breakpoint que necesites para 'sm'
+    };
+
+    handleResize(); // Verifica el tamaño inicial de la pantalla
+
+    window.addEventListener('resize', handleResize); // Detecta cambios en el tamaño de la ventana
+
+    return () => window.removeEventListener('resize', handleResize); // Cleanup
+  }, []);
   useEffect(() => {
     if (!Array.isArray(data)) {
       const timer = setTimeout(() => {
@@ -186,10 +198,10 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
             : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
 
         return (
-          <Card key={index} imgSrc={imageSrc} horizontal>
+          <Card key={index} imgSrc={imageSrc} horizontal={!isSmallScreen}>
             <div className="ml-4 pe-3">
-              <h1 className="text-lg font-semibold dark:text-white ">{book.book_title_original}</h1>
-              <h5 className="text-sm text-gray-600 dark:text-white">{book.book_title_parallel}</h5>
+              <h1 className="text-base font-semibold dark:text-white ">{book.book_title_original}</h1>
+              <h5 className="text-xs text-gray-600 dark:text-white">{book.book_title_parallel}</h5>
               <div className="mt-2 text-gray-600  dark:text-white">
                 {Array.isArray(book?.book_authors) && book?.book_authors?.map((author, index) => (
                   <h5 key={index} className="text-sm">{author.author_name}</h5>

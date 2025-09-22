@@ -111,7 +111,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
 
                     >
                         <div className="flex w-full items-center justify-between ">
-                            <h5 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white max-sm:text-sm">
+                            <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white max-sm:text-sm">
                                 {book.book_title_original || "Titulo del libro"}
                             </h5>
                             <div>

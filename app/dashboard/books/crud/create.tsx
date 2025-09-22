@@ -87,11 +87,14 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
             {!bookType && (
                 <div className="mb-8 flex flex-col items-center gap-2">
                     <div className="w-full max-w-md">
-                        <Label
-                            htmlFor="book_type"
-                            className="mb-2 block text-center text-sm font-semibold text-gray-700"
-                            value="Selecciona el tipo de libro"
-                        />
+                        <div className="flex items-center gap-2">
+                            <Label
+                                htmlFor="book_type"
+                                className="mb-2 block text-center text-sm font-semibold text-gray-700"
+                                value="Selecciona el tipo de libro"
+                            />
+                            <p className="text-red-600">*</p>
+                        </div>
                         <Select
                             id="book_type"
                             name="book_type"
@@ -115,7 +118,10 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                     <div className="space-y-6" >
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div className="mb-4 max-sm:col-span-2">
-                                <Label htmlFor="book_title_original" value="Título Original" />
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="book_title_original" value="Título Original" />
+                                    <p className="text-red-600">*</p>
+                                </div>
                                 <TextInput
                                     name="book_title_original"
                                     id="book_title_original"
@@ -157,28 +163,25 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     </div>
                                 )}
                                 <div className="mb-4">
-                                    <Label htmlFor="book_quantity" value="Numero de ejemplares" />
+                                    <div className="flex items-center gap-2">
+                                        <Label htmlFor="book_quantity" value="Numero de ejemplares" />
+                                        <p className="text-red-600">*</p>
+                                    </div>
                                     <TextInput
                                         name="book_quantity"
                                         id="book_quantity"
                                         type="number"
+                                        required
                                         defaultValue={fetch?.book_quantity}
                                         min={1}
                                     />
                                 </div>
                             </div>
-                            <div className="col-span-2 mb-4">
-                                <Label htmlFor="book_description" value="Descripción" />
-                                <Textarea
-                                    name="book_description"
-                                    id="book_description"
-                                    placeholder="Descripción"
-                                    defaultValue={fetch?.book_description}
-                                />
-                            </div>
-
                             <div className="mb-4 max-sm:col-span-2">
-                                <Label htmlFor="book_condition" value="Condición" />
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="book_condition" value="Condición" />
+                                    <p className="text-red-600">*</p>
+                                </div>
                                 <Select id="book_condition" name="book_condition"
                                     defaultValue={String(fetch?.book_condition)}
                                     required>
@@ -189,9 +192,13 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 </Select>
                             </div>
                             <div className="mb-4 max-sm:col-span-2">
-                                <Label htmlFor="book_language" value="Idioma" />
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="book_language" value="Idioma" />
+                                    <p className="text-red-600">*</p>
+                                </div>
                                 <Select id="book_language" name="book_language"
                                     defaultValue={String(fetch?.book_language)}
+                                    required
                                 >
                                     {languages.map((language, index) => (
                                         <option key={index} value={language.code}>
@@ -202,7 +209,10 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             </div>
                             {['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) && (
                                 < div className="mb-4 max-sm:col-span-2">
-                                    <Label htmlFor="book_location" value="Signatura tipográfica" />
+                                    <div className="flex items-center gap-2">
+                                        <Label htmlFor="book_location" value="Signatura tipográfica" />
+                                        <p className="text-red-600">*</p>
+                                    </div>
                                     <div className="flex gap-2">
                                         <div className="flex-1">
                                             <TextInput
@@ -218,7 +228,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     </div>
                                 </div>
                             )}
-                            <div className="mb-4 max-sm:col-span-2">
+                            <div className={`${!['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? ' col-span-2 ' : ' max-sm:col-span-2 '}` + "mb-4"}>
                                 <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
                                 <Datepicker
                                     name="book_acquisition_date"
@@ -228,7 +238,10 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                             <div className="col-span-2">
                                 <section className="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
                                     <div className="mb-4">
-                                        <Label htmlFor="book_price_type" value="Tipo de Precio" />
+                                        <div className="flex items-center gap-2">
+                                            <Label htmlFor="book_price_type" value="Tipo de Precio" />
+                                            <p className="text-red-600">*</p>
+                                        </div>
                                         <Select id="book_price_type" name="book_price_type"
                                             defaultValue={fetch?.book_price_type}
                                             required>
@@ -241,11 +254,15 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     </div>
 
                                     <div className="mb-4">
-                                        <Label htmlFor="book_original_price" value="Precio Original" />
+                                        <div className="flex items-center gap-2">
+                                            <Label htmlFor="book_original_price" value="Precio Original" />
+                                            <p className="text-red-600">*</p>
+                                        </div>
                                         <TextInput
                                             name="book_original_price"
                                             id="book_original_price"
                                             placeholder="3"
+                                            required
                                             type="number"
                                             step="0.01"
                                             defaultValue={fetch?.book_original_price}
@@ -255,7 +272,8 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     <div className="mb-4">
                                         <Label htmlFor="book_type" value="Tipo de Libro" />
                                         <Select id="book_type" name="book_type"
-                                            defaultValue={String(fetch?.book_type)}
+                                            defaultValue={bookType ? bookType : String(fetch?.book_type)}
+                                            onChange={(e) => setBookType(e.target.value)}
                                             required>
                                             {bookTypes.map(books => (
                                                 <option key={books.code} value={books.code}>
@@ -267,7 +285,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 </section>
                             </div>
 
-                            <div className="mb-4 max-sm:col-span-2">
+                            <div className={`${!['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? ' mb-4' : ''}` + " max-sm:col-span-2"}>
                                 <AutocompleteSuggestion
                                     id="book_category"
                                     name="Categorías"
@@ -277,7 +295,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 />
 
                             </div>
-                            <div className="mb-4 max-sm:col-span-2">
+                            <div className={`${!['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? 'mb-4' : ' '}` + " max-sm:col-span-2"}>
                                 <AutocompleteSuggestion
                                     id="book_authors"
                                     name="Autores"
@@ -285,25 +303,28 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     type="authors"
                                     initialSelectedItems={transformToSuggestions(fetch?.book_authors) ?? []}
                                 />
-
                             </div>
-                            <div className="mb-4 max-sm:col-span-2">
-                                <AutocompleteSuggestion
-                                    id="book_instruments"
-                                    name="Instrumentos"
-                                    placeholder="Ingrese instrumentos separados por comas"
-                                    type="instruments"
-                                    initialSelectedItems={transformToSuggestions(fetch?.book_instruments) ?? []}
-                                />
-                            </div>
-                            <div className="mb-4 max-sm:col-span-2">
-                                <Label htmlFor="book_includes" value="Incluye" />
-                                <Textarea
-                                    name="book_includes"
-                                    id="book_includes"
-                                    defaultValue={fetch?.book_includes}
-                                />
-                            </div>
+                            {!['PARTITURA', 'REVISTA'].includes(bookType) && (
+                                <>
+                                    <div className="mb-4 max-sm:col-span-2">
+                                        <AutocompleteSuggestion
+                                            id="book_instruments"
+                                            name="Instrumentos"
+                                            placeholder="Ingrese instrumentos separados por comas"
+                                            type="instruments"
+                                            initialSelectedItems={transformToSuggestions(fetch?.book_instruments) ?? []}
+                                        />
+                                    </div>
+                                    <div className="mb-4 max-sm:col-span-2">
+                                        <Label htmlFor="book_includes" value="Incluye" />
+                                        <Textarea
+                                            name="book_includes"
+                                            id="book_includes"
+                                            defaultValue={fetch?.book_includes}
+                                        />
+                                    </div>
+                                </>
+                            )}
                             <div className="mb-4 max-sm:col-span-2">
                                 <Tabs aria-label="Tabs with underline" style="underline" >
                                     <Tabs.Item active title="URL">
@@ -351,6 +372,15 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                         />
                                     </Tabs.Item>
                                 </Tabs>
+                            </div>
+                            <div className="col-span-2 mb-4">
+                                <Label htmlFor="book_description" value="Descripción" />
+                                <Textarea
+                                    name="book_description"
+                                    id="book_description"
+                                    placeholder="Descripción"
+                                    defaultValue={fetch?.book_description}
+                                />
                             </div>
                             {['CD', 'VHS', 'DVD'].includes(bookType) && (
                                 <div className="col-span-2">

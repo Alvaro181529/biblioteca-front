@@ -62,7 +62,9 @@ export default function AnalyticsComponent() {
                         labels: { style: { fontSize: '12px' } }
                     },
                     tooltip: { y: { formatter: (val: number) => `${val} libros` } },
-                    colors: ['#FF5733', '#33FF57', '#3357FF']
+                    fill: {
+                        colors: ['#7EA862']
+                    }
                 };
 
                 newConditionSeries[bookType] = [{ name: bookType, data: values }];
@@ -109,8 +111,8 @@ export default function AnalyticsComponent() {
             setOptionsVal({
                 chart: { type: 'bar', height: 350 },
                 xaxis: { categories, labels: { style: { fontSize: '12px' } } },
-                tooltip: { y: { formatter: (val: number) => `${val} unidades` } },
-                colors: ['#FF5733', '#33FF57', '#3357FF']
+                tooltip: { y: { formatter: (val: number) => `${val} $` } },
+                colors: ['#FF5733']
             });
 
             setSeriesVal([{

@@ -28,7 +28,6 @@ export async function updateRegister(formData: FormData) {
         register_intrument: registerInstrument.length > 0 ? registerInstrument : [],  // Asegurarse de que siempre sea un array
         register_professor: formData.get('register_professor') || "null",
     };
-    console.log(data);
     const validatedData = bookSchema.parse(data);
 
     try {
@@ -51,7 +50,6 @@ const update = async (validatedData: any) => {
         });
 
         const result = await res.json();
-        console.log(result);
         if (!res.ok) {
             return { success: false, message: 'No se pudo registrar la información' };
         }

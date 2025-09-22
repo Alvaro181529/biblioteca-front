@@ -32,7 +32,7 @@ export function ComponentSidebar({ rol }: { rol: string }) {
     return (
         <Sidebar
             aria-label="Sidebar"
-            className={`z-40 h-screen transition-transform max-md:hidden md:translate-x-0 ${collapsed ? 'w-20' : 'w-64'}`}
+            className={`z-40 h-screen shadow-lg shadow-black transition-transform max-md:hidden md:translate-x-0 ${collapsed ? 'w-20' : 'w-64'}`}
         >
             <button
                 onClick={() => setCollapsed(!collapsed)}
