@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookFormData } from "@/interface/Interface";
-import { Button, Card } from "flowbite-react";
+import { BookFormData, BooksFiles } from "@/interface/Interface";
+import { Button, Card, Tooltip } from "flowbite-react";
 import { ComponentModalCreate } from "@/components/Modal";
 import { notFound, useRouter } from "next/navigation";
 import { FormBorrowed } from "./crud/borrowed";
@@ -13,13 +13,18 @@ import { User } from "next-auth";
 import { isValidUrl } from "@/lib/validateURL";
 import { AiOutlineLoading } from "react-icons/ai";
 import { useSession } from "next-auth/react";
+import { IoPlayCircleOutline } from "react-icons/io5";
+import { MdOutlinePictureAsPdf } from "react-icons/md";
+import Vizualizer from "@/app/dashboard/books/[id]/component/Vizualizer";
 
 export default function ContentId({ params }: { params: { id: number } }) {
     const [openModal, setOpenModal] = useState(false);
     const { data: session, status } = useSession()
+    const [openModalMidi, setOpenModalMidi] = useState(false);
     const [pdf, setPdf] = useState(true);
     const [spin, setSpin] = useState(true);
     const { data } = useBooksData(params.id);
+    const { data: filesData } = useBooksDataFiles(params.id);
     const imageUrl = String(data?.book_imagen);
     const router = useRouter()
 
@@ -33,7 +38,24 @@ export default function ContentId({ params }: { params: { id: number } }) {
         }
     }, [data?.book_document]);
     if (data?.statusCode == 404) { return notFound() }
-
+    const DownloadMXL = () => {
+        const mxlUrl = String(filesData?.mxl_url);
+        if (isValidUrl(mxlUrl)) {
+            router.push(mxlUrl);
+        } else {
+            const mxlDownloadUrl = `/api/books/mxl/${mxlUrl}`;
+            router.push(mxlDownloadUrl);
+        }
+    }
+    const DownloadMIDI = () => {
+        const midiUrl = String(filesData?.midi_url);
+        if (isValidUrl(midiUrl)) {
+            router.push(midiUrl);
+        } else {
+            const mxlDownloadUrl = `/api/books/midi/${midiUrl}`;
+            router.push(mxlDownloadUrl);
+        }
+    }
     const documentUrl = () => {
         const documentUrl = String(data?.book_document);
 
@@ -54,26 +76,42 @@ export default function ContentId({ params }: { params: { id: number } }) {
         <div className="mx-auto max-w-6xl px-4 py-2 md:px-2">
             <div className="grid items-start gap-4 md:grid-cols-2">
                 <div className="m-auto mt-0 grid gap-6">
-                    <Image
-                        width={600}
-                        height={800}
-                        className="aspect-[3/4] w-full rounded-lg object-cover"
-                        alt={String(data?.book_title_original)}
-                        src={imageSrc}
-                    />
-                    {(session?.user.rols == "ESTUDIANTE" || session?.user.rols == "DOCENTE") && (
-                        <Button
-                            aria-label="Pdf"
-                            className="mt-0 bg-red-700 font-semibold"
-                            processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
-                            isProcessing={spin}
-                            disabled={pdf}
-                            onClick={documentUrl}
-                        >
-                            Ver pdf
-                        </Button>
-                    )}
-
+                    <ComponentModalCreate title="Visualizador" openModal={openModalMidi} setOpenModal={setOpenModalMidi} status={false}>
+                        <Vizualizer DownloadMIDI={DownloadMIDI} DownloadMXL={DownloadMXL} filesData={filesData || { midi_url: null, mxl_url: null }} />
+                    </ComponentModalCreate>
+                    <div className="relative w-full">
+                        {/* Imagen con Tailwind */}
+                        <Image
+                            width={560}
+                            height={800}
+                            className="aspect-[3/4] rounded-lg object-cover"
+                            alt={String(data?.book_title_original)}
+                            src={imageSrc}
+                        />
+                        {(session?.user.rols == "ESTUDIANTE" || session?.user.rols == "DOCENTE") && (
+                            data?.book_type == 'PARTITURA' && (
+                                <Tooltip className="z-50" content="Obtener archivos midi y mxl">
+                                    <button onClick={() => setOpenModalMidi(true)} className="absolute left-4 top-4 rounded-full bg-white p-2 shadow-lg hover:bg-gray-100 focus:outline-none">
+                                        <IoPlayCircleOutline className="size-10 text-green-900" />
+                                    </button>
+                                </Tooltip>
+                            )
+                        )}
+                        {(session?.user.rols == "ESTUDIANTE" || session?.user.rols == "DOCENTE") && (
+                            <Tooltip className="z-50" content="Ver Pef del libro">
+                                <button
+                                    aria-label="Pdf"
+                                    className={`absolute left-4 ${data?.book_type === 'PARTITURA' ? 'top-20' : 'top-4'} ${data?.book_document === 'null' ? 'hidden' : ''} rounded-full bg-white p-2 shadow-lg hover:bg-gray-100 focus:outline-none ${['DVD', 'CD', 'VHS', 'CASSETTE', 'AUDIO LIBRO'].includes(String(data?.book_type)) ? 'hidden' : ''}`}
+                                    // processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
+                                    // isProcessing={spin}
+                                    disabled={pdf}
+                                    onClick={documentUrl}
+                                >
+                                    <MdOutlinePictureAsPdf className="size-10 text-red-700" />
+                                </button>
+                            </Tooltip>
+                        )}
+                    </div>
                     <section className="mb-2 flex w-full items-center justify-between">
                         <div>
                             <h1 className="mb-2 text-2xl font-bold dark:text-white">{data?.book_title_original || "Título no disponible"}</h1>
@@ -265,6 +303,25 @@ const FetchUser = (id: number) => {
             const fetchData = async () => {
                 try {
                     const url = `/api/users/me`;
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    setData(result)
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            fetchData();
+        }
+    }, [id])
+    return { data }
+}
+const useBooksDataFiles = (id: number) => {
+    const [data, setData] = useState<BooksFiles | null>(null);
+    useEffect(() => {
+        if (id) {
+            const fetchData = async () => {
+                try {
+                    const url = `/api/books/files/${id}`;
                     const res = await fetch(url);
                     const result = await res.json();
                     setData(result)

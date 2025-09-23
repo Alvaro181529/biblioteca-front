@@ -8,6 +8,8 @@ import { InvoicesCardSkeleton } from "@/components/skeletons";
 import { ComponentPagination } from "@/components/Pagination";
 import { isValidUrl } from "@/lib/validateURL";
 import { LuSettings2 } from "react-icons/lu";
+import { BusquedaAvanzada } from "@/utils/busquedaAvanzada";
+import { ComponentModalCreate } from '@/components/Modal';
 
 interface SerchParams {
     searchParams: {
@@ -36,11 +38,17 @@ export default function ContentPage({ searchParams }: SerchParams) {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
-    const handleSeach = () => {
+    const handleSearch = () => {
         setModalState(false)
         setTitle("Busqueda Avanzada")
         setModalType('search');
         setOpenModal(true);
+    };
+    const closeModal = () => {
+        setModalState(true)
+        setOpenModal(false);
+        setTitle("Crear Libro")
+        setModalType('create');
     };
     const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSize = Number(event.target.value)
@@ -58,7 +66,7 @@ export default function ContentPage({ searchParams }: SerchParams) {
                     <ComponentSearch onChange={handleSizeChange} size={size} />
                 </div>
                 <div className='w-full py-2'>
-                    <Button aria-label='Reporte' className='w-full rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-300' onClick={handleSeach}><LuSettings2 className='text-xl text-gray-600' /></Button>
+                    <Button aria-label='Ajuste' className='w-full rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-400' onClick={handleSearch}><LuSettings2 className='text-xl text-gray-600' /></Button>
                 </div>
                 <Select onChange={handleTypeChange} className="col-span-3 py-2 md:col-span-2">
                     <option value="">Todo</option>
@@ -78,6 +86,9 @@ export default function ContentPage({ searchParams }: SerchParams) {
             </div>
             <CardBook data={data} />
             <ComponentPagination currentPage={currentPage} onPageChange={handlePageChange} totalPages={pages} />
+            <ComponentModalCreate title={title} openModal={openModal} setOpenModal={closeModal} status={modalState}>
+                {modalType === 'search' && <BusquedaAvanzada></BusquedaAvanzada>}
+            </ComponentModalCreate>
         </section>
     )
 }

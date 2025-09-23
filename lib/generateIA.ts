@@ -7,7 +7,7 @@ const conversationMemory = new Map<string, any>();
 export async function Respuesta(mensaje: string) {
     const userEmail: string = String(await getSessionUser());
     try {
-        const isBusqueda = /recomienda|libros de|quiero leer|recomiéndame/i.test(mensaje);
+        const isBusqueda = /recomienda|libros de|quiero leer|recomiéndame|recomendarme|necesito/i.test(mensaje);
         if (isBusqueda) {
             const respuesta = await BusquedaBooksIA(mensaje, userEmail)
             return `Aquí tienes algunas recomendaciones:\n\n${respuesta}`;
@@ -23,7 +23,7 @@ export async function Respuesta(mensaje: string) {
 export async function Signatura(titulo: string, autor: string) {
     try {
         const response = await ai.models.generateContent({
-            model: process.env.GOOGLE_MODEL || "gemini-1.5-flash",
+            model: process.env.GOOGLE_MODEL || "gemini-2.5-flash-lite",
             contents: `Eres un asistente preciso y respetuoso.
                     Responde de forma clara y concisa.
 
@@ -45,7 +45,7 @@ export async function Signatura(titulo: string, autor: string) {
 }
 async function BusquedaBooksIA(mensaje: string, userEmail: string) {
     const liempiezaBusqueda = await ai.models.generateContent({
-        model: process.env.GOOGLE_MODEL || "gemini-1.5-flash",
+        model: process.env.GOOGLE_MODEL || "gemini-2.5-flash-lite",
         contents: `Extrae el tema o palabra clave del siguiente mensaje, relacionado con libros o música. Solo responde con la palabra o frase clave más relevante, sin explicaciones: ${mensaje}`,
         config: {
             systemInstruction: `Eres Aria, un asistente amable, claro y en español.
@@ -91,7 +91,7 @@ async function ConversacionIA(mensaje: string, userEmail: string) {
         Si no está relacionado, simplemente responde normalmente al mensaje.`
         : `Responde al siguiente mensaje del usuario de forma clara, amable y en español: "${mensaje}".`;
     const response = await ai.models.generateContent({
-        model: process.env.GOOGLE_MODEL || "gemini-1.5-flash",
+        model: process.env.GOOGLE_MODEL || "gemini-2.5-flash-lite",
         contents,
         config: {
             systemInstruction: `Eres Aria, un asistente amable, claro y en español.
