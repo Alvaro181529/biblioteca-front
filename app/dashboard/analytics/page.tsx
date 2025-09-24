@@ -111,7 +111,7 @@ export default function AnalyticsComponent() {
             setOptionsVal({
                 chart: { type: 'bar', height: 350 },
                 xaxis: { categories, labels: { style: { fontSize: '12px' } } },
-                tooltip: { y: { formatter: (val: number) => `${val} $` } },
+                tooltip: { y: { formatter: (val: number) => `${val} Bs` } },
                 colors: ['#FF5733']
             });
 
