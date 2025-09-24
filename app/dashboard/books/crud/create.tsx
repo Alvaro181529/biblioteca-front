@@ -151,17 +151,15 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                         defaultValue={fetch?.book_editorial}
                                     />
                                 </div>
-                                {bookType && (
-                                    <div className="mb-4">
-                                        <Label htmlFor="book_isbn" value="ISBN" />
-                                        <TextInput
-                                            name="book_isbn"
-                                            id="book_isbn"
-                                            placeholder="978-3-16-148410-0"
-                                            defaultValue={fetch?.book_isbn}
-                                        />
-                                    </div>
-                                )}
+                                <div className={`${['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? 'hidden ' : ''}` + "mb-4"}>
+                                    <Label htmlFor="book_isbn" value="ISBN" />
+                                    <TextInput
+                                        name="book_isbn"
+                                        id="book_isbn"
+                                        placeholder="978-3-16-148410-0"
+                                        defaultValue={fetch?.book_isbn}
+                                    />
+                                </div>
                                 <div className="mb-4">
                                     <div className="flex items-center gap-2">
                                         <Label htmlFor="book_quantity" value="Numero de ejemplares" />
@@ -207,27 +205,27 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     ))}
                                 </Select>
                             </div>
-                            {['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) && (
-                                < div className="mb-4 max-sm:col-span-2">
-                                    <div className="flex items-center gap-2">
-                                        <Label htmlFor="book_location" value="Signatura tipográfica" />
-                                        <p className="text-red-600">*</p>
+
+                            < div className={['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? 'hidden ' : '' + "mb-4 max-sm:col-span-2"}>
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="book_location" value="Signatura tipográfica" />
+                                    <p className="text-red-600">*</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <TextInput
+                                            name="book_location"
+                                            id="book_location"
+                                            placeholder="Ubicación"
+                                            defaultValue={fetch?.book_location || signatura || ''} // Mantén defaultValue como estaba
+                                        />
                                     </div>
-                                    <div className="flex gap-2">
-                                        <div className="flex-1">
-                                            <TextInput
-                                                name="book_location"
-                                                id="book_location"
-                                                placeholder="Ubicación"
-                                                defaultValue={fetch?.book_location || signatura || ''} // Mantén defaultValue como estaba
-                                            />
-                                        </div>
-                                        <div className="flex-none">
-                                            <Button onClick={() => onClickSignatura(String(bookTitle), String(fetch?.book_authors))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
-                                        </div>
+                                    <div className="flex-none">
+                                        <Button onClick={() => onClickSignatura(String(bookTitle), String(fetch?.book_authors))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
                                     </div>
                                 </div>
-                            )}
+                            </div>
+
                             <div className={`${!['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? ' col-span-2 ' : ' max-sm:col-span-2 '}` + "mb-4"}>
                                 <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
                                 <Datepicker
@@ -243,7 +241,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                             <p className="text-red-600">*</p>
                                         </div>
                                         <Select id="book_price_type" name="book_price_type"
-                                            defaultValue={fetch?.book_price_type}
+                                            defaultValue={fetch?.book_price_type || 0}
                                             required>
                                             {currencies.map(currency => (
                                                 <option key={currency.code} value={currency.code}>
@@ -304,27 +302,23 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     initialSelectedItems={transformToSuggestions(fetch?.book_authors) ?? []}
                                 />
                             </div>
-                            {!['PARTITURA', 'REVISTA'].includes(bookType) && (
-                                <>
-                                    <div className="mb-4 max-sm:col-span-2">
-                                        <AutocompleteSuggestion
-                                            id="book_instruments"
-                                            name="Instrumentos"
-                                            placeholder="Ingrese instrumentos separados por comas"
-                                            type="instruments"
-                                            initialSelectedItems={transformToSuggestions(fetch?.book_instruments) ?? []}
-                                        />
-                                    </div>
-                                    <div className="mb-4 max-sm:col-span-2">
-                                        <Label htmlFor="book_includes" value="Incluye" />
-                                        <Textarea
-                                            name="book_includes"
-                                            id="book_includes"
-                                            defaultValue={fetch?.book_includes}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                            <div className={['PARTITURA', 'REVISTA'].includes(bookType) ? 'hidden' : '' + "mb-4 max-sm:col-span-2"}>
+                                <AutocompleteSuggestion
+                                    id="book_instruments"
+                                    name="Instrumentos"
+                                    placeholder="Ingrese instrumentos separados por comas"
+                                    type="instruments"
+                                    initialSelectedItems={transformToSuggestions(fetch?.book_instruments) ?? []}
+                                />
+                            </div>
+                            <div className={['PARTITURA', 'REVISTA'].includes(bookType) ? 'hidden' : '' + "mb-4 max-sm:col-span-2"}>
+                                <Label htmlFor="book_includes" value="Incluye" />
+                                <Textarea
+                                    name="book_includes"
+                                    id="book_includes"
+                                    defaultValue={fetch?.book_includes}
+                                />
+                            </div>
                             <div className="mb-4 max-sm:col-span-2">
                                 <Tabs aria-label="Tabs with underline" style="underline" >
                                     <Tabs.Item active title="URL">

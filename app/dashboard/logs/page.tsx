@@ -25,7 +25,7 @@ interface LogsResponse {
 export default function LogsPage() {
     const [update, setUpdate] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [size, setSize] = useState(10);
+    const [size, setSize] = useState(1000);
 
     const columns = [
         "id",
