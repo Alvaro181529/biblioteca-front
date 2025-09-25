@@ -1,5 +1,5 @@
 "use client";
-
+import { Accordion, AccordionContent, AccordionPanel, AccordionTitle } from "flowbite-react";
 import { Author, Categories } from "@/interface/Interface";
 import { Checkbox, Label, Spinner, Textarea } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
@@ -191,45 +191,47 @@ export function BusquedaAvanzada() {
                 />
             </div>
 
-            {/* Instrumentos */}
-            <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-800">Instrumentos</h2>
-                <div className="flex flex-col gap-2 p-2">
-                    {instruments.map((inst, index) => (
-                        <div key={index} className="flex items-center gap-3">
-                            <Checkbox
-                                id={inst.instrument_name}
-                                checked={selectedInstruments.has(inst.instrument_name)}
-                                onChange={() =>
-                                    toggleSelection(inst.instrument_name, selectedInstruments, setSelectedInstruments, "instrument")
-                                }
-                            />
-                            <Label htmlFor={inst.instrument_name} className="text-sm text-gray-700">
-                                {inst.instrument_name}
-                            </Label>
-                        </div>
-                    ))}
+            <div className="col-span-2 flex flex-row gap-6 md:flex-col">
+                {/* Instrumentos */}
+                <div>
+                    <h2 className="mb-4 text-lg font-semibold text-gray-800">Instrumentos</h2>
+                    <div className="flex flex-col gap-2 p-2">
+                        {instruments.map((inst, index) => (
+                            <div key={index} className="flex items-center gap-3">
+                                <Checkbox
+                                    id={inst.instrument_name}
+                                    checked={selectedInstruments.has(inst.instrument_name)}
+                                    onChange={() =>
+                                        toggleSelection(inst.instrument_name, selectedInstruments, setSelectedInstruments, "instrument")
+                                    }
+                                />
+                                <Label htmlFor={inst.instrument_name} className="text-sm text-gray-700">
+                                    {inst.instrument_name}
+                                </Label>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            {/* Categorías */}
-            <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-800">Categorías</h2>
-                <div className="flex flex-col gap-2 p-2">
-                    {categories.map((cat, index) => (
-                        <div key={index} className="flex items-center gap-3">
-                            <Checkbox
-                                id={cat.category_name}
-                                checked={selectedCategory.has(cat.category_name)}
-                                onChange={() =>
-                                    toggleSelection(cat.category_name, selectedCategory, setSelectedCategory, "category")
-                                }
-                            />
-                            <Label htmlFor={cat.category_name} className="text-sm text-gray-700">
-                                {cat.category_name}
-                            </Label>
-                        </div>
-                    ))}
+                {/* Categorías */}
+                <div>
+                    <h2 className="mb-4 text-lg font-semibold text-gray-800">Categorías</h2>
+                    <div className="flex flex-col gap-2 p-2">
+                        {categories.map((cat, index) => (
+                            <div key={index} className="flex items-center gap-3">
+                                <Checkbox
+                                    id={cat.category_name}
+                                    checked={selectedCategory.has(cat.category_name)}
+                                    onChange={() =>
+                                        toggleSelection(cat.category_name, selectedCategory, setSelectedCategory, "category")
+                                    }
+                                />
+                                <Label htmlFor={cat.category_name} className="text-sm text-gray-700">
+                                    {cat.category_name}
+                                </Label>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>

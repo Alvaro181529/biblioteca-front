@@ -214,6 +214,7 @@ const useBooksData = (size: number, currentPage: number, search: string, type: s
                             truncateContent(book.book_observation, 4),
                         ]);
                     };
+                    console.log(result);
                     configureColumns();
                     setInfoData(info(result.data))
                     setData(transformData(result.data));

@@ -268,7 +268,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                             required
                                             type="number"
                                             step="0.01"
-                                            defaultValue={fetch?.book_original_price}
+                                            defaultValue={fetch?.book_original_price || 0}
                                             min="0"
                                         />
                                     </div>
