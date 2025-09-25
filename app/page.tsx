@@ -179,8 +179,6 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
       const contentType = res.headers.get("Content-Type") || "";
       if (contentType.includes("application/json")) {
         const resJson = await res.json();
-        console.log(resJson);
-
         if (resJson?.statusCode === 404) {
           return fallbackUrl
 

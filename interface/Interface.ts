@@ -60,7 +60,7 @@ export interface BookFormData {
     book_language: string;
     book_type: string;
     book_description: string;
-    book_condition: 'BUENO' | 'REGULAR' | 'MALO'; // Ajusta según tu enumeración
+    book_condition: 'BUENO' | 'REGULAR' | 'MALO' | 'PÉSIMO'; // Ajusta según tu enumeración
     book_quantity: number;
     book_includes: string[];
     book_headers: string[];

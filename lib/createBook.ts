@@ -18,7 +18,7 @@ const bookSchema = z.object({
     book_language: z.optional(z.string()),
     book_type: z.optional(z.string()),
     book_description: z.optional(z.string()),
-    book_condition: z.optional(z.enum(['BUENO', 'REGULAR', 'MALO'])),
+    book_condition: z.optional(z.enum(['BUENO', 'REGULAR', 'MALO', 'PÉSIMO'])),
     book_quantity: z.optional(z.number()),
     book_includes: z.optional(z.array(z.string())),
     book_headers: z.optional(z.array(z.string())),

@@ -129,7 +129,8 @@ export default function BooksId({ params }: { params: { id: number } }) {
             router.push(documentUrl);
         } else {
             const pdfUrl = `/api/books/document/${documentUrl}`;
-            router.push(pdfUrl);
+            // router.push(pdfUrl);
+            window.open(pdfUrl, '_blank');
         }
     }
     return (
@@ -168,6 +169,7 @@ export default function BooksId({ params }: { params: { id: number } }) {
                         <Tooltip className="z-50" content="Ver Pef del libro">
                             <button
                                 aria-label="Pdf"
+
                                 className={`absolute left-4 ${data?.book_type === 'PARTITURA' ? 'top-20' : 'top-4'} ${data?.book_document === 'null' ? 'hidden' : ''} rounded-full bg-white p-2 shadow-lg hover:bg-gray-100 focus:outline-none ${['DVD', 'CD', 'VHS', 'CASSETTE', 'AUDIO LIBRO'].includes(String(data?.book_type)) ? 'hidden' : ''}`}
                                 // processingSpinner={<AiOutlineLoading className="size-6 animate-spin" />}
                                 // isProcessing={spin}

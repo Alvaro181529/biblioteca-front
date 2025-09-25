@@ -9,6 +9,7 @@ export default function Vizualizer({ DownloadMIDI, DownloadMXL, filesData }: { D
             </div >
         );
     }
+    console.log(filesData);
     return (
         <section id="section2" className="py-10">
             <div className="mx-auto flex w-full max-w-7xl items-center justify-center gap-8 px-6 max-sm:flex-col md:flex-row">

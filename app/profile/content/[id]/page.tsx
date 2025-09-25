@@ -16,6 +16,16 @@ import { useSession } from "next-auth/react";
 import { IoPlayCircleOutline } from "react-icons/io5";
 import { MdOutlinePictureAsPdf } from "react-icons/md";
 import Vizualizer from "@/app/dashboard/books/[id]/component/Vizualizer";
+const loadMidiPlayerScript = () => {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = "https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/html-midi-player@1.5.0";
+        script.defer = true;
+        script.onload = () => resolve(true);
+        script.onerror = (e) => reject(new Error("Failed to load MIDI player scripts"));
+        document.body.appendChild(script);
+    });
+};
 
 export default function ContentId({ params }: { params: { id: number } }) {
     const [openModal, setOpenModal] = useState(false);
@@ -37,6 +47,17 @@ export default function ContentId({ params }: { params: { id: number } }) {
             setPdf(false)
         }
     }, [data?.book_document]);
+    useEffect(() => {
+        if (openModalMidi) {
+            loadMidiPlayerScript()
+                .then(() => {
+                    console.log("MIDI player script loaded successfully!");
+                })
+                .catch((error) => {
+                    console.error("Error loading MIDI player script:", error);
+                });
+        }
+    }, [openModalMidi]);
     if (data?.statusCode == 404) { return notFound() }
     const DownloadMXL = () => {
         const mxlUrl = String(filesData?.mxl_url);
@@ -63,7 +84,7 @@ export default function ContentId({ params }: { params: { id: number } }) {
             router.push(documentUrl);
         } else {
             const pdfUrl = `/api/books/document/${documentUrl}`;
-            router.push(pdfUrl);
+            window.open(pdfUrl, '_blank');
         }
     }
     const imageSrc = isValidUrl(imageUrl)
