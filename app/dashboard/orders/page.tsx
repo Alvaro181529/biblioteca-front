@@ -188,13 +188,15 @@ const TableOrders = ({ data, page, size, fetchData }: { data: Orders[], page: nu
                                 </span>
                             </Table.Cell>
                             <Table.Cell >
-                                <List >
-                                    {order.books.map(book => (
+                                {order.books.map(book => (
+                                    <List key={book.id} className="max-h-32 overflow-y-auto">
                                         <List.Item key={book.id} className="text-wrap">
                                             {book.book_title_original}
                                         </List.Item>
-                                    ))}
-                                </List>
+                                        <List.Item key={index}><span className="font-bold">Inventario: </span>{book.book_inventory || 'S/I'}</List.Item>
+                                        <List.Item key={index}><span className="font-bold">Ubicado en: </span> {book.book_location}</List.Item>
+                                    </List>
+                                ))}
                             </Table.Cell>
                             <Table.Cell>{order.order_status}</Table.Cell>
                             <Table.Cell>

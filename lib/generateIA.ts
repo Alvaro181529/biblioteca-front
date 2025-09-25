@@ -21,6 +21,8 @@ export async function Respuesta(mensaje: string) {
 }
 
 export async function Signatura(titulo: string, autor: string) {
+    console.log('titulo', titulo);
+    console.log('autor', autor);
     try {
         const response = await ai.models.generateContent({
             model: process.env.GOOGLE_MODEL || "gemini-2.5-flash-lite",

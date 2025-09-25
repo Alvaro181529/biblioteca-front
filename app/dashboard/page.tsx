@@ -165,11 +165,13 @@ const CardB = ({ searchParams, update, setUpdate }: SerchParams & { update: bool
                                         </div>
                                         <div>
                                             <span className="font-semibold">Prestamos:</span>
-                                            <List className="ml-4">
-                                                {orde.books.map((book, index) => (
+                                            {orde.books.map((book, index) => (
+                                                <List key={index} className="ml-4">
+                                                    <List.Item key={index}>Inventario: {book.book_inventory || 'S/I'}</List.Item>
                                                     <List.Item key={index}>{book.book_title_original}</List.Item>
-                                                ))}
-                                            </List>
+                                                    <List.Item key={index}>Ubicado en: {book.book_location}</List.Item>
+                                                </List>
+                                            ))}
                                         </div>
                                         <div>
                                             <span className="font-semibold">Fecha:</span> {new Date(orde.order_at).toLocaleDateString('es-ES', {

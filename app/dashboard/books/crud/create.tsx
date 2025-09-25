@@ -20,11 +20,17 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
     const [signatura, setSignatura] = useState<string | null>(null);
     const { data: session } = useSession();
     const [bookTitle, setBookTitle] = useState<string>(fetch?.book_title_original || "");
+    const [authorCutter, setAuthorCutter] = useState<any>(fetch?.book_authors || "");
     const token = session?.user?.accessToken || ""
     const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setImageFile(e.target.files[0]);
         }
+    };
+    const handleAuthorsChange = (selectedAuthors: Suggestion[]) => {
+        const authorsString = selectedAuthors.map(author => author.name).join(', ');
+        setAuthorCutter(authorsString);
+        console.log(authorsString);
     };
 
     const onDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,7 +156,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                         defaultValue={fetch?.book_editorial}
                                     />
                                 </div>
-                                <div className={`${['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? 'hidden ' : ''}` + "mb-4"}>
+                                <div className={`${!['LIBRO',].includes(bookType) ? 'hidden ' : ''}` + "mb-4"}>
                                     <Label htmlFor="book_isbn" value="ISBN" />
                                     <TextInput
                                         name="book_isbn"
@@ -159,7 +165,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                         defaultValue={fetch?.book_isbn}
                                     />
                                 </div>
-                                <div className="mb-4">
+                                <div className={`${!["LIBRO"].includes(bookType) ? 'col-span-2 ' : ''}` + "mb-4"}>
                                     <div className="flex items-center gap-2">
                                         <Label htmlFor="book_quantity" value="Numero de ejemplares" />
                                         <p className="text-red-600">*</p>
@@ -205,7 +211,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                 </Select>
                             </div>
 
-                            < div className={['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? 'hidden ' : '' + "mb-4 max-sm:col-span-2"}>
+                            < div className={"mb-4 max-sm:col-span-2"}>
                                 <div className="flex items-center gap-2">
                                     <Label htmlFor="book_location" value="Signatura tipográfica" />
                                     <p className="text-red-600">*</p>
@@ -220,12 +226,12 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                         />
                                     </div>
                                     <div className="flex-none">
-                                        <Button onClick={() => onClickSignatura(String(bookTitle), String(fetch?.book_authors))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
+                                        <Button onClick={() => onClickSignatura(String(bookTitle), String(authorCutter || fetch?.book_authors))} className={bookTitle ? " bg-gray-300 text-black" : 'hidden'}><FiRefreshCcw className="size-5" /></Button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className={`${!['LIBRO', 'PARTITURA', 'REVISTA'].includes(bookType) ? ' col-span-2 ' : ' max-sm:col-span-2 '}` + "mb-4"}>
+                            <div className={"mb-4"} >
                                 <Label htmlFor="book_acquisition_date" value="Fecha de Adquisición" />
                                 <Datepicker
                                     name="book_acquisition_date"
@@ -299,6 +305,7 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
                                     placeholder="Ingrese autores separados por comas"
                                     type="authors"
                                     initialSelectedItems={transformToSuggestions(fetch?.book_authors) ?? []}
+                                    onAuthorsChange={handleAuthorsChange}
                                 />
                             </div>
                             <div className={['PARTITURA', 'REVISTA'].includes(bookType) ? 'hidden' : '' + "mb-4 max-sm:col-span-2"}>
@@ -410,14 +417,15 @@ type SuggestionProps = {
     name: string
     placeholder: string
     type: 'categories' | 'authors' | 'instruments'
-    initialSelectedItems: Suggestion[]
+    initialSelectedItems: Suggestion[],
+    onAuthorsChange?: (selectedItems: Suggestion[]) => void; // Nueva prop para manejar el cambio
 }
 
 type Suggestion = {
     id: number;
     name: string;
 }
-function AutocompleteSuggestion({ id, name, placeholder, type, initialSelectedItems }: SuggestionProps) {
+function AutocompleteSuggestion({ id, name, placeholder, type, initialSelectedItems, onAuthorsChange }: SuggestionProps) {
     const [value, setValue] = useState('')
     const [selectedItems, setSelectedItems] = useState<Suggestion[]>(initialSelectedItems)
     const [search, setSearch] = useState('')
@@ -429,7 +437,10 @@ function AutocompleteSuggestion({ id, name, placeholder, type, initialSelectedIt
         if (selectedItems.length >= 0) {
             setValue(selectedItems.map(item => item.name).join(', ') + '');
         }
-    }, [selectedItems]); // Dependencia en selectedItems
+        if (onAuthorsChange) {
+            onAuthorsChange(selectedItems); // Enviar los autores seleccionados
+        }
+    }, [selectedItems, onAuthorsChange]); // Dependencia en selectedItems
     useEffect(() => {
         if (suggestions.length > 0) {
             setIsLoading(false)
