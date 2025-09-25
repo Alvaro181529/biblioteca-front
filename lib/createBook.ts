@@ -69,7 +69,6 @@ export async function createBook(formData: FormData, token?: string): Promise<Re
     try {
         return await save(String(data.id), validatedData, token || "");
     } catch (error) {
-        console.log(error);
         return { success: false, message: 'Error al procesar el inventario' };
     }
 }

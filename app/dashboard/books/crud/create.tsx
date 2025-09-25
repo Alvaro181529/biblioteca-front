@@ -35,7 +35,6 @@ export function FormCreate({ id, setOpenModal }: { id?: number, setOpenModal: (o
 
     const onClickSignatura = async (titulo: string, author: string) => {
         const signaturaEncontrada = await Signatura(titulo || "", author || "");
-        console.log(signaturaEncontrada);
         setSignatura(String(signaturaEncontrada));
     }
 

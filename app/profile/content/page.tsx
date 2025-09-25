@@ -92,12 +92,53 @@ export default function ContentPage({ searchParams }: SerchParams) {
         </section>
     )
 }
+const checkImage = async (book: BookFormData): Promise<string> => {
+    const imageUrl = book.book_imagen;
+    const fallbackUrl = "/svg/placeholder.svg";
 
+    if (isValidUrl(imageUrl)) {
+
+        return imageUrl;
+    }
+
+    const apiUrl = `/api/books/image/${imageUrl || book.book_inventory}`;
+
+    try {
+        const res = await fetch(apiUrl);
+        // Si no está ok, intentamos parsear JSON solo si el header lo indica
+        const contentType = res.headers.get("Content-Type") || "";
+        if (contentType.includes("application/json")) {
+            const resJson = await res.json();
+            if (resJson?.statusCode === 404) {
+                return fallbackUrl
+
+            } else {
+
+                return apiUrl
+            }
+        }
+        return apiUrl
+    } catch (error) {
+        console.error("Error al verificar la imagen:", error);
+        return fallbackUrl
+    }
+};
 const CardBook = ({ data }: { data: BookFormData[] }) => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [hasNoResults, setHasNoResults] = useState(false);
+    const [validatedImages, setValidatedImages] = useState<string[]>([]);
 
+    useEffect(() => {
+        const validateAllImages = async () => {
+            if (!data || data.length === 0) return;
+
+            const results = await Promise.all(data.map((book) => checkImage(book)));
+            setValidatedImages(results);
+        };
+
+        validateAllImages();
+    }, [data]);
     useEffect(() => {
         if (!data || data.length === 0) {
             const timer = setTimeout(() => {
@@ -126,13 +167,7 @@ const CardBook = ({ data }: { data: BookFormData[] }) => {
     return (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
             {data?.map((book, index) => {
-                const imageUrl = String(book?.book_imagen);
-                const imageSrc = isValidUrl(imageUrl)
-                    ? imageUrl
-                    : imageUrl && imageUrl.toLowerCase() !== "null"
-                        ? `/api/books/image/${imageUrl}`
-                        : "/svg/placeholder.svg";
-
+                const imageSrc = validatedImages[index] || "/svg/placeholder.svg";
                 return (
                     <Card
                         key={index}

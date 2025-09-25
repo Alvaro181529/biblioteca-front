@@ -35,6 +35,7 @@ export default function BooksId({ params }: { params: { id: number } }) {
     const [pdf, setPdf] = useState(true);
     const [spin, setSpin] = useState(true);
     const [files, setFiles] = useState(false);
+    const [imageSrc, setImageSrc] = useState<string>("/svg/placeholder.svg");
     const { data } = useBooksData(params.id, openModal)
     const { data: filesData } = useBooksDataFiles(params.id);
 
@@ -54,7 +55,43 @@ export default function BooksId({ params }: { params: { id: number } }) {
                 });
         }
     }, [openModalMidi]);
+    useEffect(() => {
+        if (!data) return;
 
+        const checkImage = async () => {
+            const imageUrl = data.book_imagen;
+            const isUrl = isValidUrl(imageUrl);
+            const fallbackUrl = "/svg/placeholder.svg";
+
+            if (isUrl) {
+                setImageSrc(imageUrl);
+                return;
+            }
+
+            const apiUrl = `/api/books/image/${imageUrl || data.book_inventory}`;
+
+            try {
+                const res = await fetch(apiUrl);
+                // Si no está ok, intentamos parsear JSON solo si el header lo indica
+                const contentType = res.headers.get("Content-Type") || "";
+                if (contentType.includes("application/json")) {
+                    const resJson = await res.json();
+                    if (resJson?.statusCode === 404) {
+                        setImageSrc(fallbackUrl);
+                        return;
+                    } else {
+                        setImageSrc(apiUrl);
+                        return;
+                    }
+                }
+                setImageSrc(apiUrl);
+            } catch (error) {
+                console.error("Error al verificar la imagen:", error);
+                setImageSrc(fallbackUrl);
+            }
+        };
+        checkImage();
+    }, [data]);
     const router = useRouter()
     useEffect(() => {
         if (!data?.book_document) {
@@ -84,12 +121,6 @@ export default function BooksId({ params }: { params: { id: number } }) {
         }
     }
     if (data?.statusCode == 404) return notFound()
-    const imageUrl = String(data?.book_imagen);
-    const imageSrc = isValidUrl(imageUrl)
-        ? imageUrl
-        : imageUrl && imageUrl.toLowerCase() !== "null"
-            ? `/api/books/image/${imageUrl}`
-            : "/svg/placeholder.svg";
 
     const documentUrl = () => {
         const documentUrl = String(data?.book_document);

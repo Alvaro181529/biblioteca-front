@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BookFormData } from "@/interface/Interface";
 import { Card } from "flowbite-react";
-import { notFound } from "next/navigation";
 import { languages } from "@/types/types";
 import { User } from "next-auth";
 const isValidUrl = (url: string) => {
@@ -17,18 +16,48 @@ const isValidUrl = (url: string) => {
     }
 };
 export default function ContentId({ params }: { params: { id: number } }) {
-    const [openModal, setOpenModal] = useState(false);
-    const { data } = useBooksData(params.id)
-    if (data?.statusCode == 404) return notFound()
-    const imageUrl = String(data?.book_imagen);
+    const { data } = useBooksData(params.id);
+    const [imageSrc, setImageSrc] = useState<string>("/svg/placeholder.svg");
 
-    // Si 'imageUrl' es una URL válida, usamos esa URL; si no, generamos una ruta relativa de la API
-    const imageSrc = isValidUrl(imageUrl)
-        ? imageUrl // Si es una URL válida, usamos la URL
-        : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
-            ? `/api/books/image/${imageUrl}`
-            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+    useEffect(() => {
+        if (!data) return;
 
+        const checkImage = async () => {
+            const imageUrl = data.book_imagen;
+            const fallbackUrl = "/svg/placeholder.svg";
+
+            if (isValidUrl(imageUrl)) {
+                setImageSrc(imageUrl);
+                return;
+            }
+
+            const apiUrl = `/api/books/image/${imageUrl || data.book_inventory}`;
+
+            try {
+                const res = await fetch(apiUrl);
+                // Si no está ok, intentamos parsear JSON solo si el header lo indica
+                const contentType = res.headers.get("Content-Type") || "";
+                if (contentType.includes("application/json")) {
+                    const resJson = await res.json();
+                    if (resJson?.statusCode === 404) {
+                        setImageSrc(fallbackUrl);
+                        return;
+                    } else {
+                        setImageSrc(apiUrl);
+                        return;
+                    }
+                }
+                setImageSrc(apiUrl);
+            } catch (error) {
+                console.error("Error al verificar la imagen:", error);
+                setImageSrc(fallbackUrl);
+            }
+        };
+        checkImage();
+    }, [data]);
+
+    // console.log(data.book_id);
+    if (!data) return null;
     return (
         <div className="mx-auto max-w-6xl px-4 py-2 md:px-2">
             <div className="grid items-start gap-4 md:grid-cols-2">

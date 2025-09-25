@@ -142,12 +142,57 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasNoResults, setHasNoResults] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [validatedImages, setValidatedImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    const validateAllImages = async () => {
+      if (!data || data.length === 0) return;
+
+      const results = await Promise.all(data.map((book) => checkImage(book)));
+      setValidatedImages(results);
+    };
+
+    validateAllImages();
+  }, [data]);
   const isValidUrl = (url: string) => {
     try {
       new URL(url);
       return true;
     } catch (e) {
       return false;
+    }
+  };
+  const checkImage = async (book: BookFormData): Promise<string> => {
+    const imageUrl = book.book_imagen;
+    const fallbackUrl = "/svg/placeholder.svg";
+
+    if (isValidUrl(imageUrl)) {
+
+      return imageUrl;
+    }
+
+    const apiUrl = `/api/books/image/${imageUrl || book.book_inventory}`;
+
+    try {
+      const res = await fetch(apiUrl);
+      // Si no está ok, intentamos parsear JSON solo si el header lo indica
+      const contentType = res.headers.get("Content-Type") || "";
+      if (contentType.includes("application/json")) {
+        const resJson = await res.json();
+        console.log(resJson);
+
+        if (resJson?.statusCode === 404) {
+          return fallbackUrl
+
+        } else {
+
+          return apiUrl
+        }
+      }
+      return apiUrl
+    } catch (error) {
+      console.error("Error al verificar la imagen:", error);
+      return fallbackUrl
     }
   };
   useEffect(() => {
@@ -190,12 +235,7 @@ const CardInventario = ({ data }: { data: BookFormData[] }) => {
   return (
     <>
       {Array.isArray(data) && data?.map((book, index) => {
-        const imageUrl = String(book?.book_imagen);
-        const imageSrc = isValidUrl(imageUrl)
-          ? imageUrl // Si es una URL válida, usamos la URL
-          : imageUrl && imageUrl.toLowerCase() !== "null"  // Si no es "null", pero no es una URL válida, entonces usamos la ruta de la API
-            ? `/api/books/image/${imageUrl}`
-            : "/svg/placeholder.svg";  // Si no hay imagen, usamos el placeholder
+        const imageSrc = validatedImages[index] || "/svg/placeholder.svg";
 
         return (
           <Card key={index} imgSrc={imageSrc} horizontal={!isSmallScreen}>
